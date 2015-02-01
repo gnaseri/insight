@@ -13,8 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.ubiqlog.ubiqlogwear.R;
 
-public class WearableListItemLayout extends LinearLayout implements
-        WearableListView.Item {
+public class WearableListItemLayout extends LinearLayout {
+       // implements WearableListView.Item {
     private final float mFadedTextAlpha;
     private final int mFadedCircleColor;
     private final int mChosenCircleColor;
@@ -45,37 +45,37 @@ public class WearableListItemLayout extends LinearLayout implements
         mName = (TextView) findViewById(R.id.time_text);
     }
 
-    @Override
-    public float getProximityMinValue() {
-        return 1f;
-    }
-
-    @Override
-    public float getProximityMaxValue() {
-        return 1.6f;
-    }
-
-    @Override
-    public float getCurrentProximityValue() {
-        return mScale;
-    }
-
-    @Override
-    public void setScalingAnimatorValue(float scale) {
-        mScale = scale;
-        mCircle.setScaleX(scale);
-        mCircle.setScaleY(scale);
-    }
-
-    @Override
-    public void onScaleUpStart() {
-        mName.setAlpha(1f);
-        //  ((GradientDrawable) mCircle.getDrawable()).setColor(mChosenCircleColor);
-    }
-
-    @Override
-    public void onScaleDownStart() {
-        //((GradientDrawable) mCircle.getDrawable()).setColor(mFadedCircleColor);
-        mName.setAlpha(mFadedTextAlpha);
-    }
+//    @Override
+//    public float getProximityMinValue() {
+//        return 1f;
+//    }
+//
+//    @Override
+//    public float getProximityMaxValue() {
+//        return 1.6f;
+//    }
+//
+//    @Override
+//    public float getCurrentProximityValue() {
+//        return mScale;
+//    }
+//
+//    @Override
+//    public void setScalingAnimatorValue(float scale) {
+//        mScale = scale;
+//        mCircle.setScaleX(scale);
+//        mCircle.setScaleY(scale);
+//    }
+//
+//    @Override
+//    public void onScaleUpStart() {
+//        mName.setAlpha(1f);
+//        //  ((GradientDrawable) mCircle.getDrawable()).setColor(mChosenCircleColor);
+//    }
+//
+//    @Override
+//    public void onScaleDownStart() {
+//        //((GradientDrawable) mCircle.getDrawable()).setColor(mFadedCircleColor);
+//        mName.setAlpha(mFadedTextAlpha);
+//    }
 }
