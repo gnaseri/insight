@@ -16,7 +16,7 @@ import com.ubiqlog.ubiqlogwear.utils.CSVEncodeDecode;
 import java.util.Date;
 
 /**
- * Created by prajnashetty on 10/30/14.
+ * Created by Cole Murray 1/28/15
  */
 
 public class BatterySensor extends Service {
