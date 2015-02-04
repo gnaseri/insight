@@ -1,17 +1,17 @@
 package com.ubiqlog.ubiqlogwear.sensors;
 
-import android.hardware.SensorEvent;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
-import android.hardware.SensorEventListener;
-import android.os.IBinder;
-import android.content.Intent;
 import android.app.Service;
+import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
-import com.ubiqlog.ubiqlogwear.utils.JsonEncodeDecode;
+import com.ubiqlog.ubiqlogwear.utils.CSVEncodeDecode;
 
 import java.util.Date;
 
@@ -19,11 +19,12 @@ import java.util.Date;
  * Created by prajnashetty on 10/30/14.
  */
 
-public class LightSensor extends Service {
-    private SensorManager sensorManager;
-    private Sensor lightSensor;
-    private long lastUpdate;
-    SensorEventListener listen;
+public class LightSensor extends Service implements SensorEventListener {
+    private static final String LOG_TAG = LightSensor.class.getSimpleName();
+    private Sensor mLight;
+    private SensorManager mSensorManager;
+    public LightSensor() {
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -31,49 +32,47 @@ public class LightSensor extends Service {
     }
 
     @Override
+    public void onCreate() {
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        Toast.makeText(this,"LightSens Logging Started", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null){
+            //SensorDelayNormal is 200,000 ms
+            mSensorManager.registerListener(this,mLight,SensorManager.SENSOR_DELAY_NORMAL);
 
-        sensorManager.registerListener(listen, lightSensor, 2);
-        lastUpdate = System.currentTimeMillis();
-
+        }
         return START_STICKY;
     }
 
     @Override
-    public void onCreate() {
-        Toast.makeText(getApplicationContext(), "Started Light Logging", Toast.LENGTH_SHORT).show();
-        super.onCreate();
+    public void onSensorChanged(SensorEvent event) {
+        //Light sensor returns one value
+        float lux = event.values[0];
+        Date date = new Date();
 
-        listen = new SensorListen();
-        sensorManager = (SensorManager) getApplicationContext()
-                .getSystemService(SENSOR_SERVICE);
-        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE );
+        //Encode the lux value and date
+        String encoded = CSVEncodeDecode.encodeLight(lux, date);
+        Log.d(LOG_TAG, encoded);
+
+        // add encoded string to buffer
+        DataAcquisitor.dataBuffer.add(encoded);
+
+
     }
 
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
 
     @Override
     public void onDestroy() {
-        sensorManager.unregisterListener(listen);
-        Toast.makeText(this, "Destroy Light Logging", Toast.LENGTH_SHORT).show();
+        mSensorManager.unregisterListener(this);
+        Log.d(LOG_TAG, "Light sensor stopped");
         super.onDestroy();
-    }
-
-    public class SensorListen implements SensorEventListener {
-
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            Date _currentDate = new Date();
-            if (event.accuracy == 3) {
-                String jsonString = JsonEncodeDecode.EncodeLight(event.values[0], _currentDate);
-                DataAcquisitor.dataBuffer.add(jsonString);
-                Log.i("Light-Logging", jsonString);
-            }
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
-
     }
 }
