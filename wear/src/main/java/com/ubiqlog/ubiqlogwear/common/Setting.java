@@ -1,14 +1,20 @@
 package com.ubiqlog.ubiqlogwear.common;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
 public final class Setting {
+
+    public static final long SAVE_FILE_WAIT_INTERVAL = 10000L; // 10 seconds
+    //Internal File Directory is appended to this
+    public static final String LOG_FOLDER = "insight" ;
+
+
 
     public static Vector<String> vectorExcludedApplications = new Vector<String>();
     public static final String googleMapKey = "This has been removed for public access";
@@ -43,7 +49,6 @@ public final class Setting {
 
     // MainUI
     public static final String[] MAINUI_LIST = { "Logging", "Sensors","Settings", "Tools" };
-    public static final String LOG_FOLDER = "/sdcard/ubiqlog";// /audio
     public static final String PICTURE_FOLDER = "/sdcard/ubiqlog/picture";
     // public static final String camera = "com.android.camera";
     // public static final String audio = "com.android.music";
