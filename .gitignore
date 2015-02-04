@@ -9,4 +9,7 @@
 #.iml files
 *.iml
 
+#idea
+.idea/*
+
 
