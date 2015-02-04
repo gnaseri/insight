@@ -2,7 +2,6 @@ package com.ubiqlog.ubiqlogwear.core;
 
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
@@ -12,66 +11,57 @@ import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.utils.IOManager;
 
 public class DataAggregator extends Service {
-
-	String today;
-	Long currDateL;
+    public static String LOG_TAG = DataAggregator.class.getSimpleName();
+    private final int minBuffSize = 20;
 
     IOManager datalogger;
-	private Handler objHandler = new Handler();
-	private Context _ctx = null;
+    private Handler mHandler = new Handler();
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return null;
-	}
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
-	private Runnable doDataAggregation = new Runnable() {
-		public void run() {
-			manageDataAcq(20);
-			objHandler.postDelayed(doDataAggregation, Long.parseLong(Setting.Instance(_ctx).getDaggSav2File()));
-		}
-	};
+    private Runnable doDataAggregation = new Runnable() {
+        public void run() {
+            manageDataAcq(minBuffSize);
+            mHandler.postDelayed(doDataAggregation,Setting.SAVE_FILE_WAIT_INTERVAL);
+        }
+    };
 
-	@Override
-	public void onCreate() {
-		Log.d("Data-Aggregator", "--- onCreate");
-		_ctx = this;
+    @Override
+    public void onCreate() {
+        Log.d(LOG_TAG, "--- onCreate");
         datalogger = new IOManager();
-	}
+    }
 
-	@Override
-	public void onDestroy() {
-		objHandler.removeCallbacks(doDataAggregation);
-		manageDataAcq(0);
-		Log.d("Data-Aggregator", "--- onDestroy");
-	}
+    @Override
+    public void onDestroy() {
+        mHandler.removeCallbacks(doDataAggregation);
+        manageDataAcq(0);
+        Log.d(LOG_TAG, "--- onDestroy");
+    }
 
-	@Override
-	public void onStart(Intent intent, int startId) {
-		Log.d("Data-Aggregator", "--- onStart");
-		_ctx = this;
-		manageDataAcq(20);
-		objHandler.postDelayed(doDataAggregation, Long.parseLong(Setting.Instance(this).getDaggSav2File()));
-	}
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d("Data-Aggregator", "--- onStartCommand");
-		_ctx = this;
-		manageDataAcq(20);
-		objHandler.postDelayed(doDataAggregation, Long.parseLong(Setting.Instance(this).getDaggSav2File()));
-		return START_STICKY;
-	}
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(LOG_TAG, "--- onStartCommand");
+        if (intent != null){
+            manageDataAcq(minBuffSize);
+            mHandler.postDelayed(doDataAggregation, Setting.SAVE_FILE_WAIT_INTERVAL);
+        }
 
-	
-/*
- * added minimumSize as param -> so that on termination every data in buffer to be written in file
- */
-	private void manageDataAcq(int minimumSize) {
-		if (DataAcquisitor.dataBuffer.size() > minimumSize) {
-			datalogger.logData(DataAcquisitor.dataBuffer);
-			DataAcquisitor.dataBuffer.clear();
-		}
+        return START_STICKY;
+    }
 
-	}
+
+    private void manageDataAcq(int minimumSize) {
+        if (DataAcquisitor.dataBuffer.size() > minimumSize) {
+            //Write data to file
+            datalogger.logData(this,DataAcquisitor.dataBuffer);
+            //Clear buffer
+            DataAcquisitor.dataBuffer.clear();
+        }
+
+    }
 
 }
