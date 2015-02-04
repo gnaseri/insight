@@ -51,8 +51,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         name = new String[]{getResources().getString(R.string.me), getResources().getString(R.string.activity), getResources().getString(R.string.heartrate),
                 getResources().getString(R.string.appusage), getResources().getString(R.string.device), getResources().getString(R.string.battery),
                 getResources().getString(R.string.bluetooth), getResources().getString(R.string.amlight), getResources().getString(R.string.notification)};
-        image = new Integer[]{null, R.drawable.runicn, R.drawable.hearticn, R.drawable.appicn, null, R.drawable.batteryicn,
-                R.drawable.bluetoothicn, R.drawable.lighticn, R.drawable.notificn};
+        image = new Integer[]{null, R.drawable.ic_activity, R.drawable.ic_heart, R.drawable.ic_appusage, null, R.drawable.ic_battery,
+                R.drawable.ic_bluetooth, R.drawable.ic_light, R.drawable.ic_notif};
 
         mWearableListView = (WearableListView) findViewById(R.id.times_list_view);
         //setadapter to listview

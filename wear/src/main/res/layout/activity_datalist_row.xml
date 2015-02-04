@@ -45,8 +45,8 @@
             android:layout_height="40dp"
             android:id="@+id/ivStatus"
             android:layout_column="1"
-            android:src="@drawable/baricons_start"
-            android:background="@drawable/baricons_mid" />
+            android:src="@drawable/ic_bar_start"
+            android:background="@drawable/ic_bar_mid" />
 
         <TextView
             android:layout_width="wrap_content"

@@ -21,7 +21,7 @@
             android:id="@+id/imageView"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
-            android:src="@drawable/icon_refresh" />
+            android:src="@drawable/ic_refresh" />
 
         <TextView
             android:layout_width="wrap_content"

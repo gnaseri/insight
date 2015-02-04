@@ -107,7 +107,7 @@ public class MultipleListItemsAdapter extends BaseAdapter {
                 holder.item_StatusImage.setBackground(activity.getResources().getDrawable(getBackgroundImage(getCount(), position)));
                 holder.item_StatusImage.setPadding(6, 6, 6, 6);
                 if (Integer.valueOf(rData.icon).equals(null))
-                    holder.item_StatusImage.setImageResource(R.drawable.baricons_bullet);
+                    holder.item_StatusImage.setImageResource(R.drawable.ic_bar_bullet);
                 else
                     holder.item_StatusImage.setImageResource(rData.icon);
                 break;
@@ -134,11 +134,11 @@ public class MultipleListItemsAdapter extends BaseAdapter {
 
     public int getBackgroundImage(int count, int position) {
         if (position == 0)
-            return R.drawable.baricons_start;
+            return R.drawable.ic_bar_start;
         else if (position == count - mLinkButtonsSet.size() - 1)
-            return R.drawable.baricons_end;
+            return R.drawable.ic_bar_end;
         else
-            return R.drawable.baricons_mid;
+            return R.drawable.ic_bar_mid;
     }
 }
 

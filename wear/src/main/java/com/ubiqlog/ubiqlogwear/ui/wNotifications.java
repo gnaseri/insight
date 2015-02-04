@@ -70,7 +70,7 @@ public class wNotifications extends Activity {
         String status[] = {"Facebook", "Viber", "Battery", "Email", "Unknown"};
         for (int j = 0; j < 10; j++) {
             Random randomGenerator = new Random();
-            RowData rData = new RowData(new Date(time.getTime() + j * 3 * 60 * 1000), status[randomGenerator.nextInt(3)], R.drawable.baricons_bullet);
+            RowData rData = new RowData(new Date(time.getTime() + j * 3 * 60 * 1000), status[randomGenerator.nextInt(3)], R.drawable.ic_bar_bullet);
             rDatas.add(rData);
         }
         return rDatas;
