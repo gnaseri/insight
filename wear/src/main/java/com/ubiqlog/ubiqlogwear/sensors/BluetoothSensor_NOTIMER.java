@@ -78,7 +78,7 @@ public class BluetoothSensor_NOTIMER extends Service implements SensorConnector 
 
                         String jsonString = JsonEncodeDecode.EncodeBluetooth(deviceName,device.getAddress(),stateBluetoothDevice.getState(),currentDateTime.getTime());
                         Log.e("--------DETECTED BT-----",jsonString);
-//						dataAcq.dataBuff.add(jsonString);
+//						dataAcq.dataBuffer.add(jsonString);
                         jsonString = null;
                     } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 
@@ -176,7 +176,7 @@ public class BluetoothSensor_NOTIMER extends Service implements SensorConnector 
 									deviceName = "NO_DEVICENAME";
 								}
 								String jsonString = JsonEncodeDecode.EncodeBluetooth(deviceName, device.getAddress(), stateBluetoothDevice.getState(), currentDateTime.getTime());
-								dataAcq.dataBuff.add(jsonString);
+								dataAcq.dataBuffer.add(jsonString);
 								jsonString = null;
 							} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 

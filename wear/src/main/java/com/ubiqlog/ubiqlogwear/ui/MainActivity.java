@@ -1,4 +1,3 @@
-
 package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
@@ -7,12 +6,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.hardware.SensorEvent;
 import android.os.Bundle;
 import android.support.wearable.view.WearableListView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -72,7 +70,8 @@ public class MainActivity extends Activity implements SensorEventListener {
                 } else if (selectedItem.toLowerCase().contains("notifications")) {
                     Intent i = new Intent(getApplicationContext(), wNotifications.class);
                     startActivity(i);
-
+                } else if (selectedItem.toLowerCase().contains("battery")) {
+                    startActivity(new Intent(MainActivity.this, BatteryLevelActivity.class));
                 } else
                     Toast.makeText(getApplicationContext(), "Not Active!", Toast.LENGTH_SHORT).show();
 

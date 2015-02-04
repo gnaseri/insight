@@ -37,7 +37,7 @@ public class ApplicationSensorHelper {
 				if(!_foundApps.contains(entry.getKey())){
 					//Log.d("APPS", "Write to log: " + entry.getKey());
 					String jsonString = JsonEncodeDecode.EncodeApplication(friendlyName,entry.getKey(), entry.getValue(), endDate);
-					DataAcquisitor.dataBuff.add(jsonString);
+					DataAcquisitor.dataBuffer.add(jsonString);
                     Log.i("Application-Logging", "--- Active Applications " + jsonString);
 					entries.remove();
 					
@@ -45,7 +45,7 @@ public class ApplicationSensorHelper {
 				else if(entry.getValue().before(new Date(new Date().getTime()-timeInterval))){					
 					//Log.d("APPS", "Write to log from interval: " + entry.getKey());
 					String jsonString = JsonEncodeDecode.EncodeApplication(friendlyName,entry.getKey(), entry.getValue(),endDate);
-					DataAcquisitor.dataBuff.add(jsonString);
+					DataAcquisitor.dataBuffer.add(jsonString);
                     Log.i("Application-Logging", "--- Active Applications " + jsonString);
 					entry.setValue(new Date());
 					

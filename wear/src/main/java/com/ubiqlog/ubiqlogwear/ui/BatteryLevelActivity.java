@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.ui.fragments.BatteryChartFragment;
 
@@ -18,19 +19,20 @@ public class BatteryLevelActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_battery_level);
-        if (savedInstanceState == null) {
+
+       /* if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.chart_fragment, new BatteryChartFragment())
                     .commit();
 
-        }
+        } */
     }
 
     @Override
     protected void onStart()
     {
         super.onStart();
-//        if (DataAcquisitor.dataBuff.size() > 0)
+//        if (DataAcquisitor.dataBuffer.size() > 0)
 //            drawPlot();
     }
 

@@ -103,7 +103,7 @@ public class BluetoothSensor extends Service  {
                                     deviceName = "NO_DEVICENAME";
                                 }
                                 String jsonString = JsonEncodeDecode.EncodeBluetooth(deviceName, device.getAddress(), stateBluetoothDevice.getState(), currentDateTime.getTime());
-                                dataAcq.dataBuff.add(jsonString);
+                                dataAcq.dataBuffer.add(jsonString);
                                 Log.i("Bluetooth-Logging",jsonString);
                                 jsonString = null;
                             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {

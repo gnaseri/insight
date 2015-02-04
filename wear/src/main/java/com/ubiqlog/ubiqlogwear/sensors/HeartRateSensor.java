@@ -66,7 +66,7 @@ public class HeartRateSensor extends Service {
             Date _currentDate = new Date();
             if (event.accuracy == 3) {
                 String jsonString = JsonEncodeDecode.EncodeHeartRate(event.values[0], _currentDate);
-                DataAcquisitor.dataBuff.add(jsonString);
+                DataAcquisitor.dataBuffer.add(jsonString);
                 Log.i("HeartRate-Logging", jsonString);
             }
         }

@@ -67,9 +67,9 @@ public class DataAggregator extends Service {
  * added minimumSize as param -> so that on termination every data in buffer to be written in file
  */
 	private void manageDataAcq(int minimumSize) {
-		if (DataAcquisitor.dataBuff.size() > minimumSize) {
-			datalogger.logData(DataAcquisitor.dataBuff);
-			DataAcquisitor.dataBuff.clear();
+		if (DataAcquisitor.dataBuffer.size() > minimumSize) {
+			datalogger.logData(DataAcquisitor.dataBuffer);
+			DataAcquisitor.dataBuffer.clear();
 		}
 
 	}

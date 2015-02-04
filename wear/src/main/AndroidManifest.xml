@@ -29,6 +29,12 @@
             android:label="@string/title_activity_wnotifications">
 
         </activity>
+        <activity android:name=".ui.BatteryLevelActivity"
+            android:label="Battery"
+        />
+        <service android:name=".sensors.BatterySensor"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

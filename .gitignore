@@ -4,3 +4,11 @@
 /.idea/libraries
 .DS_Store
 /build
+
+
+#.iml files
+*.iml
+
+#idea
+*.idea
+

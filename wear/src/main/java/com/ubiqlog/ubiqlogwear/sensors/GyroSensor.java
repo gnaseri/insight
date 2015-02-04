@@ -69,7 +69,7 @@ public class GyroSensor extends Service {
                     Date _currentDate = new Date();
                     String jsonString = JsonEncodeDecode.EncodeGyroscope(event.values[0],
                             event.values[1], event.values[2], _currentDate);
-                    DataAcquisitor.dataBuff.add(jsonString);
+                    DataAcquisitor.dataBuffer.add(jsonString);
                     Log.i("Gyroscope-Logging", jsonString);
                     lastUpdate = System.currentTimeMillis();
                 }
