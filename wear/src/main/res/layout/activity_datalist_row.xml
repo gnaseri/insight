@@ -10,7 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="0dp"
         android:gravity="center_vertical"
-        android:id="@+id/row">
+        android:id="@+id/row"
+        android:clickable="true">
 
         <LinearLayout
             android:orientation="vertical"
