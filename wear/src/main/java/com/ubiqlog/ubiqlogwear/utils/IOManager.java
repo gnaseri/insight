@@ -1,52 +1,46 @@
 package com.ubiqlog.ubiqlogwear.utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-
+import android.content.Context;
 import android.util.Log;
 
 import com.ubiqlog.ubiqlogwear.common.Setting;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
 public class IOManager{
 
-	String datenow = new String();
+    public static final String LOG_TAG = IOManager.class.getSimpleName();
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy");
 	
-	public void logData(ArrayList<String> inArr) {
-		FileWriter writer;
-		datenow = DateFormat.getDateInstance(DateFormat.SHORT).format(System.currentTimeMillis());
-		SimpleDateFormat dateformat = new SimpleDateFormat("M-d-yyyy");
-        Log.i("IO-Manager", "--- Start writing to log");
-        FileOutputStream outputStream;
-		try {
-			File logFile = new File(Setting.Instance(null).getLogFolder() + "/" + "log_" + dateformat.format(new Date()) + ".txt"); //datenow+ ".txt");
-            Log.i("IO-Manager", "--- File = "+Setting.Instance(null).getLogFolder() + "/" + "log_" + dateformat.format(new Date()) + ".txt");
-            writer = new FileWriter(logFile, true);
-			if (!logFile.exists()) {
-				logFile.createNewFile();
-			}
-			Iterator<String> it = inArr.iterator();
-			while (it.hasNext()) {
-				String aaa = it.next();
-				writer.append(aaa+ System.getProperty("line.separator"));
-			}
-			writer.flush();
-			writer.close();
-			writer = null;
+	public void logData( Context context, ArrayList<String> data) {
+        Log.d(LOG_TAG,"Started Saving Data");
+        FileWriter writer;
 
-            Log.i("IO-Manager", "--- Finished writing to log");
 
-		} catch (Exception e) {
-			
-			 Log.e("DataAggregator", "--------Failed to write in a file-----"+ e.getMessage() + "; Stack: " +  Log.getStackTraceString(e));
-			
-		}
+        File logFile = new File (context.getFilesDir().getAbsolutePath() + "/log_" +
+                dateFormat.format(new Date()) + ".txt");
+
+        //Setup File for writing
+        try {
+            writer = new FileWriter(logFile,true);
+
+            for (String s : data){
+                writer.append(s + System.getProperty("line.separator"));
+            }
+
+            writer.flush();
+            writer.close();
+
+            Log.d (LOG_TAG, "Finished Writing to file");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 
 	public void logError(String msg) {
