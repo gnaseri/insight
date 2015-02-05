@@ -1,27 +1,11 @@
 package com.ubiqlog.ubiqlogwear.utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-
-import android.content.Context;
-
-import android.util.Log;
-
-import com.ubiqlog.ubiqlogwear.common.Setting;
-
 /**
  * Created by prajnashetty on 10/30/14.
  * This class is not being used
  */
 public class IOManager_BU {
-
+/*
    // private String filename = "MySampleFile.txt";
     private String filepath = "Ubiqlog";
     File myInternalFile;
@@ -94,5 +78,5 @@ public class IOManager_BU {
             Log.e("IOManager.logError", ex.getMessage(), ex);
         }
     }
-
+*/
 }

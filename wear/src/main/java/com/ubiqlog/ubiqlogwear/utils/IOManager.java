@@ -3,12 +3,9 @@ package com.ubiqlog.ubiqlogwear.utils;
 import android.content.Context;
 import android.util.Log;
 
-import com.ubiqlog.ubiqlogwear.common.Setting;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,7 +40,7 @@ public class IOManager{
         }
 	}
 
-	public void logError(String msg) {
+	/*public void logError(String msg) {
 		PrintWriter printWr;
 		Date a = new Date (System.currentTimeMillis());
 		String errorDate = a.getDate()+"-"+a.getMonth()+"-"+a.getYear();
@@ -58,5 +55,5 @@ public class IOManager{
 			Log.e("IOManager.logError", ex.getMessage(), ex);
 		}
 	}
-
+    */
 }

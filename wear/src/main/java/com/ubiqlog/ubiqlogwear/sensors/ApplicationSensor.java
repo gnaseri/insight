@@ -1,21 +1,8 @@
 package com.ubiqlog.ubiqlogwear.sensors;
 
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.ubiqlog.ubiqlogwear.common.Setting;
-import com.ubiqlog.ubiqlogwear.utils.IOManager;
-
-import android.app.ActivityManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.PowerManager;
-import android.util.Log;
-import android.widget.Toast;
 
 /**
  * This sensor will use time interval for logging
@@ -23,7 +10,16 @@ import android.widget.Toast;
  *
  */
 public class ApplicationSensor extends Service implements SensorConnector {
+    @Override
+    public void readSensor() {
 
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+/*
   //  private com.ubiqlog.ubiqlogwear.core.DataAcquisitor dataAcq;
 
     private Handler objHandler = new Handler();
@@ -102,6 +98,6 @@ public class ApplicationSensor extends Service implements SensorConnector {
     public String getSensorName() {
         return "APPLICATION";
     }
-
+*/
 }
 

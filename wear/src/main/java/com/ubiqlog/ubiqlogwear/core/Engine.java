@@ -1,28 +1,16 @@
 package com.ubiqlog.ubiqlogwear.core;
 
-import java.io.File;
-
-import android.app.Application;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.IBinder;
-import android.util.Log;
-import android.widget.Toast;
-
-import com.ubiqlog.ubiqlogwear.sensors.AccelerometerSensor;
-import com.ubiqlog.ubiqlogwear.sensors.ApplicationSensor;
-import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;
-import com.ubiqlog.ubiqlogwear.sensors.BluetoothSensor;
-import com.ubiqlog.ubiqlogwear.sensors.GyroSensor;
-import com.ubiqlog.ubiqlogwear.sensors.HeartRateSensor;
-import com.ubiqlog.ubiqlogwear.utils.CleanUpService;
 
 
 public class Engine extends Service {
-	
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+	/*
 //	private Context ctx = getApplicationContext();
 	private Context ctx = getBaseContext();
 	@Override
@@ -53,6 +41,8 @@ public class Engine extends Service {
 	/**
 	 * Run UbiqLog after boot
 	 */
+
+    /*
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 //		Log.e("[Engine]","----onStartCommand 4m UBIQLOG");
@@ -151,4 +141,5 @@ public class Engine extends Service {
 
     }
 
+*/
 }

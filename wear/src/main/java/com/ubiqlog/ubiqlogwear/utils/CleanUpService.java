@@ -3,23 +3,17 @@ package com.ubiqlog.ubiqlogwear.utils;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
-
-import com.ubiqlog.ubiqlogwear.common.Setting;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 /**
  * Created by prajnashetty on 10/30/14.
  * This class is not being used.
  */
 
 public class CleanUpService extends Service {
-    public CleanUpService() {
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+   /* public CleanUpService() {
     }
 
     @Override
@@ -61,5 +55,5 @@ public class CleanUpService extends Service {
 
         }
     }
-
+*/
 }
