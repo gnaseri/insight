@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">insight</string>
-     <string name="hello_world">Hello world!</string>
+    <string name="app_name">Insight</string>
+
+    <!-- Names of items in HomeListview -->
+    <string name="me_title">Me</string>
+    <string name="activity_title">Activity</string>
+    <string name="battery_title">Battery</string>
+    <string name="heart_rate_title">Heart Rate</string>
+    <string name="app_usage_title">App Usage</string>
+
+    <!-- Names of items in SystemListView -->
+    <string name="system_title">System</string>
+    <string name="bluetooth_title">Bluetooth</string>
+    <string name="amblight_title">Ambient Light</string>
+    <string name="notification_title">Notifications</string>
+    <string name="title_activity_activity_test">ActivityTest</string>
+    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Previous strings -->
     <string name="ubiqlog_greeting">Logging process at work.. </string>
     <string name="title_activity_main">MyActivity</string>
     <string name="title_activity_battery_level">BatteryLevelActivity</string>
@@ -14,14 +30,6 @@
     <string name="title_activity_wbluetooth">Bluetooth</string>
     <string name="title_activity_wnotifications">Notifications</string>
     <string name="me">Me</string>
-    <string name="activity">Activity</string>
-    <string name="heartrate">Heart rate</string>
-    <string name="appusage">App Usage</string>
-    <string name="device">Device</string>
-    <string name="battery">Battery</string>
-    <string name="bluetooth">Bluetooth</string>
-    <string name="amlight">Ambient Light</string>
-    <string name="notification">Notifications</string>
     <string name="custom_orange">#FFBF00</string>
     <string name="title_activity_textColor">#FFFFFF</string>
 
