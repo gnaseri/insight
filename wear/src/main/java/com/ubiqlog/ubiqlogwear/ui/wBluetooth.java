@@ -30,6 +30,7 @@ public class wBluetooth extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_datalist);
+        
         //Start bluetooth sensor Service
         startService(new Intent(this, BluetoothSensor.class));
         Log.d(LOG_TAG, "Service started");

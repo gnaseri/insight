@@ -8,6 +8,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
+import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
+import com.ubiqlog.ubiqlogwear.utils.CSVEncodeDecode;
+
+import java.util.Date;
 
 /* This class monitors connection between Handheld and Wearable */
 public class BluetoothSensor extends WearableListenerService {
@@ -16,10 +20,8 @@ public class BluetoothSensor extends WearableListenerService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(LOG_TAG, "OnStart command called");
         if (mClient != null){
             mClient.connect();
-            Log.d(LOG_TAG, "Connected");
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -46,10 +48,17 @@ public class BluetoothSensor extends WearableListenerService {
     @Override
     public void onPeerConnected(Node peer) {
         Log.d(LOG_TAG, "Bluetooth connected");
+        String encoded = CSVEncodeDecode.encodeBT("Connected",new Date());
+        Log.d(LOG_TAG,encoded);
+        DataAcquisitor.dataBuffer.add(encoded);
     }
 
     @Override
     public void onPeerDisconnected(Node peer) {
         Log.d(LOG_TAG, "Bluetooth Disconnected");
+        String encoded = CSVEncodeDecode.encodeBT("Disconnected", new Date());
+        Log.d(LOG_TAG,encoded);
+        DataAcquisitor.dataBuffer.add(encoded);
+
     }
 }

@@ -42,4 +42,12 @@ public class CSVEncodeDecode {
 
         return encodedString.toString();
     }
+
+    public static String encodeBT (String state, Date timestamp){
+        StringBuilder encodedString = new StringBuilder("");
+        encodedString = encodedString.append(
+                "Bluetooth,Status:" + state + "," + dateFormat.format(timestamp)
+        );
+        return encodedString.toString();
+    }
 }
