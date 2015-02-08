@@ -1,53 +1,55 @@
 package com.ubiqlog.ubiqlogwear.sensors;
 
-import android.app.Service;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.IBinder;
+import android.os.Bundle;
+import android.util.Log;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
+import com.google.android.gms.wearable.WearableListenerService;
 
-public class BluetoothSensor extends Service  {
+/* This class monitors connection between Handheld and Wearable */
+public class BluetoothSensor extends WearableListenerService {
+    private static final String LOG_TAG = BluetoothSensor.class.getSimpleName();
+    private GoogleApiClient mClient;
+
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(LOG_TAG, "OnStart command called");
+        if (mClient != null){
+            mClient.connect();
+            Log.d(LOG_TAG, "Connected");
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
-    /* Attach a broadcast receiver to watch for connection/disconnection */
+
     @Override
     public void onCreate() {
-        IntentFilter filter1 = new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED);
-        IntentFilter filter2 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-        IntentFilter filter3 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+        super.onCreate();
+        mClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {
+                        Log.d(LOG_TAG, "Successful connect");
+                    }
 
-        this.registerReceiver(mReceiver, filter1);
-        this.registerReceiver(mReceiver,filter2);
-        this.registerReceiver(mReceiver,filter3);
+                    @Override
+                    public void onConnectionSuspended(int i) {
+
+                    }
+                })
+                .build();
     }
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
-            if (BluetoothDevice.ACTION_FOUND.equals(action)){
-                //Device found
-            }
-            else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)){
-                //Device is connected
-            }
-            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-                //Done searching
-            }
-            else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)){
-                //About to disconnect
-            }
-            else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)){
-                // Disconnected
-            }
+    @Override
+    public void onPeerConnected(Node peer) {
+        Log.d(LOG_TAG, "Bluetooth connected");
+    }
 
-        }
-    };
+    @Override
+    public void onPeerDisconnected(Node peer) {
+        Log.d(LOG_TAG, "Bluetooth Disconnected");
+    }
 }
