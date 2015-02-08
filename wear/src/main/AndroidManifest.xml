@@ -11,6 +11,9 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name">
@@ -35,6 +38,11 @@
         <service android:name=".sensors.BatterySensor"
             android:enabled="true"
             android:exported="false" />
+        <service android:name=".sensors.BluetoothSensor">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

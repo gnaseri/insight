@@ -1,13 +1,16 @@
 package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.sensors.BluetoothSensor;
 import com.ubiqlog.ubiqlogwear.utils.MultipleListItemsAdapter;
 import com.ubiqlog.ubiqlogwear.utils.RowData;
 
@@ -20,12 +23,16 @@ import java.util.Random;
 
 
 public class wBluetooth extends Activity {
+    private static final String LOG_TAG = wBluetooth.class.getSimpleName();
     private MultipleListItemsAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_datalist);
+        //Start bluetooth sensor Service
+        startService(new Intent(this, BluetoothSensor.class));
+        Log.d(LOG_TAG, "Service started");
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitle);
