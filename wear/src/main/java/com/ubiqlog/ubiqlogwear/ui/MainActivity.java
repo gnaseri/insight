@@ -9,6 +9,7 @@ import android.support.wearable.view.WearableListView;
 import com.ubiqlog.ubiqlogwear.Adapters.MyAdapter;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.common.MainListItem;
+import com.ubiqlog.ubiqlogwear.sensors.ActivitySensor;
 import com.ubiqlog.ubiqlogwear.utils.FeatureCheck;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class MainActivity extends Activity  {
         listArray.add(meTitle);
         MainListItem activityItem = new MainListItem(
                 getResources().getString(R.string.activity_title),
-                R.drawable.ic_activity, MainActivity.class);
+                R.drawable.ic_activity, ActivitySensor.class);
         listArray.add(activityItem);
         MainListItem heartrateItem = new MainListItem(
                 getString(R.string.heart_rate_title),
