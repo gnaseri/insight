@@ -15,4 +15,6 @@ public final class SensorConstants {
     public static long BATTERY_LOG_INTERVAL = 600000L;  //10 minutes
 
     public static long BT_LOG_INTERVAL = 600000L; //10 minutes
+
+    public static long WALKDETECTION_INTERVAL = 30000L; //30 seconds
 }

@@ -19,6 +19,7 @@ import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
 import com.ubiqlog.ubiqlogwear.R;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 
@@ -27,8 +28,10 @@ import java.util.concurrent.TimeUnit;
    get changeOfStep, perform activity recognition, or get speed
  */
 public class ActivitySensor extends Activity implements GoogleApiClient.ConnectionCallbacks,
-GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.OnConnectionFailedListener {
     private static final String LOG_TAG = ActivitySensor.class.getSimpleName();
+
+    private ActivityDataHelper.StepList stepList;
 
     private TextView mTextView;
     private GoogleApiClient mFitnessClient;
@@ -39,6 +42,7 @@ GoogleApiClient.OnConnectionFailedListener{
         setContentView(R.layout.activity_activity_sensor);
 
         buildFitnessActivity();
+        stepList = new ActivityDataHelper.StepList();
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
@@ -52,13 +56,13 @@ GoogleApiClient.OnConnectionFailedListener{
     @Override
     protected void onStart() {
         super.onStart();
-        if (mFitnessClient != null){
+        if (mFitnessClient != null) {
             mFitnessClient.connect();
         }
 
     }
 
-    private void buildFitnessActivity(){
+    private void buildFitnessActivity() {
         mFitnessClient = new GoogleApiClient.Builder(this)
                 .addApi(Fitness.API)
                 .addScope(Fitness.SCOPE_ACTIVITY_READ)
@@ -83,16 +87,21 @@ GoogleApiClient.OnConnectionFailedListener{
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(LOG_TAG, "Connection failed: " + connectionResult.getErrorCode());
-        if (mTextView != null)
-            mTextView.setText("Connect account with handheld device");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mTextView.setText("Connect account with handheld device");
+            }
+        });
+
     }
 
-    private void invokeFitnessApi(){
+    private void invokeFitnessApi() {
         setupSensorRequest();
 
     }
 
-    private void setupSensorRequest(){
+    private void setupSensorRequest() {
         SensorRequest req = new SensorRequest.Builder()
                 .setDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
                 .setSamplingRate(1, TimeUnit.SECONDS)
@@ -106,17 +115,23 @@ GoogleApiClient.OnConnectionFailedListener{
     private class DataSourceListener implements OnDataPointListener {
         @Override
         public void onDataPoint(DataPoint dataPoint) {
-            for (Field field : dataPoint.getDataType().getFields()){
+            for (Field field : dataPoint.getDataType().getFields()) {
                 final Value val = dataPoint.getValue(field);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mTextView != null){
-                            mTextView.setText(val.asInt() + " steps");
+                if (val != null) {
 
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ActivityDataHelper.Step newStep = new ActivityDataHelper.Step(val.asInt(), new Date());
+                            stepList.insert(newStep);
+                            if (mTextView != null) {
+                                mTextView.setText(val.asInt() + " steps");
+
+                            }
                         }
-                    }
-                });
+                    });
+                }
                 Log.d(LOG_TAG, "Detected datapoint field: " + field.getName());
                 Log.d(LOG_TAG, "Detected datapoint value: " + val);
             }

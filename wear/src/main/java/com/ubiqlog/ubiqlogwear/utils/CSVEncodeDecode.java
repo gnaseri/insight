@@ -50,4 +50,15 @@ public class CSVEncodeDecode {
         );
         return encodedString.toString();
     }
+
+    public static String encodeStepActivity (Date startTime, Date endTime, int culmStepAmt,
+                                                                             int stepDiff){
+        StringBuilder encodedString = new StringBuilder("");
+        encodedString = encodedString.append(
+                "Activity,StartTime:" + dateFormat.format(startTime) + " "
+                + "EndTime:" + dateFormat.format(endTime) + " " + "StepDiff:"
+                + stepDiff + " " + "CulmStep:" + culmStepAmt + "," + dateFormat.format(endTime)
+        );
+        return encodedString.toString();
+    }
 }

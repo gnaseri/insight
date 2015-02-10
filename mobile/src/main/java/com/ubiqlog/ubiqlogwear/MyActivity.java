@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 public class MyActivity extends Activity {
 
@@ -12,7 +14,14 @@ public class MyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mobile_main_activity);
-        startActivity(new Intent(this,GooglePlayServicesActivity.class));
+        Button auth_btn = (Button) findViewById(R.id.auth_btn);
+        auth_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MyActivity.this, GooglePlayServicesActivity.class));
+
+            }
+        });
     }
 
 
