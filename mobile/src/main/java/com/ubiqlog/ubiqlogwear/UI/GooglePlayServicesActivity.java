@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear;
+package com.ubiqlog.ubiqlogwear.UI;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -13,6 +13,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
+import com.ubiqlog.ubiqlogwear.R;
 
 
 public class GooglePlayServicesActivity extends Activity  {
