@@ -8,8 +8,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.Services.NotificationListener;
 
 
 public class NotificationActivity extends Activity {
@@ -28,8 +30,8 @@ public class NotificationActivity extends Activity {
                 startActivity(settingsIntent);
             }
         });
-        //startService(new Intent(this, NotificationListener.class));
-       // Toast.makeText(this, "Notification Listener Started",Toast.LENGTH_SHORT).show();
+        startService(new Intent(this, NotificationListener.class));
+        Toast.makeText(this, "Notification Listener Started", Toast.LENGTH_SHORT).show();
 
     }
 

@@ -1,12 +1,15 @@
 package com.ubiqlog.ubiqlogwear.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
  * Created by User on 2/4/15.
  */
 public class CSVEncodeDecode {
+    private static final String LOG_TAG = CSVEncodeDecode.class.getSimpleName();
 
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy HH:mm:ss");
 
@@ -61,4 +64,31 @@ public class CSVEncodeDecode {
         );
         return encodedString.toString();
     }
+
+    private static ArrayList<String> parseEncoded(String encoded){
+        String[] temp = encoded.split(",");
+        return new ArrayList<String>(Arrays.asList(temp));
+    }
+    public static ArrayList<String> decodeBluetooth(String encoded){
+       return parseEncoded(encoded);
+    }
+
+    /**
+     * decoded[0] = sensor;
+     * decoded[1] = Info;
+     * decoded[2] = Date;
+     */
+    public static ArrayList<String> decodeLight (String encoded){
+        return parseEncoded(encoded);
+    }
+
+    public static ArrayList<String> decodeBattery (String encoded) {
+        ArrayList<String> decoded = parseEncoded(encoded);
+        String info = decoded.remove(1);
+        String[] infoTemp = info.split(" ");
+        decoded.add(1, infoTemp[0]); //Percent
+        decoded.add(2, infoTemp[1]); // Charging Status
+        return decoded;
+    }
+
 }

@@ -20,7 +20,7 @@ public class NotificationListener extends NotificationListenerService {
         Log.d(LOG_TAG, "-------------");
 
         // show all currently active notifications
-        Log.d(LOG_TAG, "=====ALL NOTIFICATIONS");
+        Log.d(LOG_TAG, "=====ALL NOTIFICATIONS======");
         for (StatusBarNotification notif : getActiveNotifications()){
             Log.d(LOG_TAG, "ID:" + notif.getId() + "\t" + notif.getNotification().tickerText
                         + "\t" + sbn.getPackageName());
