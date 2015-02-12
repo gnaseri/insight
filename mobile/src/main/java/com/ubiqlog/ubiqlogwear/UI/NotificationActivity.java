@@ -3,7 +3,6 @@ package com.ubiqlog.ubiqlogwear.UI;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +20,7 @@ public class NotificationActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
 
-        final Intent settingsIntent = new Intent(Settings.ACTION_SECURITY_SETTINGS);
+        final Intent settingsIntent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
             settingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Button launchSettings = (Button) findViewById(R.id.auth_btn);
         launchSettings.setOnClickListener(new View.OnClickListener() {
