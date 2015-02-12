@@ -8,6 +8,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
+import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.CSVEncodeDecode;
 
 import java.util.Date;
@@ -16,6 +17,8 @@ import java.util.Date;
 public class BluetoothSensor extends WearableListenerService {
     private static final String LOG_TAG = BluetoothSensor.class.getSimpleName();
     private GoogleApiClient mClient;
+
+    private DataAcquisitor mDataBuffer;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -28,6 +31,7 @@ public class BluetoothSensor extends WearableListenerService {
     @Override
     public void onCreate() {
         super.onCreate();
+        mDataBuffer = new DataAcquisitor(this,this.getClass().getSimpleName());
         mClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
@@ -49,7 +53,7 @@ public class BluetoothSensor extends WearableListenerService {
         Log.d(LOG_TAG, "Bluetooth connected");
         String encoded = CSVEncodeDecode.encodeBT("Connected",new Date());
         Log.d(LOG_TAG,encoded);
-        //DataAcquisitor.dataBuffer.add(encoded);
+        mDataBuffer.insert(encoded);
     }
 
     @Override
@@ -57,7 +61,6 @@ public class BluetoothSensor extends WearableListenerService {
         Log.d(LOG_TAG, "Bluetooth Disconnected");
         String encoded = CSVEncodeDecode.encodeBT("Disconnected", new Date());
         Log.d(LOG_TAG,encoded);
-       // DataAcquisitor.dataBuffer.add(encoded);
-
+        mDataBuffer.insert(encoded);
     }
 }

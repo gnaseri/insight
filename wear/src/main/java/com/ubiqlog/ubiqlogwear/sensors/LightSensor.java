@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.CSVEncodeDecode;
 
 import java.util.Date;
@@ -22,6 +23,9 @@ public class LightSensor extends Service implements SensorEventListener {
     private static final String LOG_TAG = LightSensor.class.getSimpleName();
     private Sensor mLight;
     private SensorManager mSensorManager;
+
+    private DataAcquisitor mDataBuffer;
+
     public LightSensor() {
     }
 
@@ -32,6 +36,7 @@ public class LightSensor extends Service implements SensorEventListener {
 
     @Override
     public void onCreate() {
+        mDataBuffer = new DataAcquisitor(this,this.getClass().getSimpleName());
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         Toast.makeText(this,"LightSens Logging Started", Toast.LENGTH_SHORT).show();
@@ -58,8 +63,7 @@ public class LightSensor extends Service implements SensorEventListener {
         Log.d(LOG_TAG, encoded);
 
         // add encoded string to buffer
-      //  DataAcquisitor.dataBuffer.add(encoded);
-
+        mDataBuffer.insert(encoded);
 
     }
 

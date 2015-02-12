@@ -124,6 +124,8 @@ public class ActivitySensor extends Activity implements GoogleApiClient.Connecti
                         @Override
                         public void run() {
                             ActivityDataHelper.Step newStep = new ActivityDataHelper.Step(val.asInt(), new Date());
+
+                            //This method writes to file when walking gap conditions are met
                             stepList.insert(newStep);
                             if (mTextView != null) {
                                 mTextView.setText(val.asInt() + " steps");
