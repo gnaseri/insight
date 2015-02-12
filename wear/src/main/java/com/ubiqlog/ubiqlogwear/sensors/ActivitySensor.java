@@ -42,7 +42,7 @@ public class ActivitySensor extends Activity implements GoogleApiClient.Connecti
         setContentView(R.layout.activity_activity_sensor);
 
         buildFitnessActivity();
-        stepList = new ActivityDataHelper.StepList();
+        stepList = new ActivityDataHelper.StepList(this);
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {

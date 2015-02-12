@@ -1,5 +1,6 @@
 package com.ubiqlog.ubiqlogwear.sensors;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
@@ -13,6 +14,7 @@ import java.util.Date;
  */
 public class ActivityDataHelper {
     private static final String LOG_TAG = ActivityDataHelper.class.getSimpleName();
+
 
     public static class Step {
         private int culmStepAmt;
@@ -40,9 +42,12 @@ public class ActivityDataHelper {
      */
     public static class StepList {
         ArrayList<Step> stepBuff;
+        private DataAcquisitor mDataBuffer;
 
-        public StepList() {
+
+        public StepList(Context context) {
             stepBuff = new ArrayList<Step>();
+            mDataBuffer = new DataAcquisitor(context, context.getClass().getSimpleName());
         }
 
         public synchronized void insert(Step s) {
@@ -66,12 +71,10 @@ public class ActivityDataHelper {
                         String encoded = CSVEncodeDecode.encodeStepActivity(startTime,
                                                                    endTime,culmStepAmnt,diffInStep);
                         Log.d(LOG_TAG,encoded);
+
                         //Send to DataAcquisitor
-                        DataAcquisitor.dataBuffer.add(encoded);
+                        mDataBuffer.insert(encoded);
                         stepBuff.clear();
-
-
-
                     }
 
                 }

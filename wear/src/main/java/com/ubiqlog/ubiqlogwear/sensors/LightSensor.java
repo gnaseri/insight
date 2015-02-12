@@ -10,7 +10,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.CSVEncodeDecode;
 
 import java.util.Date;
@@ -59,7 +58,7 @@ public class LightSensor extends Service implements SensorEventListener {
         Log.d(LOG_TAG, encoded);
 
         // add encoded string to buffer
-        DataAcquisitor.dataBuffer.add(encoded);
+      //  DataAcquisitor.dataBuffer.add(encoded);
 
 
     }

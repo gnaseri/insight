@@ -1,11 +1,13 @@
 package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;
 import com.ubiqlog.ubiqlogwear.ui.fragments.BatteryChartFragment;
 
 /**
@@ -19,6 +21,9 @@ public class BatteryLevelActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_battery_level);
+
+        //Start battery monitoring service
+        startService(new Intent(this, BatterySensor.class));
 
        /* if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

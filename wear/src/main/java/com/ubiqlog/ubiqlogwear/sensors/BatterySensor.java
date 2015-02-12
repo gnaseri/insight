@@ -22,6 +22,8 @@ import java.util.Date;
 public class BatterySensor extends Service {
     public static final String LOG_TAG = BatterySensor.class.getSimpleName();
 
+    private DataAcquisitor mDataBuffer;
+
     private Handler mHandler = new Handler();
 
     @Override
@@ -63,7 +65,7 @@ public class BatterySensor extends Service {
         String encoded =
                 CSVEncodeDecode.encodeBattery(level, isCharging, currentDate);
 
-        DataAcquisitor.dataBuffer.add(encoded);
+        mDataBuffer.insert(encoded);
 
         Log.d(LOG_TAG, encoded);
 
@@ -90,6 +92,9 @@ public class BatterySensor extends Service {
 
         // create our handler using the looper from thread
         mHandler = new Handler(thread.getLooper());
+
+        //initialize our buffer
+        mDataBuffer = new DataAcquisitor(this,this.getClass().getSimpleName());
 
         Toast.makeText(this, "Start Battery Log", Toast.LENGTH_SHORT).show();
     }

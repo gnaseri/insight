@@ -6,4 +6,6 @@ public final class Setting {
     //Internal File Directory is appended to this
     public static final String LOG_FOLDER = "insight" ;
 
+    public static final int bufferMaxSize = 10;
+
 }

@@ -1,17 +1,10 @@
 package com.ubiqlog.ubiqlogwear.core;
 
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.Handler;
-import android.os.IBinder;
-import android.util.Log;
-
-import com.ubiqlog.ubiqlogwear.common.Setting;
-import com.ubiqlog.ubiqlogwear.utils.IOManager;
-
+/*
 public class DataAggregator extends Service {
     public static String LOG_TAG = DataAggregator.class.getSimpleName();
+
     private final int minBuffSize = 20;
 
     IOManager datalogger;
@@ -63,5 +56,4 @@ public class DataAggregator extends Service {
         }
 
     }
-
-}
+    */

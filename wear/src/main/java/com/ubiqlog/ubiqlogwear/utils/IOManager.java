@@ -3,18 +3,19 @@ package com.ubiqlog.ubiqlogwear.utils;
 import android.content.Context;
 import android.util.Log;
 
+import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class IOManager{
 
     public static final String LOG_TAG = IOManager.class.getSimpleName();
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy");
-	
+	/*
 	public void logData( Context context, ArrayList<String> data) {
         Log.d(LOG_TAG,"Started Saving Data");
         FileWriter writer;
@@ -38,7 +39,36 @@ public class IOManager{
         } catch (IOException e) {
             e.printStackTrace();
         }
-	}
+	}*/
+
+    public void logData( Context context, DataAcquisitor dataAcq){
+        Log.d(LOG_TAG, "Started Saving Data");
+        FileWriter writer;
+
+
+        File dir = new File (context.getFilesDir().getAbsolutePath() + "/log_" + File.separatorChar
+                + dataAcq.getFolderName());
+        dir.mkdirs();
+        File logFile = new File(dir, dateFormat.format(new Date()) + ".txt");
+
+        Log.d(LOG_TAG, logFile.getAbsolutePath());
+
+        //Setup File for writing
+        try {
+            writer = new FileWriter(logFile,true);
+
+            for (String s : dataAcq.getDataBuffer()){
+                writer.append(s + System.getProperty("line.separator"));
+            }
+
+            writer.flush();
+            writer.close();
+            dataAcq.getDataBuffer().clear();
+            Log.d (LOG_TAG, "Finished Writing to file");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 	/*public void logError(String msg) {
 		PrintWriter printWr;

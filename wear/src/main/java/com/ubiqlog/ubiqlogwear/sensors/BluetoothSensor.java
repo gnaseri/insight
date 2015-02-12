@@ -8,7 +8,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
-import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.CSVEncodeDecode;
 
 import java.util.Date;
@@ -50,7 +49,7 @@ public class BluetoothSensor extends WearableListenerService {
         Log.d(LOG_TAG, "Bluetooth connected");
         String encoded = CSVEncodeDecode.encodeBT("Connected",new Date());
         Log.d(LOG_TAG,encoded);
-        DataAcquisitor.dataBuffer.add(encoded);
+        //DataAcquisitor.dataBuffer.add(encoded);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class BluetoothSensor extends WearableListenerService {
         Log.d(LOG_TAG, "Bluetooth Disconnected");
         String encoded = CSVEncodeDecode.encodeBT("Disconnected", new Date());
         Log.d(LOG_TAG,encoded);
-        DataAcquisitor.dataBuffer.add(encoded);
+       // DataAcquisitor.dataBuffer.add(encoded);
 
     }
 }

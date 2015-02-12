@@ -1,16 +1,15 @@
 package com.ubiqlog.ubiqlogwear.sensors;
 
-import android.hardware.SensorEvent;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
-import android.hardware.SensorEventListener;
-import android.os.IBinder;
-import android.content.Intent;
 import android.app.Service;
+import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JsonEncodeDecode;
 
 import java.util.Date;
@@ -66,7 +65,7 @@ public class HeartRateSensor extends Service {
             Date _currentDate = new Date();
             if (event.accuracy == 3) {
                 String jsonString = JsonEncodeDecode.EncodeHeartRate(event.values[0], _currentDate);
-                DataAcquisitor.dataBuffer.add(jsonString);
+               // DataAcquisitor.dataBuffer.add(jsonString);
                 Log.i("HeartRate-Logging", jsonString);
             }
         }
