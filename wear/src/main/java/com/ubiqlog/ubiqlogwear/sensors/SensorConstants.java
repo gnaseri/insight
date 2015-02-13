@@ -1,8 +1,6 @@
 package com.ubiqlog.ubiqlogwear.sensors;
 
-/**
- * Created by prajnashetty on 11/18/14.
- */
+
 public final class SensorConstants {
 
     public static long ACCELEROMETER_LOG_INTERVAL = 300000L;  //5 minutes
@@ -17,4 +15,6 @@ public final class SensorConstants {
     public static long BT_LOG_INTERVAL = 600000L; //10 minutes
 
     public static long WALKDETECTION_INTERVAL = 30000L; //30 seconds
+
+    public static long HEARTRATE_INTERVAL = 600000L;
 }

@@ -39,7 +39,7 @@ public class MainActivity extends Activity  {
         listArray.add(activityItem);
         MainListItem heartrateItem = new MainListItem(
                 getString(R.string.heart_rate_title),
-                R.drawable.ic_heart, MainActivity.class);
+                R.drawable.ic_heart, HeartRateActivity.class);
         listArray.add(heartrateItem);
         MainListItem appUsageItem = new MainListItem(
                 getString(R.string.app_usage_title),

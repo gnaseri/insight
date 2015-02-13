@@ -55,6 +55,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.HeartRateActivity"
+            android:label="@string/title_activity_heart_rate"
+            android:parentActivityName=".ui.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ubiqlog.ubiqlogwear.ui.MainActivity" />
+        </activity>
+        <service android:name=".sensors.HeartRateSensor"
+            android:exported="false"
+            android:enabled="true" />
+
     </application>
 
 </manifest>

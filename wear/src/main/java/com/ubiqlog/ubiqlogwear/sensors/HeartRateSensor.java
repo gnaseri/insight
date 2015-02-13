@@ -6,11 +6,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.ubiqlog.ubiqlogwear.utils.JsonEncodeDecode;
+import com.ubiqlog.ubiqlogwear.ui.HeartRateActivity;
 
 import java.util.Date;
 
@@ -19,10 +21,22 @@ import java.util.Date;
  */
 
 public class HeartRateSensor extends Service {
-    private SensorManager sensorManager;
+    private static final String LOG_TAG = HeartRateSensor.class.getSimpleName();
+    private SensorManager mSensorManager;
     private Sensor heartRateSensor;
-    private long lastUpdate;
+    private int READCOUNT = 0;
+    private Float avgBPM;
     SensorEventListener listen;
+
+    private Handler mHandler;
+
+    private Runnable processSensor = new Runnable() {
+        @Override
+        public void run() {
+            mSensorManager.registerListener(listen, heartRateSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            mHandler.postDelayed(processSensor, 600000);
+        }
+    };
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -31,9 +45,10 @@ public class HeartRateSensor extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        sensorManager.registerListener(listen, heartRateSensor, 2);
-        lastUpdate = System.currentTimeMillis();
+        if (intent != null) {
+            mHandler.post(processSensor);
+            //mSensorManager.registerListener(listen, heartRateSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
 
         return START_STICKY;
     }
@@ -42,18 +57,19 @@ public class HeartRateSensor extends Service {
     public void onCreate() {
         Toast.makeText(getApplicationContext(), "Started Heart Rate Logging", Toast.LENGTH_SHORT).show();
         super.onCreate();
-
+        HandlerThread ht = new HandlerThread("HeartThread", android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        ht.start();
+        mHandler = new Handler(ht.getLooper());
         listen = new SensorListen();
-        sensorManager = (SensorManager) getApplicationContext()
+        mSensorManager = (SensorManager) getApplicationContext()
                 .getSystemService(SENSOR_SERVICE);
-        heartRateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE );
+        heartRateSensor = mSensorManager.getDefaultSensor(65562); //
     }
-
 
 
     @Override
     public void onDestroy() {
-        sensorManager.unregisterListener(listen);
+        mSensorManager.unregisterListener(listen);
         Toast.makeText(this, "Destroy Heart Rate Logging", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }
@@ -63,10 +79,24 @@ public class HeartRateSensor extends Service {
         @Override
         public void onSensorChanged(SensorEvent event) {
             Date _currentDate = new Date();
-            if (event.accuracy == 3) {
-                String jsonString = JsonEncodeDecode.EncodeHeartRate(event.values[0], _currentDate);
-               // DataAcquisitor.dataBuffer.add(jsonString);
-                Log.i("HeartRate-Logging", jsonString);
+            float heartBPM = event.values[0];
+            if (heartBPM > 0) {
+
+                if (avgBPM == null) {
+                    avgBPM = heartBPM;
+                } else
+                    avgBPM = (avgBPM + heartBPM) / 2;
+
+                HeartRateActivity.updateValues(avgBPM);
+
+            }
+            Log.d(LOG_TAG, "HeartBPM: " + heartBPM + "\t" + "Accur:" + event.accuracy);
+            READCOUNT++;
+            if (READCOUNT > 500) {
+                Log.d(LOG_TAG, "RESET OF COUNT");
+                mSensorManager.unregisterListener(listen);
+                READCOUNT = 0;
+
             }
         }
 
