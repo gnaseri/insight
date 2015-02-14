@@ -25,6 +25,18 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.wHeartRate"
+            android:label="@string/title_activity_wheartrate" >
+        </activity>
+        <activity
+            android:name=".ui.wAmbientLight"
+            android:label="@string/title_activity_wambientlight" >
+        </activity>
+        <activity
+            android:name=".ui.wBattery"
+            android:label="@string/title_activity_wbattery" >
+        </activity>
+        <activity
             android:name=".ui.wBluetooth"
             android:label="@string/title_activity_wbluetooth" >
         </activity>

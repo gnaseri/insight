@@ -27,6 +27,9 @@
     <string name="title_activity_gyroscope">GyroscopeActivity</string>
     <string name="title_activity_application">ApplicationActivity</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_wheartrate">Heart Rate</string>
+    <string name="title_activity_wambientlight">Ambient Light</string>
+    <string name="title_activity_wbattery">Battery</string>
     <string name="title_activity_wbluetooth">Bluetooth</string>
     <string name="title_activity_wnotifications">Notifications</string>
     <string name="me">Me</string>

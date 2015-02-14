@@ -39,7 +39,7 @@ public class MainActivity extends Activity  {
         listArray.add(activityItem);
         MainListItem heartrateItem = new MainListItem(
                 getString(R.string.heart_rate_title),
-                R.drawable.ic_heart, HeartRateActivity.class);
+                R.drawable.ic_heart, wHeartRate.class);
         listArray.add(heartrateItem);
         MainListItem appUsageItem = new MainListItem(
                 getString(R.string.app_usage_title),
@@ -63,7 +63,7 @@ public class MainActivity extends Activity  {
         MainListItem battItem = new MainListItem(
                 getString(R.string.battery_title),
                 R.drawable.ic_battery,
-                BatteryLevelActivity.class);
+                wBattery.class);//BatteryLevelActivity.class
 
         systemItemList.add(battItem);
 
@@ -84,7 +84,7 @@ public class MainActivity extends Activity  {
         if (FeatureCheck.hasLightFeature(this)) {
             MainListItem ambLightItem = new MainListItem(
                     getString(R.string.amblight_title),
-                    R.drawable.ic_light, MainActivity.class);
+                    R.drawable.ic_light, wAmbientLight.class);
             systemItemList.add(ambLightItem);
         }
 
