@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -66,7 +68,9 @@ public class wHeartRate extends Activity {
             final Button btn1 = new Button(this);
             final Date tmpDate = new Date(date.getTime() - (i + 1) * 24 * 60 * 60 * 1000);
             btn1.setText(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
-            btn1.setBackgroundColor(Color.WHITE);
+            btn1.setBackgroundColor(getResources().getColor(R.color.chart_button_bgcolor));
+            btn1.setBackground(getResources().getDrawable(R.drawable.listview_bg_title));
+            btn1.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 30));
             btn1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -80,21 +84,21 @@ public class wHeartRate extends Activity {
     }
 
     private View createGraph(Date date) {
-        Log.i("Ambient Light", "In Create Chart");
+        Log.i("Heart Rate", "In Create Chart");
         // We start creating the XYSeries to plot the temperature
-        XYSeries series1 = new XYSeries("Ambient Light");
+        XYSeries series1 = new XYSeries("Heart Rate");
 
 
         // We start filling the series
         // with random values for Y:0-100 to X:0-24
         Random rand = new Random();
         for (int i = 1; i < 23; i++) {
-            series1.add(i, rand.nextInt(30));
+            series1.add(i,rand.nextInt(50));
         }
 
         XYSeriesRenderer renderer1 = new XYSeriesRenderer();
-        renderer1.setLineWidth(2);
-        renderer1.setColor(Color.rgb(255, 100, 0));
+        renderer1.setLineWidth(getResources().getInteger(R.integer.chart_line_width));
+        renderer1.setColor(getResources().getColor(R.color.chart_line_color));
         //renderer1.setDisplayBoundingPoints(true);
         //renderer1.setPointStyle(PointStyle.CIRCLE);
         //renderer1.setPointStrokeWidth(2);
@@ -107,19 +111,20 @@ public class wHeartRate extends Activity {
         // Finaly we create the multiple series renderer to control the graph
         XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
         mRenderer.addSeriesRenderer(renderer1);
-        mRenderer.setYAxisMin(0);
-        //mRenderer.setYAxisMax(101);
-        mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
+
+        mRenderer.addXTextLabel(0, "00:00");
+        mRenderer.addXTextLabel(6, "06:00");
+        mRenderer.addXTextLabel(12, "12:00");
+        mRenderer.addXTextLabel(18, "18:00");
+        mRenderer.addXTextLabel(23, "23:59");
 
         mRenderer.setXAxisMin(0);
         mRenderer.setXAxisMax(23);
-
-        mRenderer.addXTextLabel(0, "00:00");
-        mRenderer.addXTextLabel(12, "12:00");
-        mRenderer.addXTextLabel(23, "23:59");
-
-        mRenderer.setXLabelsAlign(Paint.Align.CENTER);
+        mRenderer.setXLabelsAlign(Paint.Align.LEFT);
         mRenderer.setXLabels(0);
+
+        mRenderer.setYAxisMin(0);
+        mRenderer.setYLabelsAlign(Paint.Align.CENTER);
 
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
         // Disable Pan on two axis
@@ -128,14 +133,16 @@ public class wHeartRate extends Activity {
         mRenderer.setBackgroundColor(Color.WHITE);
         mRenderer.setMarginsColor(Color.WHITE);
         mRenderer.setAxesColor(Color.BLACK);
-        mRenderer.setXLabelsColor(Color.BLACK);
-        mRenderer.setYLabelsColor(0, Color.BLACK);
         mRenderer.setApplyBackgroundColor(true);
         mRenderer.setShowLegend(false);//hide info label
+        mRenderer.setLabelsColor(getResources().getColor(R.color.chart_labels_color));
+        mRenderer.setXLabelsColor(getResources().getColor(R.color.chart_labels_color));
+        mRenderer.setYLabelsColor(0, getResources().getColor(R.color.chart_labels_color));
 
+        // Vertical bars
+        mRenderer.setOrientation(XYMultipleSeriesRenderer.Orientation.VERTICAL);
 
         mRenderer.setChartTitle(new SimpleDateFormat("MM/dd/yyyy").format(date));
-        mRenderer.setLabelsColor(Color.BLACK);
         GraphicalView chartView = ChartFactory.getBarChartView(this, dataset, mRenderer, BarChart.Type.DEFAULT);
         return chartView;
     }

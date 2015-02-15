@@ -65,7 +65,8 @@ public class wAmbientLight extends Activity {
             final Button btn1 = new Button(this);
             final Date tmpDate = new Date(date.getTime() - (i + 1) * 24 * 60 * 60 * 1000);
             btn1.setText(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
-            btn1.setBackgroundColor(Color.WHITE);
+            btn1.setBackgroundColor(getResources().getColor(R.color.chart_button_bgcolor));
+            btn1.setBackground(getResources().getDrawable(R.drawable.listview_bg_title));
             btn1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -92,8 +93,8 @@ public class wAmbientLight extends Activity {
         }
 
         XYSeriesRenderer renderer1 = new XYSeriesRenderer();
-        renderer1.setLineWidth(2);
-        renderer1.setColor(Color.rgb(255, 100, 0));
+        renderer1.setLineWidth(getResources().getInteger(R.integer.chart_line_width));
+        renderer1.setColor(getResources().getColor(R.color.chart_line_color));
         //renderer1.setDisplayBoundingPoints(true);
         //renderer1.setPointStyle(PointStyle.CIRCLE);
         //renderer1.setPointStrokeWidth(2);
@@ -127,14 +128,13 @@ public class wAmbientLight extends Activity {
         mRenderer.setBackgroundColor(Color.WHITE);
         mRenderer.setMarginsColor(Color.WHITE);
         mRenderer.setAxesColor(Color.BLACK);
-        mRenderer.setXLabelsColor(Color.BLACK);
-        mRenderer.setYLabelsColor(0, Color.BLACK);
         mRenderer.setApplyBackgroundColor(true);
         mRenderer.setShowLegend(false);//hide info label
-
+        mRenderer.setLabelsColor(getResources().getColor(R.color.chart_labels_color));
+        mRenderer.setXLabelsColor(getResources().getColor(R.color.chart_labels_color));
+        mRenderer.setYLabelsColor(0, getResources().getColor(R.color.chart_labels_color));
 
         mRenderer.setChartTitle(new SimpleDateFormat("MM/dd/yyyy").format(date));
-        mRenderer.setLabelsColor(Color.BLACK);
         GraphicalView chartView = ChartFactory.getLineChartView(this, dataset, mRenderer);
         return chartView;
     }
