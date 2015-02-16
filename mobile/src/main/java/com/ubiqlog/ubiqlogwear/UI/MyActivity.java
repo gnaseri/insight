@@ -18,6 +18,8 @@ public class MyActivity extends Activity {
         setContentView(R.layout.mobile_main_activity);
         Button auth_btn = (Button) findViewById(R.id.auth_btn);
         Button notif_btn = (Button) findViewById(R.id.notif_btn);
+        Button appUsage_btn = (Button) findViewById(R.id.appusage_btn);
+        Button testHR_btn = (Button) findViewById(R.id.hr_btn);
 
         auth_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,6 +34,19 @@ public class MyActivity extends Activity {
                 startActivity(new Intent(MyActivity.this,NotificationActivity.class));
             }
         });
+
+        appUsage_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+        testHR_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MyActivity.this,TestHeartRate.class));
+            }
+        });
+
     }
 
 

@@ -1,40 +1,31 @@
-package com.ubiqlog.ubiqlogwear.ui;
+package com.ubiqlog.ubiqlogwear.UI;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
+import android.os.*;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.sensors.HeartRateSensor2;
+import com.ubiqlog.ubiqlogwear.Services.HeartRate;
 
-public class HeartRateActivity extends Activity {
+public class TestHeartRate extends Activity {
 
-    public static void updateValues(float heartBPM){
-        if (hr != null){
-            hr.setText("heart:" + heartBPM);
-        }
-    }
-
-    private static final String LOG_TAG = HeartRateActivity.class.getSimpleName();
-    private static TextView hr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG_TAG,"Starting heartService");
-        startService(new Intent(this, HeartRateSensor2.class));
-        setContentView(R.layout.activity_heart_rate);
-        hr = (TextView) findViewById(R.id.hr_tv);
+        setContentView(R.layout.activity_test_heart_rate);
+        HandlerThread ht = new HandlerThread("HR", android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        ht.start();
+        Handler h = new Handler(ht.getLooper());
+        HeartRate.setup(this); // will print stuff to log
+        HeartRate.getData(h);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_heart_rate, menu);
+        getMenuInflater().inflate(R.menu.menu_test_heart_rate, menu);
         return true;
     }
 

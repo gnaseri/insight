@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ubiqlog.ubiqlogwear" >
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.ubiqlog.ubiqlogwear">
 
     <uses-feature android:name="android.hardware.type.watch" />
 
     <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions"></uses-permission>
 
     <application
         android:allowBackup="true"
@@ -66,6 +69,17 @@
         <service android:name=".sensors.HeartRateSensor"
             android:exported="false"
             android:enabled="true" />
+       ß
+        <receiver android:name=".sensors.BCast"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="vnd.google.fitness.TRACK"></action>
+                <action android:name="vnd.google.fitness.VIEW"></action>
+                <data android:mimeType="vnd.google.fitness.data_type/com.google.heart_rate.bpm"></data>
+
+            </intent-filter>
+        </receiver>
 
     </application>
 

@@ -6,7 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_google_play_services">GooglePlayServicesActivity</string>
     <string name="title_activity_notification">NotificationActivity</string>
-
-    <string name = "notif_prompt">Authorize Insight for Notification Access</string>
+    <string name="notif_prompt">Authorize Insight for Notification Access</string>
+    <string name="title_activity_test_heart_rate">TestHeartRate</string>
 
 </resources>

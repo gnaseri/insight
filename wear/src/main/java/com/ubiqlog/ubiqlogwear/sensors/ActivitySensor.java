@@ -1,10 +1,12 @@
 package com.ubiqlog.ubiqlogwear.sensors;
 
 import android.app.Activity;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -32,17 +34,34 @@ public class ActivitySensor extends Activity implements GoogleApiClient.Connecti
     private static final String LOG_TAG = ActivitySensor.class.getSimpleName();
 
     private ActivityDataHelper.StepList stepList;
+    private BCast mReceiver;
 
     private TextView mTextView;
     private GoogleApiClient mFitnessClient;
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+        Log.d(LOG_TAG, "Destroying ActivitySensor");
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_sensor);
+        mReceiver = new BCast();
 
         buildFitnessActivity();
         stepList = new ActivityDataHelper.StepList(this);
+        IntentFilter filter = new IntentFilter();
+        try {
+            filter.addDataType("vnd.google.fitness.data_type/com.google.heart_rate.bpm");
+        } catch (IntentFilter.MalformedMimeTypeException e) {
+            e.printStackTrace();
+        }
+        registerReceiver(mReceiver, filter);
+        Toast.makeText(this,"Started receiver",Toast.LENGTH_SHORT).show();
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
