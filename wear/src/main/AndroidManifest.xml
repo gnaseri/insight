@@ -66,20 +66,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ubiqlog.ubiqlogwear.ui.MainActivity" />
         </activity>
-        <service android:name=".sensors.HeartRateSensor"
-            android:exported="false"
-            android:enabled="true" />
-       ß
-        <receiver android:name=".sensors.BCast"
-            android:exported="true"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="vnd.google.fitness.TRACK"></action>
-                <action android:name="vnd.google.fitness.VIEW"></action>
-                <data android:mimeType="vnd.google.fitness.data_type/com.google.heart_rate.bpm"></data>
 
-            </intent-filter>
-        </receiver>
 
     </application>
 

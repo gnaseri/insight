@@ -1,33 +1,43 @@
 package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
+import android.os.*;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.sensors.HeartRateSensor2;
+import com.ubiqlog.ubiqlogwear.sensors.HeartRate.HeartRate;
 
 public class HeartRateActivity extends Activity {
 
-    public static void updateValues(float heartBPM){
-        if (hr != null){
-            hr.setText("heart:" + heartBPM);
-        }
-    }
-
     private static final String LOG_TAG = HeartRateActivity.class.getSimpleName();
     private static TextView hr;
+    private HandlerThread mFitHandlerThread;
+    private Handler mFitHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG_TAG,"Starting heartService");
-        startService(new Intent(this, HeartRateSensor2.class));
-        setContentView(R.layout.activity_heart_rate);
-        hr = (TextView) findViewById(R.id.hr_tv);
+        // This builds a connection to google fit api and connects.
+        HeartRate.setup(this);
+
+        //Initialize and Start Handler Thread
+        initializeHandler();
+
+        //This will fetch HeartRateBPM from HistoryAPI for a week of activity
+        HeartRate.getDataPoints(mFitHandler);
+
+
+    }
+
+    private void initializeHandler(){
+
+        mFitHandlerThread = new HandlerThread("FitHandlerThread",
+                android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        mFitHandlerThread.start();
+
+        mFitHandler = new Handler(mFitHandlerThread.getLooper());
+
     }
 
 

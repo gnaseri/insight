@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.Services;
+package com.ubiqlog.ubiqlogwear.sensors.HeartRate;
 
 import android.content.Context;
 import android.os.Handler;
@@ -14,6 +14,7 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
+import com.ubiqlog.ubiqlogwear.utils.GoogleFitConnection;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,9 +23,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by User on 2/15/15.
+ * Created by User on 2/16/15.
  */
-public class HeartRate  {
+public class HeartRate {
     private static final String TAG = HeartRate.class.getSimpleName();
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy HH:mm:ss");
     private static GoogleApiClient mFitClient;
@@ -53,14 +54,16 @@ public class HeartRate  {
 
         mFitClient.connect();
 
-        Log.d(TAG, "Is Connected, Fetching data");
+        Log.d(TAG, "Is Connected");
     }
 
     public static void getData(Handler h) {
         h.post(runnable);
     }
 
-    public static void getDataPoints (Handler h) {h.post(getHeartDataResult);}
+    public static void getDataPoints(Handler h) {
+        h.post(getHeartDataResult);
+    }
 
     private static DataReadRequest buildDataReadRequestPoints() {
         Calendar cal = Calendar.getInstance();
@@ -143,6 +146,3 @@ public class HeartRate  {
         }
     }
 }
-
-
-
