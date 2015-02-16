@@ -2,6 +2,7 @@ package com.ubiqlog.ubiqlogwear.UI;
 
 import android.app.Activity;
 import android.os.*;
+import android.os.Process;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,7 +19,15 @@ public class TestHeartRate extends Activity {
         ht.start();
         Handler h = new Handler(ht.getLooper());
         HeartRate.setup(this); // will print stuff to log
-        HeartRate.getData(h);
+       // HeartRate.getData(h);
+
+        HandlerThread heartPointsThread = new HandlerThread("HeartPoints", Process.THREAD_PRIORITY_BACKGROUND);
+        heartPointsThread.start();
+        Handler hPoint = new Handler(heartPointsThread.getLooper());
+
+        HeartRate.getDataPoints(hPoint);
+
+
     }
 
 
