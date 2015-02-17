@@ -38,6 +38,8 @@ public class GoogleFitConnection implements GoogleApiClient.ConnectionCallbacks,
 
     }
 
+
+
     @Override
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "Connected");

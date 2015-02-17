@@ -46,6 +46,10 @@
             android:name=".UI.TestHeartRate"
             android:label="@string/title_activity_test_heart_rate" >
         </activity>
+        <activity
+            android:name=".UI.HeartRateActivity"
+            android:label="@string/title_activity_heart_rate" >
+        </activity>
     </application>
 
 </manifest>

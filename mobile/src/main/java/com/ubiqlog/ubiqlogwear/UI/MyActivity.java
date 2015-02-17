@@ -43,7 +43,7 @@ public class MyActivity extends Activity {
         testHR_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MyActivity.this,TestHeartRate.class));
+                startActivity(new Intent(MyActivity.this,HeartRateActivity.class));
             }
         });
 
