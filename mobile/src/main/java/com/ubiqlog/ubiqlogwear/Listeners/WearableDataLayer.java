@@ -11,6 +11,7 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
@@ -26,8 +27,10 @@ public class WearableDataLayer implements MessageApi.MessageListener{
 
     private static final String SEND_KEY = "com.example.Data";
     private static final String SYNC_KEY = "/start/HistorySYNC";
+    private static Context mContext;
 
     public static GoogleApiClient buildDataApiClient(Context context){
+        mContext = context;
         final GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(context)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
@@ -55,8 +58,9 @@ public class WearableDataLayer implements MessageApi.MessageListener{
 
     }
 
-    public static void sendData(GoogleApiClient mClient){
+    public static void sendData(GoogleApiClient mClient, DataSet dataSet){
         Log.d(TAG, "Sending data");
+        Log.d(TAG, "DataSet is size" + dataSet.getDataPoints().size());
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/data");
         putDataMapReq.getDataMap().putInt(SEND_KEY,new Date().getSeconds());
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
@@ -70,7 +74,7 @@ public class WearableDataLayer implements MessageApi.MessageListener{
     public void onMessageReceived(MessageEvent messageEvent) {
         if (messageEvent.getPath().equals(SYNC_KEY)) {
             Log.d(TAG, "Message Event received");
-            HeartRateActivity.syncRequest();
+            HeartRateActivity.fetchHeartDataSet(mContext);
         }
     }
 }

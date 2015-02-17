@@ -7,7 +7,6 @@ import android.util.Log;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
@@ -18,49 +17,55 @@ import com.google.android.gms.fitness.result.DataReadResult;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by User on 2/15/15.
  */
-public class HeartRate  {
+public class HeartRate {
+
+    public interface SyncRequestInterface {
+        public void setDataSet(DataSet dataSet);
+    }
+
     private static final String TAG = HeartRate.class.getSimpleName();
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy HH:mm:ss");
     private static GoogleApiClient mFitClient;
+    private static Context mContext;
 
-    static final Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            DataReadResult dataReadResult =
-                    Fitness.HistoryApi.readData(mFitClient, buildDataReadRequest())
-                            .await(1, TimeUnit.MINUTES);
-            if (dataReadResult.getBuckets().size() > 0) {
-                Log.d(TAG, "Returned buckets: " + dataReadResult.getBuckets().size());
-                for (Bucket bucket : dataReadResult.getBuckets()) {
-                    List<DataSet> dataSets = bucket.getDataSets();
-                    for (DataSet ds : dataSets) {
-                        dumpDataSet(ds);
-                    }
-                }
-            }
-        }
-    };
-
-    public static void setup(Context context) {
+    public static GoogleApiClient buildFitClient(Context context) {
+        mContext = context;
         GoogleFitConnection gfc = new GoogleFitConnection(context);
         mFitClient = gfc.buildFitClient();
 
-        mFitClient.connect();
-
-        Log.d(TAG, "Is Connected, Fetching data");
+        return mFitClient;
     }
 
-    public static void getData(Handler h) {
-        h.post(runnable);
+    public static class HeartResultsRunnable implements Runnable {
+        private GoogleApiClient mGoogleApiClient;
+        private SyncRequestInterface sync;
+
+        public HeartResultsRunnable(GoogleApiClient googleApiClient, SyncRequestInterface sync) {
+            this.mGoogleApiClient = googleApiClient;
+            this.sync = sync;
+        }
+
+        @Override
+        public void run() {
+            PendingResult<DataReadResult> pendingResult =
+                    Fitness.HistoryApi.readData(mGoogleApiClient, buildDataReadRequestPoints());
+
+            DataReadResult dataReadResult = pendingResult.await();
+            DataSet dataSet = dataReadResult.getDataSet(DataType.TYPE_HEART_RATE_BPM);
+            sync.setDataSet(dataSet);
+            dumpHeartDataPoints(dataSet);
+        }
     }
 
-    public static void getDataPoints (Handler h) {h.post(getHeartDataResult);}
+
+    public static void getDataPoints(Handler h, GoogleApiClient client, SyncRequestInterface sync) {
+        h.post(new HeartResultsRunnable(client,sync));
+    }
 
     private static DataReadRequest buildDataReadRequestPoints() {
         Calendar cal = Calendar.getInstance();
@@ -80,17 +85,6 @@ public class HeartRate  {
 
     }
 
-    private static Runnable getHeartDataResult = new Runnable() {
-        @Override
-        public void run() {
-            PendingResult<DataReadResult> pendingResult =
-                    Fitness.HistoryApi.readData(mFitClient, buildDataReadRequestPoints());
-
-            DataReadResult dataReadResult = pendingResult.await();
-            DataSet dataSet = dataReadResult.getDataSet(DataType.TYPE_HEART_RATE_BPM);
-            dumpHeartDataPoints(dataSet);
-        }
-    };
 
     private static void dumpHeartDataPoints(DataSet dataSet) {
         for (DataPoint dp : dataSet.getDataPoints()) {
@@ -105,7 +99,7 @@ public class HeartRate  {
             }
         }
     }
-
+/*
     private static DataReadRequest buildDataReadRequest() {
         //Get info from a week ago
 
@@ -142,6 +136,33 @@ public class HeartRate  {
             }
         }
     }
+*/
+
+    /*
+    static final Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            DataReadResult dataReadResult =
+                    Fitness.HistoryApi.readData(mFitClient, buildDataReadRequest())
+                            .await(1, TimeUnit.MINUTES);
+            if (dataReadResult.getBuckets().size() > 0) {
+                Log.d(TAG, "Returned buckets: " + dataReadResult.getBuckets().size());
+                for (Bucket bucket : dataReadResult.getBuckets()) {
+                    List<DataSet> dataSets = bucket.getDataSets();
+                    for (DataSet ds : dataSets) {
+                        dumpDataSet(ds);
+                    }
+                }
+            }
+        }
+    };
+
+
+
+    public static void getData(Handler h) {
+        h.post(runnable);
+    }
+    */
 }
 
 

@@ -1,15 +1,20 @@
 package com.ubiqlog.ubiqlogwear.UI;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.Services.HeartRate;
 
 
 /* This class will wait for a sync request from the wearable. Once it receives the sync request,
@@ -73,8 +78,23 @@ public class HeartRateActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static void syncRequest(){
-        WearableDataLayer.sendData(mWearableClient);
+    //Send the dataSet to the wearable
+    public static void sendToWearable(DataSet dataSet){
+        WearableDataLayer.sendData(mWearableClient, dataSet);
+
+    }
+    public static void fetchHeartDataSet(Context context){
+        GoogleApiClient fitClient = HeartRate.buildFitClient(context);
+        fitClient.connect();
+        HandlerThread heartThread = new HandlerThread("Heartthread",android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        heartThread.start();
+        Handler heartHandler = new Handler(heartThread.getLooper());
+        HeartRate.getDataPoints(heartHandler,fitClient,new HeartRate.SyncRequestInterface() {
+            @Override
+            public void setDataSet(DataSet dataSet) {
+                sendToWearable(dataSet);
+            }
+        });
     }
 
 }

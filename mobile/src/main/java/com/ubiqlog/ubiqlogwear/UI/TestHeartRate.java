@@ -1,13 +1,14 @@
 package com.ubiqlog.ubiqlogwear.UI;
 
 import android.app.Activity;
-import android.os.*;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Process;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.Services.HeartRate;
 
 public class TestHeartRate extends Activity {
 
@@ -18,14 +19,14 @@ public class TestHeartRate extends Activity {
         HandlerThread ht = new HandlerThread("HR", android.os.Process.THREAD_PRIORITY_BACKGROUND);
         ht.start();
         Handler h = new Handler(ht.getLooper());
-        HeartRate.setup(this); // will print stuff to log
+      //  HeartRate.setupFitClient(this); // will print stuff to log
        // HeartRate.getData(h);
 
         HandlerThread heartPointsThread = new HandlerThread("HeartPoints", Process.THREAD_PRIORITY_BACKGROUND);
         heartPointsThread.start();
         Handler hPoint = new Handler(heartPointsThread.getLooper());
 
-        HeartRate.getDataPoints(hPoint);
+     //   HeartRate.getDataPoints(hPoint);
 
 
     }
