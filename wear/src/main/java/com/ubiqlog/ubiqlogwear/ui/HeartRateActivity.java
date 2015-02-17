@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.data.FreezableUtils;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -20,6 +21,8 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
+
+import java.util.List;
 
 public class HeartRateActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, DataApi.DataListener {
@@ -85,13 +88,16 @@ public class HeartRateActivity extends Activity implements GoogleApiClient.Conne
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
         Log.d(TAG, "Received data");
-        for (DataEvent event : dataEvents) {
+        final List<DataEvent> events = FreezableUtils.freezeIterable(dataEvents);
+        for (DataEvent event : events) {
             if (event.getType() == DataEvent.TYPE_CHANGED) {
                 //Data item changed
                 DataItem item = event.getDataItem();
                 if (item.getUri().getPath().compareTo("/data") == 0) {
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                    doAction(dataMap.getInt(SEND_KEY));
+                    final String s = dataMap.getString(SEND_KEY);
+                    Log.d(TAG, "Retrieved string: " + s);
+                    doAction(s);
                 }
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
                 // DataItem deleted
@@ -99,12 +105,13 @@ public class HeartRateActivity extends Activity implements GoogleApiClient.Conne
         }
     }
 
-    private void doAction(final int i) {
-        Log.d(TAG, "Received: " + i);
+
+
+    private void doAction(final String s) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(HeartRateActivity.this,"Received:" + i, Toast.LENGTH_SHORT).show();
+                Toast.makeText(HeartRateActivity.this,"Received:" + s, Toast.LENGTH_SHORT).show();
             }
         });
 

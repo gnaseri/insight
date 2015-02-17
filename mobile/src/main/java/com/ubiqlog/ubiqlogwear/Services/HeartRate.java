@@ -40,7 +40,9 @@ public class HeartRate {
 
         return mFitClient;
     }
-
+    /* This runnable retrieves heartDataSet from History API
+        It sends DataSet to HeartActivity to be sent to wearable
+     */
     public static class HeartResultsRunnable implements Runnable {
         private GoogleApiClient mGoogleApiClient;
         private SyncRequestInterface sync;

@@ -83,18 +83,29 @@ public class HeartRateActivity extends Activity {
         WearableDataLayer.sendData(mWearableClient, dataSet);
 
     }
+    /*This function builds a fitClient after receiving a sync Request from the wearable
+        It starts a thread to fetch the heartDataSet and calls to sendToWearable, sending
+        the dataset to the wearable
+     */
     public static void fetchHeartDataSet(Context context){
         GoogleApiClient fitClient = HeartRate.buildFitClient(context);
         fitClient.connect();
-        HandlerThread heartThread = new HandlerThread("Heartthread",android.os.Process.THREAD_PRIORITY_BACKGROUND);
-        heartThread.start();
-        Handler heartHandler = new Handler(heartThread.getLooper());
+
+        Handler heartHandler = buildHandler();
+
         HeartRate.getDataPoints(heartHandler,fitClient,new HeartRate.SyncRequestInterface() {
             @Override
             public void setDataSet(DataSet dataSet) {
                 sendToWearable(dataSet);
             }
         });
+    }
+
+    private static Handler buildHandler(){
+        HandlerThread heartThread = new HandlerThread("Heartthread",android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        heartThread.start();
+        Handler heartHandler = new Handler(heartThread.getLooper());
+        return heartHandler;
     }
 
 }
