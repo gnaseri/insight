@@ -73,7 +73,9 @@ public class HeartRate {
         Calendar cal = Calendar.getInstance();
         Date now = new Date();
         long endTime = cal.getTimeInMillis();
-        cal.add(Calendar.WEEK_OF_YEAR, -1);
+        cal.add(Calendar.HOUR_OF_DAY, -cal.get(Calendar.HOUR_OF_DAY));
+        cal.add(Calendar.MINUTE, -cal.get(Calendar.MINUTE));
+        cal.add(Calendar.SECOND, -cal.get(Calendar.SECOND));
         long startTime = cal.getTimeInMillis();
 
         Log.i(TAG, "Range start:" + dateFormat.format(startTime));

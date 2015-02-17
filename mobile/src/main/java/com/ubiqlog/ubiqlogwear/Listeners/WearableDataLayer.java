@@ -6,6 +6,7 @@ package com.ubiqlog.ubiqlogwear.Listeners;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -71,13 +72,13 @@ public class WearableDataLayer implements MessageApi.MessageListener{
     }
 
     public static void sendData(GoogleApiClient mClient, DataSet dataSet){
-
+        Parcel p = Parcel.obtain();
+        dataSet.writeToParcel(p,0);
+        byte[] bytes = p.marshall();
         Log.d(TAG, "Sending data");
-        Log.d(TAG, "Dataset as string: " + dataSet.toString());
-        Log.d(TAG, "DataSet is size" + dataSet.getDataPoints().size());
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/data");
         putDataMapReq.getDataMap().putLong("time", new Date().getTime());
-        putDataMapReq.getDataMap().putString(SEND_KEY, dataSet.toString());
+        putDataMapReq.getDataMap().putByteArray(SEND_KEY,bytes);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         //Send Data To wearable
         PendingResult<DataApi.DataItemResult> pendingResult =
