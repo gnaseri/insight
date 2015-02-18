@@ -9,7 +9,6 @@ import android.support.wearable.view.WearableListView;
 import com.ubiqlog.ubiqlogwear.Adapters.MyAdapter;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.common.MainListItem;
-import com.ubiqlog.ubiqlogwear.sensors.ActivitySensor;
 import com.ubiqlog.ubiqlogwear.utils.FeatureCheck;
 
 import java.util.ArrayList;
@@ -35,15 +34,15 @@ public class MainActivity extends Activity  {
         listArray.add(meTitle);
         MainListItem activityItem = new MainListItem(
                 getResources().getString(R.string.activity_title),
-                R.drawable.ic_activity, ActivitySensor.class);
+                R.drawable.ic_activity, wActivity.class);//ActivitySensor.class
         listArray.add(activityItem);
         MainListItem heartrateItem = new MainListItem(
                 getString(R.string.heart_rate_title),
-                R.drawable.ic_heart, HeartRateActivity.class);
+                R.drawable.ic_heart, wHeartRate.class);
         listArray.add(heartrateItem);
         MainListItem appUsageItem = new MainListItem(
                 getString(R.string.app_usage_title),
-                R.drawable.ic_appusage, MainActivity.class);
+                R.drawable.ic_appusage, wAppUsage.class);
 
         listArray.add(appUsageItem);
         listArray.addAll(createSystemListItems());
@@ -63,7 +62,7 @@ public class MainActivity extends Activity  {
         MainListItem battItem = new MainListItem(
                 getString(R.string.battery_title),
                 R.drawable.ic_battery,
-                BatteryLevelActivity.class);
+                wBattery.class);//BatteryLevelActivity.class
 
         systemItemList.add(battItem);
 
@@ -81,10 +80,10 @@ public class MainActivity extends Activity  {
                     R.drawable.ic_bluetooth, wBluetooth.class);
             systemItemList.add(bluetoothItem);
         }
-        if (FeatureCheck.hasLightFeature(this)) {
+        if (!FeatureCheck.hasLightFeature(this)) {
             MainListItem ambLightItem = new MainListItem(
                     getString(R.string.amblight_title),
-                    R.drawable.ic_light, MainActivity.class);
+                    R.drawable.ic_light, wAmbientLight.class);
             systemItemList.add(ambLightItem);
         }
 

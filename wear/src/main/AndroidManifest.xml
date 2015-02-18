@@ -28,6 +28,26 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.wActivity"
+            android:label="@string/title_activity_wactivity" >
+        </activity>
+        <activity
+            android:name=".ui.wAppUsage"
+            android:label="@string/title_activity_wappusage" >
+        </activity>
+        <activity
+            android:name=".ui.wHeartRate"
+            android:label="@string/title_activity_wheartrate" >
+        </activity>
+        <activity
+            android:name=".ui.wAmbientLight"
+            android:label="@string/title_activity_wambientlight" >
+        </activity>
+        <activity
+            android:name=".ui.wBattery"
+            android:label="@string/title_activity_wbattery" >
+        </activity>
+        <activity
             android:name=".ui.wBluetooth"
             android:label="@string/title_activity_wbluetooth" >
         </activity>
@@ -35,9 +55,6 @@
             android:name=".ui.wNotifications"
             android:label="@string/title_activity_wnotifications" >
         </activity>
-        <activity
-            android:name=".ui.BatteryLevelActivity"
-            android:label="Battery" />
 
         <service
             android:name=".sensors.BatterySensor"
