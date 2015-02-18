@@ -23,6 +23,12 @@ public class NotificationListener extends NotificationListenerService {
         // show all currently active notifications
         Log.d(LOG_TAG, "=====ALL NOTIFICATIONS======");
         for (StatusBarNotification notif : getActiveNotifications()){
+
+            Notification notification = notif.getNotification();
+            Log.d(LOG_TAG, "Flags:" + notification.flags);
+            //if ((notification.flags & notification.FLAG_LOCAL_ONLY) == notification.FLAG_LOCAL_ONLY){
+
+           // }
             Log.d(LOG_TAG, "ID:" + notif.getId() + "\t" + notif.getNotification().tickerText
                         + "\t" + sbn.getPackageName());
             Log.d(LOG_TAG, "T:" +

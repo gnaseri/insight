@@ -133,7 +133,7 @@ public class HeartRateActivity extends Activity implements GoogleApiClient.Conne
             }
         }
     }
-
+    /* This function sends the sync command to the watch, which returns heartRate history API info*/
     private class SyncTask extends AsyncTask<Void, Void, Void> {
 
         @Override

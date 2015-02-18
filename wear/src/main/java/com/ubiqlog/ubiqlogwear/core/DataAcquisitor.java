@@ -39,4 +39,10 @@ public class DataAcquisitor {
         }
     }
 
+    public void flush(){
+        Log.d(LOG_TAG, "Flushing buffer");
+        IOManager dataLogger = new IOManager();
+        dataLogger.logData(context,this);
+    }
+
 }

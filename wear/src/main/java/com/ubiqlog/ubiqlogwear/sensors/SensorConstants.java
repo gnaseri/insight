@@ -16,5 +16,5 @@ public final class SensorConstants {
 
     public static long WALKDETECTION_INTERVAL = 30000L; //30 seconds
 
-    public static long HEARTRATE_INTERVAL = 600000L;
+    public static long LIGHT_SENSOR_INTERVAL = 600000L; // 10 minutes
 }
