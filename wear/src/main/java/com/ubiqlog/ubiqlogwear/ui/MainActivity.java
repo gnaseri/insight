@@ -9,7 +9,6 @@ import android.support.wearable.view.WearableListView;
 import com.ubiqlog.ubiqlogwear.Adapters.MyAdapter;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.common.MainListItem;
-import com.ubiqlog.ubiqlogwear.sensors.ActivitySensor;
 import com.ubiqlog.ubiqlogwear.utils.FeatureCheck;
 
 import java.util.ArrayList;
