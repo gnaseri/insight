@@ -35,7 +35,7 @@ public class MainActivity extends Activity  {
         listArray.add(meTitle);
         MainListItem activityItem = new MainListItem(
                 getResources().getString(R.string.activity_title),
-                R.drawable.ic_activity, ActivitySensor.class);
+                R.drawable.ic_activity, wActivity.class);//ActivitySensor.class
         listArray.add(activityItem);
         MainListItem heartrateItem = new MainListItem(
                 getString(R.string.heart_rate_title),
@@ -43,7 +43,7 @@ public class MainActivity extends Activity  {
         listArray.add(heartrateItem);
         MainListItem appUsageItem = new MainListItem(
                 getString(R.string.app_usage_title),
-                R.drawable.ic_appusage, MainActivity.class);
+                R.drawable.ic_appusage, wAppUsage.class);
 
         listArray.add(appUsageItem);
         listArray.addAll(createSystemListItems());
@@ -81,7 +81,7 @@ public class MainActivity extends Activity  {
                     R.drawable.ic_bluetooth, wBluetooth.class);
             systemItemList.add(bluetoothItem);
         }
-        if (FeatureCheck.hasLightFeature(this)) {
+        if (!FeatureCheck.hasLightFeature(this)) {
             MainListItem ambLightItem = new MainListItem(
                     getString(R.string.amblight_title),
                     R.drawable.ic_light, wAmbientLight.class);

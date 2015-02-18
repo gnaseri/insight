@@ -27,6 +27,8 @@
     <string name="title_activity_gyroscope">GyroscopeActivity</string>
     <string name="title_activity_application">ApplicationActivity</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_wactivity">Activity</string>
+    <string name="title_activity_wappusage">App Usage</string>
     <string name="title_activity_wheartrate">Heart Rate</string>
     <string name="title_activity_wambientlight">Ambient Light</string>
     <string name="title_activity_wbattery">Battery</string>

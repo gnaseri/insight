@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -48,8 +49,15 @@ public class wAmbientLight extends Activity {
 
     private void displayData(Date date) {
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
-        final FrameLayout chart = (FrameLayout) findViewById(R.id.chart);
+        final LinearLayout frameBox = (LinearLayout) findViewById(R.id.frameBox);
+
+        FrameLayout chart = new FrameLayout(this);
+        LinearLayout.LayoutParams cParams = new LinearLayout.LayoutParams(getSizeInDP(190), getSizeInDP(170));
+        cParams.gravity = (Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        chart.setLayoutParams(cParams);
+        chart.setPadding(3, 10, 10, 10);
         chart.addView(createGraph(date));
+        frameBox.addView(chart,0);
 
         final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -138,4 +146,5 @@ public class wAmbientLight extends Activity {
         GraphicalView chartView = ChartFactory.getLineChartView(this, dataset, mRenderer);
         return chartView;
     }
+    private int getSizeInDP(int x){return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());}
 }

@@ -1,5 +1,6 @@
 package com.ubiqlog.ubiqlogwear.ui;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -8,13 +9,13 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ubiqlog.ubiqlogwear.R;
 
@@ -27,14 +28,17 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 /**
  * Created by Manouchehr on 2/13/2015.
  */
-public class wHeartRate extends Activity {
+public class wActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +47,7 @@ public class wHeartRate extends Activity {
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
-        tvTitle.setText(R.string.title_activity_wheartrate);
+        tvTitle.setText(R.string.title_activity_wactivity);
 
         Date date = new Date();
         displayData(date);
@@ -51,17 +55,66 @@ public class wHeartRate extends Activity {
     }
 
     private void displayData(Date date) {
+        boolean isEnabled_walk = true;
+        boolean isEnabled_run = true;
+        boolean isEnabled_steady = true;
+        boolean isEnabled_bicycle = true;
+
+        List<String> activities_list = new ArrayList<String>();
+        if (isEnabled_walk) activities_list.add("Walk");
+        if (isEnabled_run) activities_list.add("Run");
+        if (isEnabled_steady) activities_list.add("Steady");
+        if (isEnabled_bicycle) activities_list.add("Bicycle");
+
+        if (activities_list.size() <= 0) return;
+
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
         final LinearLayout frameBox = (LinearLayout) findViewById(R.id.frameBox);
 
-        FrameLayout chart = new FrameLayout(this);
-        LinearLayout.LayoutParams cParams = new LinearLayout.LayoutParams(getSizeInDP(190), getSizeInDP(170));
-        cParams.gravity = (Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-        chart.setLayoutParams(cParams);
-        chart.setPadding(3, 10, 10, 10);
-        chart.addView(createGraph(date));
-        frameBox.addView(chart,0);
 
+        // remove all added views before except linksbox
+        frameBox.removeViewsInLayout(0, frameBox.getChildCount() - 1);
+
+        FrameLayout chart;
+        LinearLayout.LayoutParams cParams;
+
+        for (int i = 0; i < activities_list.size(); i++) {
+            chart = new FrameLayout(this);
+            chart.removeAllViews();
+            cParams = new LinearLayout.LayoutParams(getSizeInDP(190), getSizeInDP(50));
+            cParams.gravity = (Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+
+            boolean showFooter = false;
+            boolean showHeader = false;
+
+            if (i == 0) {
+                //first item
+                showHeader = true;
+                cParams.setMargins(0, 0, 0, -12);
+
+            } else if (i == activities_list.size() - 1) {
+                //last item
+                showFooter = true;
+                cParams.setMargins(0, -12, 0, 0);
+
+            } else {
+                //middle items
+                cParams.setMargins(0, -12, 0, -12);
+
+            }
+            chart.setLayoutParams(cParams);
+            chart.setPadding(15, -5, 5, -5);
+            chart.addView(createGraph(date, activities_list.get(i), showFooter, showHeader));
+            frameBox.addView(chart, i);
+        }
+
+        final TextView tvDate = new TextView(this);
+        tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
+        tvDate.setTextSize(getSizeInDP(8));
+
+        //  frameBox.addView(tvDate, 0);
+
+        //render Links box
         final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -78,7 +131,6 @@ public class wHeartRate extends Activity {
             btn1.setText(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
             btn1.setBackgroundColor(getResources().getColor(R.color.chart_button_bgcolor));
             btn1.setBackground(getResources().getDrawable(R.drawable.listview_bg_title));
-            btn1.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 30));
             btn1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -91,17 +143,17 @@ public class wHeartRate extends Activity {
 
     }
 
-    private View createGraph(Date date) {
-        Log.i("Heart Rate", "In Create Chart");
+    private View createGraph(Date date, String title, boolean isVisibleFooter, boolean isVisibleHeader) {
+        Log.i("Activity " + title, "In Create Chart");
         // We start creating the XYSeries to plot the temperature
-        XYSeries series1 = new XYSeries("Heart Rate");
+        XYSeries series1 = new XYSeries("Activity " + title);
 
 
         // We start filling the series
-        // with random values for Y:0-100 to X:0-24
+        // with random values for Y:0-30 to X:0-24
         Random rand = new Random();
         for (int i = 1; i < 23; i++) {
-            series1.add(i,rand.nextInt(50));
+            series1.add(i, rand.nextInt(30));
         }
 
         XYSeriesRenderer renderer1 = new XYSeriesRenderer();
@@ -119,21 +171,26 @@ public class wHeartRate extends Activity {
         // Finaly we create the multiple series renderer to control the graph
         XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
         mRenderer.addSeriesRenderer(renderer1);
-
-        mRenderer.addXTextLabel(0, "00:00");
-        mRenderer.addXTextLabel(6, "06:00");
-        mRenderer.addXTextLabel(12, "12:00");
-        mRenderer.addXTextLabel(18, "18:00");
-        mRenderer.addXTextLabel(23, "23:59");
+        mRenderer.setYAxisMin(0);
+        mRenderer.setYLabels(0);
+        mRenderer.addYTextLabel(5, title);
+        mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
 
         mRenderer.setXAxisMin(0);
         mRenderer.setXAxisMax(23);
-        mRenderer.setXLabelsAlign(Paint.Align.LEFT);
+
+        if (isVisibleHeader)
+            mRenderer.setChartTitle(new SimpleDateFormat("MM/dd/yyyy").format(date));
+
+        if (isVisibleFooter) {
+            mRenderer.addXTextLabel(0, "00:00");
+            mRenderer.addXTextLabel(12, "12:00");
+            mRenderer.addXTextLabel(23, "23:59");
+        }
+
+        mRenderer.setXLabelsAlign(Paint.Align.CENTER);
         mRenderer.setXLabels(0);
-
-        mRenderer.setYAxisMin(0);
-        mRenderer.setYLabelsAlign(Paint.Align.CENTER);
-
+        mRenderer.setShowAxes(false);
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
         // Disable Pan on two axis
         mRenderer.setPanEnabled(false, false);
@@ -146,13 +203,11 @@ public class wHeartRate extends Activity {
         mRenderer.setLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setXLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setYLabelsColor(0, getResources().getColor(R.color.chart_labels_color));
-
-        // Vertical bars
-        mRenderer.setOrientation(XYMultipleSeriesRenderer.Orientation.VERTICAL);
-
-        mRenderer.setChartTitle(new SimpleDateFormat("MM/dd/yyyy").format(date));
         GraphicalView chartView = ChartFactory.getBarChartView(this, dataset, mRenderer, BarChart.Type.DEFAULT);
         return chartView;
     }
-    private int getSizeInDP(int x){return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());}
+
+    private int getSizeInDP(int x) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());
+    }
 }
