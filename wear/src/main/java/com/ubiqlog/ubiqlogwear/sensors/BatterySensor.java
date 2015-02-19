@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -58,16 +57,24 @@ public class BatterySensor extends Service {
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
         // highest level for battery
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        Log.d(LOG_TAG, "Battery Update:" + level);
 
 
-        Date currentDate = new Date();
 
-        String encoded =
-                CSVEncodeDecode.encodeBattery(level, isCharging, currentDate);
 
-        mDataBuffer.insert(encoded);
+        //We only want battery records every %5
+        if (level % 5 == 0){
+            Date currentDate = new Date();
+            String encoded =
+                    CSVEncodeDecode.encodeBattery(level, isCharging, currentDate);
 
-        Log.d(LOG_TAG, encoded);
+            mDataBuffer.insert(encoded);
+            mDataBuffer.flush();
+
+            Log.d(LOG_TAG, encoded);
+        }
+
+
 
     }
 
@@ -76,8 +83,13 @@ public class BatterySensor extends Service {
         Log.d("Battery-Logging", "--- onStart");
         // May not have intent if service was killed or restarted
         if (intent != null){
-            readSensor();
-            mHandler.postDelayed(doBatteryLogging, SensorConstants.BATTERY_LOG_INTERVAL);
+            //Register for the battery changed
+            IntentFilter filter = new IntentFilter(
+                    Intent.ACTION_BATTERY_CHANGED);
+            // return value contains batteries status
+            Intent batteryStatus = this.registerReceiver(null,filter);
+            //readSensor();
+           // mHandler.postDelayed(doBatteryLogging, SensorConstants.BATTERY_LOG_INTERVAL);
         }
 
         return START_STICKY;
@@ -86,12 +98,13 @@ public class BatterySensor extends Service {
     @Override
     public void onCreate() {
         //Create a new Thread which also has a Looper Object
-        HandlerThread thread = new HandlerThread("BatteryThread",
+       /* HandlerThread thread = new HandlerThread("BatteryThread",
                 android.os.Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
 
         // create our handler using the looper from thread
         mHandler = new Handler(thread.getLooper());
+        */
 
         //initialize our buffer
         mDataBuffer = new DataAcquisitor(this,this.getClass().getSimpleName());
@@ -103,7 +116,8 @@ public class BatterySensor extends Service {
     @Override
     public void onDestroy() {
         Log.d(LOG_TAG, "Stopped Battery Logging");
-        mHandler.removeCallbacks(doBatteryLogging);
+        this.unregisterReceiver(null);
+      //  mHandler.removeCallbacks(doBatteryLogging);
         Toast.makeText(this, "Stopped Battery Logging", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }

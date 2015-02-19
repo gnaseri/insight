@@ -1,6 +1,7 @@
 package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -36,6 +38,10 @@ public class wBattery extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chart);
+
+        //start Service  - Cole
+        startService(new Intent(this,BatterySensor.class));
+
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
