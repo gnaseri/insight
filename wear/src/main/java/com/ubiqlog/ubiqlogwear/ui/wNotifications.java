@@ -1,7 +1,6 @@
 package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,7 +9,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.sensors.NotificationSensor;
 import com.ubiqlog.ubiqlogwear.utils.MultipleListItemsAdapter;
 import com.ubiqlog.ubiqlogwear.utils.RowData;
 
@@ -32,8 +30,8 @@ public class wNotifications extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_datalist);
 
-        //start Service
-        startService(new Intent(this,NotificationSensor.class));
+        //Cannot use NotificationSensor on wear
+        //startService(new Intent(this,NotificationSensor.class));
         Log.d(LOG_TAG,"Started Notification Service");
 
 

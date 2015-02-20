@@ -1,52 +1,98 @@
 package com.ubiqlog.ubiqlogwear.Services;
 
-import android.app.Notification;
+import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.Wearable;
+import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
 
 /**
  * Created by User on 2/10/15.
  */
 public class NotificationListener extends NotificationListenerService {
-    private static final String LOG_TAG = NotificationListener.class.getSimpleName();
+    private static final String TAG = NotificationListener.class.getSimpleName();
+    private GoogleApiClient mGoogleApiClient;
+
+    private final String NOTIF_KEY = "com.insight.notif";
 
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
-        Log.d (LOG_TAG, "--Current Notification--");
+        Log.d (TAG, "--Current Notification--");
 
-        Log.d(LOG_TAG, "ID:" + sbn.getId() + "\t" + sbn.getNotification().tickerText
+        Log.d(TAG, "ID:" + sbn.getId() + "\t" + sbn.getNotification().tickerText
                 + "\t" + sbn.getPackageName());
-        Log.d(LOG_TAG, "-------------");
+        Log.d(TAG, "-------------");
 
-        // show all currently active notifications
-        Log.d(LOG_TAG, "=====ALL NOTIFICATIONS======");
+
+        sendNotificationsToWear(sbn,NOTIF_KEY);
+
+       /* // show all currently active notifications
+        Log.d(TAG, "=====ALL NOTIFICATIONS======");
         for (StatusBarNotification notif : getActiveNotifications()){
 
             Notification notification = notif.getNotification();
-            Log.d(LOG_TAG, "Flags:" + notification.flags);
-            //if ((notification.flags & notification.FLAG_LOCAL_ONLY) == notification.FLAG_LOCAL_ONLY){
-
-           // }
-            Log.d(LOG_TAG, "ID:" + notif.getId() + "\t" + notif.getNotification().tickerText
+            Log.d(TAG, "Flags:" + notification.flags);
+            // This isn't working.
+            if ((notification.flags & notification.FLAG_LOCAL_ONLY) == notification.FLAG_LOCAL_ONLY){
+                Log.d(TAG, "DEVICE ONLY");
+            }
+            Log.d(TAG, "ID:" + notif.getId() + "\t" + notif.getNotification().tickerText
                         + "\t" + sbn.getPackageName());
-            Log.d(LOG_TAG, "T:" +
+            Log.d(TAG, "T:" +
                      notif.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE)
                       + "ET:" +  notif.getNotification().extras.getCharSequence(Notification.EXTRA_TEXT));
 
         }
-        Log.d(LOG_TAG, "=================");
+        Log.d(TAG, "================="); */
 
 
     }
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
-        Log.d(LOG_TAG, "Notification Removed");
-        Log.d(LOG_TAG, "ID:" + sbn.getId() + "\t" + sbn.getNotification().tickerText
+        Log.d(TAG, "Notification Removed");
+        Log.d(TAG, "ID:" + sbn.getId() + "\t" + sbn.getNotification().tickerText
                     + "\t" + sbn.getPackageName());
-        Log.d(LOG_TAG, "-------------------");
+        Log.d(TAG, "-------------------");
 
     }
+
+    private GoogleApiClient buildGoogleAPIClient(){
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {
+                        Log.d(TAG, "Connected");
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+
+                    }
+                })
+                .addOnConnectionFailedListener( new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(ConnectionResult connectionResult) {
+                        //Try reconnect
+                        mGoogleApiClient.connect();
+                    }
+                })
+                .build();
+        return mGoogleApiClient;
+    }
+    private void sendNotificationsToWear(StatusBarNotification sbn, String KEY_NAME){
+        buildGoogleAPIClient();
+        mGoogleApiClient.connect();
+
+        WearableDataLayer.sendNotificationtoWear(mGoogleApiClient,sbn, KEY_NAME);
+        mGoogleApiClient.disconnect();
+    }
+
+
 }

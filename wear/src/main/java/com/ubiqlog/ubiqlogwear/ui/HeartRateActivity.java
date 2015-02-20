@@ -36,7 +36,7 @@ public class HeartRateActivity extends Activity implements GoogleApiClient.Conne
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy HH:mm:ss");
 
 
-    private static final String SEND_KEY = "com.example.data";
+    public static final String HEART_HIST_KEY = "com.insight.heartrate";
 
     private GoogleApiClient mGoogleAPIClient;
     private TextView tv;
@@ -102,7 +102,7 @@ public class HeartRateActivity extends Activity implements GoogleApiClient.Conne
                 DataItem item = event.getDataItem();
                 if (item.getUri().getPath().compareTo("/data") == 0) {
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                    final byte[] bytes = dataMap.getByteArray(SEND_KEY);
+                    final byte[] bytes = dataMap.getByteArray(HEART_HIST_KEY);
                     Log.d(TAG, "Parcelable retrieved of size: " + bytes.length);
 
                     DataSet ds = unMarshall(bytes);
@@ -118,6 +118,7 @@ public class HeartRateActivity extends Activity implements GoogleApiClient.Conne
         parcel.unmarshall(bytes,0,bytes.length);
         parcel.setDataPosition(0);
         DataSet ds = DataSet.CREATOR.createFromParcel(parcel);
+        parcel.recycle();
         return ds;
     }
     private void dumpDataSet(DataSet dataSet){

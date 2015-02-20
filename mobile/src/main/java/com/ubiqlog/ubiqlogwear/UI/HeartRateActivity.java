@@ -80,7 +80,7 @@ public class HeartRateActivity extends Activity {
 
     //Send the dataSet to the wearable
     public static void sendToWearable(DataSet dataSet){
-        WearableDataLayer.sendData(mWearableClient, dataSet);
+        WearableDataLayer.sendData(mWearableClient, dataSet, WearableDataLayer.HEART_HIST_KEY);
 
     }
     /*This function builds a fitClient after receiving a sync Request from the wearable

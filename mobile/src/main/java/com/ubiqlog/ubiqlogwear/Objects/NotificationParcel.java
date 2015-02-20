@@ -1,0 +1,73 @@
+package com.ubiqlog.ubiqlogwear.Objects;
+
+import android.app.Notification;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.service.notification.StatusBarNotification;
+
+/**
+ * Created by User on 2/19/15.
+ */
+public class NotificationParcel implements Parcelable{
+    public String ticketText;
+    public String EXTRA_TITLE;
+    public String EXTRA_TEXT;
+    public Integer flags;
+    public Integer ID;
+    public String PACKAGE_NAME;
+    public Long POST_TIME;
+
+
+
+    public NotificationParcel(StatusBarNotification sbn){
+        Notification n = sbn.getNotification();
+        this.ticketText = n.tickerText.toString();
+        this.EXTRA_TITLE = n.extras.getCharSequence(Notification.EXTRA_TITLE).toString();
+        this.EXTRA_TEXT = n.extras.getCharSequence(Notification.EXTRA_TEXT).toString();
+        this.flags = n.flags;
+        this.ID =  sbn.getId();
+        this.PACKAGE_NAME = sbn.getPackageName();
+        this.POST_TIME = sbn.getPostTime();
+
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int i) {
+        dest.writeString(ticketText);
+        dest.writeString(EXTRA_TITLE);
+        dest.writeString(EXTRA_TEXT);
+        dest.writeInt(flags);
+        dest.writeInt(ID);
+        dest.writeString(PACKAGE_NAME);
+        dest.writeLong(POST_TIME);
+
+
+    }
+
+    public NotificationParcel (Parcel in){
+        this.ticketText = in.readString();
+        this.EXTRA_TITLE = in.readString();
+        this.EXTRA_TEXT = in.readString();
+        this.flags = in.readInt();
+        this.ID = in.readInt();
+        this.PACKAGE_NAME = in.readString();
+        this.POST_TIME = in.readLong();
+
+    }
+
+    public static final Creator<NotificationParcel> CREATOR = new Creator<NotificationParcel>() {
+        @Override
+        public NotificationParcel createFromParcel(Parcel source) {
+            return new NotificationParcel(source);
+        }
+
+        @Override
+        public NotificationParcel[] newArray(int size) {
+            return new NotificationParcel[size];
+        }
+    };
+}
