@@ -1,5 +1,6 @@
 package com.ubiqlog.ubiqlogwear.Services;
 
+import android.app.Notification;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
@@ -22,10 +23,16 @@ public class NotificationListener extends NotificationListenerService {
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
+        if (sbn.getPackageName().equals("android")){
+            return;
+        }
         Log.d (TAG, "--Current Notification--");
 
         Log.d(TAG, "ID:" + sbn.getId() + "\t" + sbn.getNotification().tickerText
-                + "\t" + sbn.getPackageName());
+                + "\t" + sbn.getPackageName() + "\t"
+                + sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE) + "\t"
+                + sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TEXT) + "\t"
+                + sbn.getPostTime() +  "\t" + sbn.getNotification().when);
         Log.d(TAG, "-------------");
 
 
