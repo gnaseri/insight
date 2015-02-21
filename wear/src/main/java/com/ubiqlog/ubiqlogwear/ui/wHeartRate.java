@@ -135,6 +135,8 @@ public class wHeartRate extends Activity {
         mRenderer.setYAxisMin(0);
         mRenderer.setYLabelsAlign(Paint.Align.CENTER);
 
+        mRenderer.setBarSpacing(0.20);
+
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
         // Disable Pan on two axis
         mRenderer.setPanEnabled(false, false);

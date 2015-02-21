@@ -141,6 +141,8 @@ public class wAppUsage extends Activity {
         mRenderer.setShowAxes(false);
         mRenderer.setLabelsTextSize(getResources().getDimension(R.dimen.textsize_s1));
 
+        mRenderer.setBarSpacing(0.10);
+
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
         // Disable Pan on two axis
         mRenderer.setPanEnabled(false, false);

@@ -52,13 +52,13 @@ public class wActivity extends Activity {
     private void displayData(Date date) {
         boolean isEnabled_walk = true;
         boolean isEnabled_run = true;
-        boolean isEnabled_steady = true;
+        boolean isEnabled_vehicle = true;
         boolean isEnabled_bicycle = true;
 
         List<String> activities_list = new ArrayList<String>();
         if (isEnabled_walk) activities_list.add("Walk");
         if (isEnabled_run) activities_list.add("Run");
-        if (isEnabled_steady) activities_list.add("Steady");
+        if (isEnabled_vehicle) activities_list.add("Vehicle");
         if (isEnabled_bicycle) activities_list.add("Bicycle");
 
         if (activities_list.size() <= 0) return;
@@ -98,7 +98,7 @@ public class wActivity extends Activity {
 
             }
             chart.setLayoutParams(cParams);
-            chart.setPadding(15, -5, 5, -5);
+            chart.setPadding(12, -5, 5, -5);
             chart.addView(createGraph(date, activities_list.get(i), showFooter, showHeader));
             frameBox.addView(chart, i);
         }
@@ -168,8 +168,9 @@ public class wActivity extends Activity {
         mRenderer.addSeriesRenderer(renderer1);
         mRenderer.setYAxisMin(0);
         mRenderer.setYLabels(0);
-        mRenderer.addYTextLabel(5, title);
+        mRenderer.addYTextLabel(0, title);
         mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
+        mRenderer.setYLabelsPadding(-1f);
 
         mRenderer.setXAxisMin(0);
         mRenderer.setXAxisMax(23);
@@ -182,6 +183,9 @@ public class wActivity extends Activity {
             mRenderer.addXTextLabel(12, "12:00");
             mRenderer.addXTextLabel(23, "23:59");
         }
+
+
+        mRenderer.setBarSpacing(0.25);
 
         mRenderer.setXLabelsAlign(Paint.Align.CENTER);
         mRenderer.setXLabels(0);
