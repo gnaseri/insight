@@ -13,6 +13,7 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataMap;
@@ -95,6 +96,7 @@ public class WearableDataLayer implements MessageApi.MessageListener{
         notificationParcel.writeToParcel(p,0);
         byte[] bytes = p.marshall();
         Log.d(TAG,"Bytes:" + bytes.length);
+        Log.d(TAG,"Sending..");
 
        /* Parcel p = Parcel.obtain();
         sbn.writeToParcel(p,0);
@@ -111,6 +113,14 @@ public class WearableDataLayer implements MessageApi.MessageListener{
         //Send to wearable
         PendingResult<DataApi.DataItemResult> pendingResult =
               Wearable.DataApi.putDataItem(mClient,pdq);
+        pendingResult.setResultCallback( new ResultCallback<DataApi.DataItemResult>() {
+            @Override
+            public void onResult(DataApi.DataItemResult dataItemResult) {
+                if (!dataItemResult.getStatus().isSuccess()){
+                    Log.e(TAG, "Error:" + dataItemResult.getStatus().getStatusCode());
+                }
+            }
+        });
         p.recycle();
 
     }

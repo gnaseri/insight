@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.Objects;
+package com.ubiqlog.ubiqlogwear.common;
 
 import android.app.Notification;
 import android.os.Build;
@@ -7,9 +7,9 @@ import android.os.Parcelable;
 import android.service.notification.StatusBarNotification;
 
 /**
- * Created by User on 2/19/15.
+ * Created by User on 2/21/15.
  */
-public class NotificationParcel implements Parcelable{
+public class NotificationParcel implements Parcelable {
     public String EXTRA_TITLE;
     public String EXTRA_TEXT;
     public Integer flags;
@@ -33,7 +33,7 @@ public class NotificationParcel implements Parcelable{
         this.flags = n.flags;
         /*Category was added in API Level 21 */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                this.category = n.category;
+            this.category = n.category;
 
         }else{
             this.category = "NA";
@@ -82,3 +82,4 @@ public class NotificationParcel implements Parcelable{
         }
     };
 }
+

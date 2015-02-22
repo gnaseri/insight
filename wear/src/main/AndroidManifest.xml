@@ -54,7 +54,7 @@
             android:name=".sensors.BatterySensor"
             android:enabled="true"
             android:exported="false" />
-        <service android:name=".sensors.BluetoothSensor">
+        <service android:name=".sensors.NotificationSensor">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
@@ -78,14 +78,11 @@
                 android:value="com.ubiqlog.ubiqlogwear.ui.MainActivity" />
         </activity>
 
-        <service
-            android:name=".sensors.NotificationReceiver"
-            android:enabled="true"
-            android:exported="true">
+       <!-- <service android:name=".sensors.NotificationReceiver">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER"></action>
             </intent-filter>
-        </service>
+        </service> -->
     </application>
 
 </manifest>

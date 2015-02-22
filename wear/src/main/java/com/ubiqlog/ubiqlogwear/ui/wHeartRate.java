@@ -16,6 +16,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.utils.GoogleFitConnection;
+import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -38,6 +40,9 @@ public class wHeartRate extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chart);
+        GoogleFitConnection googleFitConnection = new GoogleFitConnection(this);
+
+        WearableSendSync.sendSyncToDevice(googleFitConnection.buildFitClient());
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);

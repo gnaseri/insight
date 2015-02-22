@@ -32,7 +32,7 @@ public class NotificationListener extends NotificationListenerService {
                 + "\t" + sbn.getPackageName() + "\t"
                 + sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE) + "\t"
                 + sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TEXT) + "\t"
-                + sbn.getPostTime() +  "\t" + sbn.getNotification().when);
+                + sbn.getPostTime() +  "\t" + sbn.getNotification().when + "\t");
         Log.d(TAG, "-------------");
 
 
@@ -69,7 +69,7 @@ public class NotificationListener extends NotificationListenerService {
 
     }
 
-    private GoogleApiClient buildGoogleAPIClient(){
+    private void buildGoogleAPIClient(){
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
@@ -91,14 +91,13 @@ public class NotificationListener extends NotificationListenerService {
                     }
                 })
                 .build();
-        return mGoogleApiClient;
     }
     private void sendNotificationsToWear(StatusBarNotification sbn, String KEY_NAME){
         buildGoogleAPIClient();
         mGoogleApiClient.connect();
 
         WearableDataLayer.sendNotificationtoWear(mGoogleApiClient,sbn, KEY_NAME);
-        mGoogleApiClient.disconnect();
+        //mGoogleApiClient.disconnect();
     }
 
 

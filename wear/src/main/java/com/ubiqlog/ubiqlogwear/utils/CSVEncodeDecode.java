@@ -1,5 +1,7 @@
 package com.ubiqlog.ubiqlogwear.utils;
 
+import com.ubiqlog.ubiqlogwear.common.NotificationParcel;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,6 +65,21 @@ public class CSVEncodeDecode {
                 + stepDiff + " " + "CulmStep:" + culmStepAmt + "," + dateFormat.format(endTime)
         );
         return encodedString.toString();
+    }
+
+    public static String encodeNotification (NotificationParcel n){
+        StringBuilder encoded = new StringBuilder("");
+        String title = n.EXTRA_TITLE;
+        String text = n.EXTRA_TEXT;
+        String packageName = n.PACKAGE_NAME;
+        Integer flags = n.flags;
+        Date postDate = new Date(n.POST_TIME);
+
+        encoded = encoded.append(
+                "Notification,T:" + title + "\t" + text + "\t" + packageName + "\t"
+                + flags + "\t" + postDate
+        );
+        return encoded.toString();
     }
 
     private static ArrayList<String> parseEncoded(String encoded){
