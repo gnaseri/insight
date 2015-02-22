@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.Services.NotificationListener;
+import com.ubiqlog.ubiqlogwear.Services.NotificationSensor;
 
 
 public class NotificationActivity extends Activity {
@@ -29,7 +29,7 @@ public class NotificationActivity extends Activity {
                 startActivity(settingsIntent);
             }
         });
-        startService(new Intent(this, NotificationListener.class));
+        startService(new Intent(this, NotificationSensor.class));
         Toast.makeText(this, "Notification Listener Started", Toast.LENGTH_SHORT).show();
 
     }

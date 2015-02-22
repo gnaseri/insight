@@ -30,7 +30,7 @@
             android:label="@string/title_activity_google_play_services" />
 
         <service
-            android:name=".Services.NotificationListener"
+            android:name=".Services.NotificationSensor"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
             <intent-filter>

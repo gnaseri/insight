@@ -14,8 +14,8 @@ import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
 /**
  * Created by User on 2/10/15.
  */
-public class NotificationListener extends NotificationListenerService {
-    private static final String TAG = NotificationListener.class.getSimpleName();
+public class NotificationSensor extends NotificationListenerService {
+    private static final String TAG = NotificationSensor.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
 
     private final String NOTIF_KEY = "com.insight.notif";

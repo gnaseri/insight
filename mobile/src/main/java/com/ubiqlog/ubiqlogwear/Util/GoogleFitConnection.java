@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.Services;
+package com.ubiqlog.ubiqlogwear.Util;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,12 +9,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
+import com.ubiqlog.ubiqlogwear.Services.HeartRateSensor;
 
 /**
  * Created by User on 2/15/15.
  */
 public class GoogleFitConnection implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    private static final String TAG = HeartRate.class.getSimpleName();
+    private static final String TAG = HeartRateSensor.class.getSimpleName();
     public GoogleApiClient mClient;
     private Context mContext;
 

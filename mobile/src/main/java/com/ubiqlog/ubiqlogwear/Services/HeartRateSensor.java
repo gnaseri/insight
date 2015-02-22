@@ -13,6 +13,7 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
+import com.ubiqlog.ubiqlogwear.Util.GoogleFitConnection;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,13 +23,13 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by User on 2/15/15.
  */
-public class HeartRate {
+public class HeartRateSensor {
 
     public interface SyncRequestInterface {
         public void setDataSet(DataSet dataSet);
     }
 
-    private static final String TAG = HeartRate.class.getSimpleName();
+    private static final String TAG = HeartRateSensor.class.getSimpleName();
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy HH:mm:ss");
     private static GoogleApiClient mFitClient;
     private static Context mContext;

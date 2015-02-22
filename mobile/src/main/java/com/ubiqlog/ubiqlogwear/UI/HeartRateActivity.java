@@ -14,7 +14,7 @@ import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.Services.HeartRate;
+import com.ubiqlog.ubiqlogwear.Services.HeartRateSensor;
 
 
 /* This class will wait for a sync request from the wearable. Once it receives the sync request,
@@ -88,12 +88,12 @@ public class HeartRateActivity extends Activity {
         the dataset to the wearable
      */
     public static void fetchHeartDataSet(Context context){
-        GoogleApiClient fitClient = HeartRate.buildFitClient(context);
+        GoogleApiClient fitClient = HeartRateSensor.buildFitClient(context);
         fitClient.connect();
 
         Handler heartHandler = buildHandler();
 
-        HeartRate.getDataPoints(heartHandler,fitClient,new HeartRate.SyncRequestInterface() {
+        HeartRateSensor.getDataPoints(heartHandler, fitClient, new HeartRateSensor.SyncRequestInterface() {
             @Override
             public void setDataSet(DataSet dataSet) {
                 sendToWearable(dataSet);
