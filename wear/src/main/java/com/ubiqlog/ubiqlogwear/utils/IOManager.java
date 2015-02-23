@@ -63,7 +63,6 @@ public class IOManager{
 
             writer.flush();
             writer.close();
-            dataAcq.getDataBuffer().clear();
             Log.d (LOG_TAG, "Finished Writing to file");
         } catch (IOException e) {
             e.printStackTrace();

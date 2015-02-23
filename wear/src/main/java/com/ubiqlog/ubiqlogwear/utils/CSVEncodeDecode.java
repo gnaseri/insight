@@ -25,7 +25,7 @@ public class CSVEncodeDecode {
      * @param timeStamp
      * @return
      */
-    public static String encodeBattery(float percent, boolean charging, Date timeStamp) {
+    public static String encodeBattery(int percent, boolean charging, Date timeStamp) {
         String chargingString = charging ? "Charging" : "Discharging";
 
         StringBuilder encodedString = new StringBuilder("");
