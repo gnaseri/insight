@@ -120,4 +120,115 @@ public class JSONUtil {
         }
         return null;
     }
+
+    /* Decode Methods*/
+
+
+    /**
+     * @param encoded
+     * @return obj[0] : timestamp
+     * obj[1] : percent
+     * obj[2] : charging
+     */
+    public Object[] decodeBattery(String encoded) {
+        try {
+            JSONObject jObj = new JSONObject(encoded);
+            Date date = (Date) jObj.get("timestamp");
+
+            JSONObject sensorData = jObj.getJSONObject("sensor_data");
+
+            int percent = sensorData.getInt("percent");
+            boolean charging = sensorData.getBoolean("charging");
+
+            return new Object[]{date, percent, charging};
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    /**
+     * obj[0] : date
+     * obj[1] : lux
+     *
+     * @param encoded
+     * @return
+     */
+    public Object[] decodeLight(String encoded) {
+        try {
+            JSONObject jObj = new JSONObject(encoded);
+            Date date = (Date) jObj.get("timestamp");
+
+            JSONObject sensorData = jObj.getJSONObject("sensor_data");
+
+            float lux = (float) sensorData.get("lux");
+
+            return new Object[]{date, lux};
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * obj[0]:date
+     * obj[1] :pkg name
+     * obj[2]: title
+     * obj[3] : text
+     * obj[4] : flags
+     * obj[5] : category
+     * @param encoded
+     * @return
+     */
+    public Object[] decodeNotification(String encoded) {
+        try {
+            JSONObject jObj = new JSONObject(encoded);
+            Date date = (Date) jObj.get("timestamp");
+
+            JSONObject sensorData = jObj.getJSONObject("sensor_data");
+            String packageName = sensorData.getString("package_name");
+            String title = sensorData.getString("title");
+            String text = sensorData.getString("text");
+            Integer flags = sensorData.getInt("flags");
+            String category = sensorData.getString("category");
+
+
+            return new Object[]{date, packageName, title, text, flags, category};
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * obj[0] :date
+     * obj[1]: startTime
+     * obj[2] : endTime
+     * obj[3] : culmStep
+     * obj[4] : step_delta
+     * @param encoded
+     * @return
+     */
+    public Object[] decodeStepActivity(String encoded) {
+        try {
+            JSONObject jObj = new JSONObject(encoded);
+            Date date = (Date) jObj.get("timestamp");
+
+            JSONObject sensorData = jObj.getJSONObject("sensor_data");
+            Date startDate = (Date) sensorData.get("start_time");
+            Date endDate = (Date) sensorData.get("end_time");
+            Integer culmAmt = sensorData.getInt("culm_step_amount");
+            Integer stepDelta = sensorData.getInt("step_delta");
+
+            return new Object[]{date, startDate, endDate, culmAmt, stepDelta};
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
