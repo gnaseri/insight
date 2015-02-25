@@ -1,6 +1,7 @@
 package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.wearable.view.BoxInsetLayout;
 import android.support.wearable.view.WatchViewStub;
@@ -9,6 +10,8 @@ import android.support.wearable.view.WearableListView;
 import com.ubiqlog.ubiqlogwear.Adapters.MyAdapter;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.common.MainListItem;
+import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;
+import com.ubiqlog.ubiqlogwear.sensors.LightSensor;
 import com.ubiqlog.ubiqlogwear.utils.FeatureCheck;
 
 import java.util.ArrayList;
@@ -93,6 +96,8 @@ public class MainActivity extends Activity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //TODO Remove after autostart created
+        startAllServices();
         setContentView(R.layout.activity_main_wear);
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
@@ -124,6 +129,16 @@ public class MainActivity extends Activity  {
 
             }
         });
+    }
+    //TODO Integrate this into autostart
+    private void startAllServices(){
+        startService(new Intent(this,BatterySensor.class));
+        //TODO Activity Sensor have hooks applied and needs to be redone
+        //Notification and Bluetooth autostart due to dataLayer
+        // HeartRate needs hooks applied to activity
+        if (FeatureCheck.hasLightFeature(this)){
+            startService(new Intent(this, LightSensor.class));
+        }
     }
 }
 

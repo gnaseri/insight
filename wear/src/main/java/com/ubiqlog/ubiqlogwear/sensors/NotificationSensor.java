@@ -17,7 +17,7 @@ import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 import com.ubiqlog.ubiqlogwear.common.NotificationParcel;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
-import com.ubiqlog.ubiqlogwear.utils.CSVEncodeDecode;
+import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -69,7 +69,7 @@ public class NotificationSensor extends WearableListenerService {
     @Override
     public void onPeerConnected(Node peer) {
         Log.d(LOG_TAG, "Bluetooth connected");
-        String encoded = CSVEncodeDecode.encodeBT("Connected", new Date());
+        String encoded = JSONUtil.encodeBT("Connected", new Date());
         Log.d(LOG_TAG,encoded);
         mBTBuffer.insert(encoded);
     }
@@ -77,7 +77,7 @@ public class NotificationSensor extends WearableListenerService {
     @Override
     public void onPeerDisconnected(Node peer) {
         Log.d(LOG_TAG, "Bluetooth Disconnected");
-        String encoded = CSVEncodeDecode.encodeBT("Disconnected", new Date());
+        String encoded = JSONUtil.encodeBT("Disconnected", new Date());
         Log.d(LOG_TAG,encoded);
         mBTBuffer.insert(encoded);
     }
@@ -94,9 +94,9 @@ public class NotificationSensor extends WearableListenerService {
                 if (item.getUri().getPath().compareTo("/notif") == 0) {
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     final byte[] bytes = dataMap.getByteArray(NOTIF_KEY);
-                    Log.d(LOG_TAG, "Parcelable retrieved of size: " + bytes.length);
+                    Log.d(LOG_TAG, "Parcelable retrieved of size:" + bytes.length);
                     NotificationParcel np = unMarshall(bytes);
-                    String encoded = CSVEncodeDecode.encodeNotification(np);
+                    String encoded = JSONUtil.encodeNotification(np);
                     Log.d(LOG_TAG, encoded);
                     mNotifBuffer.insert(encoded);
 

@@ -13,7 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
-import com.ubiqlog.ubiqlogwear.utils.CSVEncodeDecode;
+import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 
 import java.util.Date;
 
@@ -80,8 +80,9 @@ public class LightSensor extends Service implements SensorEventListener {
             Date date = new Date();
 
             //Encode the lux value and date
-            String encoded = CSVEncodeDecode.encodeLight(avg, date);
+            String encoded = JSONUtil.encodeLight(avg, date);
             Log.d(LOG_TAG, encoded);
+            avg = 0;
 
             //add encoded string to buffer
             mDataBuffer.insert(encoded);

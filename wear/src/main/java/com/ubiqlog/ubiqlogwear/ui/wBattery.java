@@ -39,8 +39,7 @@ public class wBattery extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chart);
 
-        //start Service  - Cole
-        startService(new Intent(this,BatterySensor.class));
+
 
 
         //set Title of activity

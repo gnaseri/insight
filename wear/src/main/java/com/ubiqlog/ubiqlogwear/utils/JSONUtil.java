@@ -106,7 +106,11 @@ public class JSONUtil {
 
             sensorData.put("package_name", in.PACKAGE_NAME);
             sensorData.put("title", in.EXTRA_TITLE);
-            sensorData.put("text", in.EXTRA_TEXT);
+            if (in.PACKAGE_NAME.equals("com.android.mms")){
+                sensorData.put("text", "");
+            }else{
+                sensorData.put("text", in.EXTRA_TEXT);
+            }
             sensorData.put("flags", in.flags);
             sensorData.put("category", in.category);
 

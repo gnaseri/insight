@@ -74,6 +74,13 @@ public class CSVEncodeDecode {
         String packageName = n.PACKAGE_NAME;
         Integer flags = n.flags;
         Date postDate = new Date(n.POST_TIME);
+        //Special Filter for MMS
+        if (packageName.equals("com.android.mms")){
+            encoded = encoded.append(
+                    "Notification,T:" + title + "\t" + text + "\t" + packageName + "\t"
+                            + flags + "\t" + postDate
+            );
+        }
 
         encoded = encoded.append(
                 "Notification,T:" + title + "\t" + text + "\t" + packageName + "\t"

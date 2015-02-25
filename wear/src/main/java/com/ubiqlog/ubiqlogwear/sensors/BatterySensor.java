@@ -10,7 +10,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
-import com.ubiqlog.ubiqlogwear.utils.CSVEncodeDecode;
+import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 
 import java.util.Date;
 
@@ -68,7 +68,7 @@ public class BatterySensor extends Service {
                     //store in buff
                     Log.d(TAG,"Level:" + level);
                     Log.d(TAG, "Charging:" + isCharging);
-                    String encoded = CSVEncodeDecode.encodeBattery(level,isCharging,new Date());
+                    String encoded = JSONUtil.encodeBattery(level, isCharging, new Date());
                     mDataBuffer.insert(encoded);
                 }
 

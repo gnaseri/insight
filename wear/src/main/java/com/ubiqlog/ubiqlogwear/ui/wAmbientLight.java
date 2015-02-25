@@ -37,6 +37,7 @@ public class wAmbientLight extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chart);
 
+
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
         tvTitle.setText(R.string.title_activity_wambientlight);

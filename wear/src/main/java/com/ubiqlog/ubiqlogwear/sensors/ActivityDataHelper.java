@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
-import com.ubiqlog.ubiqlogwear.utils.CSVEncodeDecode;
+import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,8 +68,8 @@ public class ActivityDataHelper {
                         int culmStepAmnt = stepBuff.get(1).getCulmStepAmt();
                         int diffInStep = stepBuff.get(1).getCulmStepAmt() - stepBuff.get(0).getCulmStepAmt();
 
-                        String encoded = CSVEncodeDecode.encodeStepActivity(startTime,
-                                                                   endTime,culmStepAmnt,diffInStep);
+                        String encoded = JSONUtil.encodeStepActivity(startTime,
+                                endTime, culmStepAmnt, diffInStep);
                         Log.d(LOG_TAG,encoded);
 
                         //Send to DataAcquisitor

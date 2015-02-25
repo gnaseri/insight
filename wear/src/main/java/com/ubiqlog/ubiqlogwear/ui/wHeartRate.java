@@ -34,6 +34,8 @@ import java.util.Random;
 /**
  * Created by Manouchehr on 2/13/2015.
  */
+
+
 public class wHeartRate extends Activity {
 
     @Override
