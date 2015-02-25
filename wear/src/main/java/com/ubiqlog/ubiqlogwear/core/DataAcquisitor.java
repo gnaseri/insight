@@ -35,7 +35,7 @@ public class DataAcquisitor {
 
         if (dataBuffer.size() > Setting.bufferMaxSize){
             IOManager dataLogger = new IOManager();
-            dataLogger.logData(context,this);
+            dataLogger.logData(this);
             getDataBuffer().clear();
 
         }
@@ -44,7 +44,7 @@ public class DataAcquisitor {
     public void flush(){
         Log.d(LOG_TAG, "Flushing buffer");
         IOManager dataLogger = new IOManager();
-        dataLogger.logData(context,this);
+        dataLogger.logData(this);
         getDataBuffer().clear();
 
 

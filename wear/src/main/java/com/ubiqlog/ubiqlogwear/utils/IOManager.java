@@ -1,6 +1,7 @@
 package com.ubiqlog.ubiqlogwear.utils;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
@@ -67,6 +68,30 @@ public class IOManager{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void logData(DataAcquisitor dataAcq){
+        File dirs = new File (Environment.getExternalStorageDirectory().getAbsolutePath()
+            + "/insight/" + dataAcq.getFolderName());
+        dirs.mkdirs();
+
+        File logFile = new File (dirs, dateFormat.format(new Date()) + ".txt");
+
+        try {
+            FileWriter writer = new FileWriter(logFile, true);
+
+            for (String s : dataAcq.getDataBuffer()) {
+                writer.append(s + System.getProperty("line.separator"));
+
+            }
+            writer.flush();
+            writer.close();
+            Log.d(LOG_TAG, "Finished writing to file");
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+
     }
 
 	/*public void logError(String msg) {
