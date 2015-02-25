@@ -1,14 +1,10 @@
 package com.ubiqlog.ubiqlogwear.sensors;
 
-import android.app.ActivityManager;
 import android.app.Service;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.os.*;
-import android.util.Log;
-
-import java.util.List;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.IBinder;
 
 /**
  * Created by Cole on 2/13/15.
@@ -18,23 +14,24 @@ import java.util.List;
 public class AppUsageSensor extends Service {
     private final String TAG = this.getClass().getSimpleName();
     private Handler mHandler;
-    private GetActivity mRunnable;
+  //  private GetActivity mRunnable;
 
     @Override
     public void onCreate() {
         HandlerThread appBackThread = new HandlerThread("AppUsage", android.os.Process.THREAD_PRIORITY_BACKGROUND);
         appBackThread.start();
         mHandler = new Handler(appBackThread.getLooper());
-        mRunnable = new GetActivity(this);
+       // mRunnable = new GetActivity(this);
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mHandler.post(mRunnable);
+        //mHandler.post(mRunnable);
         return super.onStartCommand(intent, flags, startId);
     }
 
+    /* ONLY WORKS ON KITKAT OR BELOW
     @SuppressWarnings("ResourceType")
    class GetActivity implements Runnable {
        Context context;
@@ -51,7 +48,7 @@ public class AppUsageSensor extends Service {
            Log.d(TAG,"Package name:" + packageName);
            mHandler.postDelayed(mRunnable,6000);
        }
-   }
+   } */
 
     //{
        // If lollipop
