@@ -3,6 +3,7 @@ package com.ubiqlog.ubiqlogwear.ui;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -15,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.utils.GoogleFitConnection;
 import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
@@ -30,6 +33,7 @@ import org.achartengine.renderer.XYSeriesRenderer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Manouchehr on 2/13/2015.
@@ -44,7 +48,7 @@ public class wHeartRate extends Activity {
         setContentView(R.layout.fragment_chart);
         GoogleFitConnection googleFitConnection = new GoogleFitConnection(this);
 
-        WearableSendSync.sendSyncToDevice(googleFitConnection.buildFitClient());
+//        WearableSendSync.sendSyncToDevice(googleFitConnection.buildFitClient());
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
@@ -53,6 +57,12 @@ public class wHeartRate extends Activity {
         Date date = new Date();
         displayData(date);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        new SyncTask().execute();
     }
 
     private void displayData(Date date) {
@@ -165,4 +175,28 @@ public class wHeartRate extends Activity {
         return chartView;
     }
     private int getSizeInDP(int x){return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());}
+
+    /* This function sends the sync command to the watch, which returns heartRate history API info*/
+    private class SyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            GoogleApiClient mGoogleAPIClient = new GoogleApiClient.Builder(wHeartRate.this)
+                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                        @Override
+                        public void onConnected(Bundle bundle) {
+                            Log.d("Heart", "Connected");
+                        }
+
+                        @Override
+                        public void onConnectionSuspended(int i) {
+
+                        }
+                    })
+                    .addApi(Wearable.API).build();
+            mGoogleAPIClient.blockingConnect(10, TimeUnit.SECONDS);
+            WearableSendSync.sendSyncToDevice(mGoogleAPIClient);
+            return null;
+        }
+    }
 }

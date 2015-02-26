@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.Services.WearableListenerService;
 
 public class MyActivity extends Activity {
 
@@ -43,7 +44,8 @@ public class MyActivity extends Activity {
         testHR_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MyActivity.this,HeartRateActivity.class));
+                //startActivity(new Intent(MyActivity.this,HeartRateActivity.class));
+                startService(new Intent(MyActivity.this, WearableListenerService.class));
             }
         });
 

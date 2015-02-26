@@ -24,6 +24,7 @@ public class WearableSendSync  {
     public static final String START_HIST_SYNC = "/start/HistorySYNC";
 
     public static void sendSyncToDevice(GoogleApiClient mGoogleApiClient){
+        Log.d(TAG, "Sending sync message");
         Collection<String> nodes = getNodes(mGoogleApiClient);
         for (String n : nodes){
             sendSyncMessage(mGoogleApiClient, n);

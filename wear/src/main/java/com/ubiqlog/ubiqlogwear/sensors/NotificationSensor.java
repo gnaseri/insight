@@ -7,6 +7,9 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.data.FreezableUtils;
+import com.google.android.gms.fitness.data.DataPoint;
+import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
@@ -19,8 +22,10 @@ import com.ubiqlog.ubiqlogwear.common.NotificationParcel;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by User on 2/21/15.
@@ -31,7 +36,11 @@ import java.util.List;
  */
 public class NotificationSensor extends WearableListenerService {
     private final String NOTIF_KEY = "com.insight.notif";
-    private static final String LOG_TAG = NotificationSensor.class.getSimpleName();
+    private final String HEART_KEY = "com.insight.heartrate";
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy HH:mm:ss");
+
+    private static final String TAG = NotificationSensor.class.getSimpleName();
     private GoogleApiClient mClient;
 
     private DataAcquisitor mBTBuffer;
@@ -55,7 +64,7 @@ public class NotificationSensor extends WearableListenerService {
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(Bundle bundle) {
-                        Log.d(LOG_TAG, "Successful connect");
+                        Log.d(TAG, "Successful connect");
                     }
 
                     @Override
@@ -68,23 +77,23 @@ public class NotificationSensor extends WearableListenerService {
 
     @Override
     public void onPeerConnected(Node peer) {
-        Log.d(LOG_TAG, "Bluetooth connected");
+        Log.d(TAG, "Bluetooth connected");
         String encoded = JSONUtil.encodeBT("Connected", new Date());
-        Log.d(LOG_TAG,encoded);
+        Log.d(TAG,encoded);
         mBTBuffer.insert(encoded);
     }
 
     @Override
     public void onPeerDisconnected(Node peer) {
-        Log.d(LOG_TAG, "Bluetooth Disconnected");
+        Log.d(TAG, "Bluetooth Disconnected");
         String encoded = JSONUtil.encodeBT("Disconnected", new Date());
-        Log.d(LOG_TAG,encoded);
+        Log.d(TAG,encoded);
         mBTBuffer.insert(encoded);
     }
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.d(LOG_TAG, "On data changed");
+        Log.d(TAG, "On data changed");
         final List<DataEvent> events = FreezableUtils.freezeIterable(dataEvents);
 
         for (DataEvent event : events){
@@ -94,14 +103,26 @@ public class NotificationSensor extends WearableListenerService {
                 if (item.getUri().getPath().compareTo("/notif") == 0) {
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     final byte[] bytes = dataMap.getByteArray(NOTIF_KEY);
-                    Log.d(LOG_TAG, "Parcelable retrieved of size:" + bytes.length);
+                    Log.d(TAG, "Parcelable retrieved of size:" + bytes.length);
                     NotificationParcel np = unMarshall(bytes);
                     String encoded = JSONUtil.encodeNotification(np);
-                    Log.d(LOG_TAG, encoded);
+                    Log.d(TAG, encoded);
                     mNotifBuffer.insert(encoded);
 
 
                 }
+                if (item.getUri().getPath().compareTo("/data") == 0){
+                    Log.d(TAG, "Heartrate");
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    final byte[] bytes = dataMap.getByteArray(HEART_KEY);
+                    Log.d(TAG, "Parcelable retrieved of size:" + bytes.length);
+                    DataSet dataSet = unMarshallHeartData(bytes);
+                    dumpHeartDataPoints(dataSet);
+                    //String encoded = JSONUtil.encodeNotification(np);
+
+
+                }
+
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
                 // DataItem deleted
             }
@@ -118,5 +139,28 @@ public class NotificationSensor extends WearableListenerService {
         NotificationParcel np = NotificationParcel.CREATOR.createFromParcel(parcel);
         parcel.recycle();
         return np;
+    }
+    private DataSet unMarshallHeartData (byte[] bytes){
+        Parcel parcel = Parcel.obtain();
+        parcel.unmarshall(bytes,0,bytes.length);
+        parcel.setDataPosition(0);
+
+        DataSet dataSet = DataSet.CREATOR.createFromParcel(parcel);
+        parcel.recycle();
+        return dataSet;
+    }
+
+    private static void dumpHeartDataPoints(DataSet dataSet) {
+        for (DataPoint dp : dataSet.getDataPoints()) {
+            Log.d(TAG, "Data Returned of type:" + dp.getDataType().getName());
+            Log.d(TAG, "Data Point:");
+            Log.i(TAG, "\tType: " + dp.getDataType().getName());
+            Log.i(TAG, "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+            Log.i(TAG, "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
+            for (Field field : dp.getDataType().getFields()) {
+                Log.i(TAG, "\tField: " + field.getName() +
+                        " Value: " + dp.getValue(field));
+            }
+        }
     }
 }

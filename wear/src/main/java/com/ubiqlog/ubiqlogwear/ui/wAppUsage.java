@@ -172,4 +172,6 @@ public class wAppUsage extends Activity {
     private int getSizeInDP(int x) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());
     }
+
+
 }

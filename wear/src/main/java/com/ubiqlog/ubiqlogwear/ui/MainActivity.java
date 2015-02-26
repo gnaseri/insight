@@ -83,7 +83,7 @@ public class MainActivity extends Activity  {
                     R.drawable.ic_bluetooth, wBluetooth.class);
             systemItemList.add(bluetoothItem);
         }
-        if (!FeatureCheck.hasLightFeature(this)) {
+        if (FeatureCheck.hasLightFeature(this)) {
             MainListItem ambLightItem = new MainListItem(
                     getString(R.string.amblight_title),
                     R.drawable.ic_light, wAmbientLight.class);
