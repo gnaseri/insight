@@ -107,7 +107,7 @@ public class JSONUtil {
             sensorData.put("package_name", in.PACKAGE_NAME);
             sensorData.put("title", in.EXTRA_TITLE);
             //filter sms and gmail and twitter
-            if (in.PACKAGE_NAME.equals("com.android.mms") || in.PACKAGE_NAME.equals("com.android.gm")
+            if (in.PACKAGE_NAME.equals("com.android.mms") || in.PACKAGE_NAME.equals("com.google.android.gm")
                     || in.PACKAGE_NAME.equals("com.twitter.android") || in.PACKAGE_NAME.equals("com.facebook.orca")){
                 sensorData.put("text", "");
             }else{

@@ -49,6 +49,9 @@ public class NotificationSensor extends WearableListenerService {
     private DataAcquisitor mNotifBuffer;
     private DataAcquisitor mHeartBuffer;
 
+    private String lastPackageName;
+    private String lastExtraText;
+    private String lastTitle;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (mClient != null){
@@ -109,9 +112,26 @@ public class NotificationSensor extends WearableListenerService {
                     final byte[] bytes = dataMap.getByteArray(NOTIF_KEY);
                     Log.d(TAG, "Parcelable retrieved of size:" + bytes.length);
                     NotificationParcel np = unMarshall(bytes);
+                    if (lastPackageName == null){
+                        lastPackageName = np.PACKAGE_NAME;
+                        lastExtraText = np.EXTRA_TEXT;
+                        lastTitle = np.EXTRA_TITLE;
+                    }
+                    else if (lastExtraText.equals(np.EXTRA_TEXT)&&
+                            lastPackageName.equals(np.PACKAGE_NAME) &&
+                            lastTitle.equals(np.EXTRA_TITLE)){
+                        Log.d(TAG, "Same notif");
+                        return;
+                    }
+
+
+                    lastExtraText = np.EXTRA_TEXT;
+                    lastPackageName = np.PACKAGE_NAME;
+                    lastTitle = np.EXTRA_TITLE;
                     String encoded = JSONUtil.encodeNotification(np);
                     Log.d(TAG, encoded);
                     mNotifBuffer.insert(encoded,true);
+                    mNotifBuffer.flush(true);
 
 
                 }

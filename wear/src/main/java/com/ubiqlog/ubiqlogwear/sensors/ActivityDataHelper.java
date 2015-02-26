@@ -74,6 +74,7 @@ public class ActivityDataHelper {
 
                         //Send to DataAcquisitor
                         mDataBuffer.insert(encoded,true);
+                        mDataBuffer.flush(true);
                         stepBuff.clear();
                     }
 

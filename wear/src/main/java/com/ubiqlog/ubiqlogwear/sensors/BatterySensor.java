@@ -22,6 +22,7 @@ public class BatterySensor extends Service {
     BatteryReceiver batteryReceiver;
     DataAcquisitor mDataBuffer;
     private final String TAG = this.getClass().getSimpleName();
+    private int lastVal;
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -60,6 +61,10 @@ public class BatterySensor extends Service {
             if (batteryStatus.getAction().equalsIgnoreCase(Intent.ACTION_BATTERY_CHANGED)){
                 int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
                 int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                if (level == lastVal){
+                    return;
+                }
+                lastVal = level;
 
                 boolean isCharging = (status == BatteryManager.BATTERY_STATUS_CHARGING) ||
                         ( status == BatteryManager.BATTERY_STATUS_FULL);
