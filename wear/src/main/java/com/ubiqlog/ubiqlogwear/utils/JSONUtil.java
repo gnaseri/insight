@@ -106,7 +106,9 @@ public class JSONUtil {
 
             sensorData.put("package_name", in.PACKAGE_NAME);
             sensorData.put("title", in.EXTRA_TITLE);
-            if (in.PACKAGE_NAME.equals("com.android.mms")){
+            //filter sms and gmail and twitter
+            if (in.PACKAGE_NAME.equals("com.android.mms") || in.PACKAGE_NAME.equals("com.android.gm")
+                    || in.PACKAGE_NAME.equals("com.twitter.android") || in.PACKAGE_NAME.equals("com.facebook.orca")){
                 sensorData.put("text", "");
             }else{
                 sensorData.put("text", in.EXTRA_TEXT);
@@ -124,6 +126,27 @@ public class JSONUtil {
         }
         return null;
     }
+
+    public static String encodeHeartRate (Date timestamp, float bpm){
+
+        JSONObject jsonObject = new JSONObject();
+        JSONObject sensorData = new JSONObject();
+        try {
+            jsonObject.put("sensor_name", "Activity");
+            jsonObject.put("timestamp", timestamp);
+
+            sensorData.put("bpm", bpm);
+
+            jsonObject.put("sensor_data", sensorData);
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 
     /* Decode Methods*/
 

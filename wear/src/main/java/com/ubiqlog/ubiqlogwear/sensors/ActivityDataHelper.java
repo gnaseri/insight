@@ -73,7 +73,7 @@ public class ActivityDataHelper {
                         Log.d(LOG_TAG,encoded);
 
                         //Send to DataAcquisitor
-                        mDataBuffer.insert(encoded);
+                        mDataBuffer.insert(encoded,true);
                         stepBuff.clear();
                     }
 

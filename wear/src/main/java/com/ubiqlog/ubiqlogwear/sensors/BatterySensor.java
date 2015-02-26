@@ -47,7 +47,7 @@ public class BatterySensor extends Service {
 
     @Override
     public void onDestroy() {
-        mDataBuffer.flush();
+        mDataBuffer.flush(true);
         unregisterReceiver(batteryReceiver);
         super.onDestroy();
 
@@ -69,7 +69,7 @@ public class BatterySensor extends Service {
                     Log.d(TAG,"Level:" + level);
                     Log.d(TAG, "Charging:" + isCharging);
                     String encoded = JSONUtil.encodeBattery(level, isCharging, new Date());
-                    mDataBuffer.insert(encoded);
+                    mDataBuffer.insert(encoded,true);
                 }
 
             }

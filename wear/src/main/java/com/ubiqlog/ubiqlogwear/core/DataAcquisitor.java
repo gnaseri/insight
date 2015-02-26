@@ -29,22 +29,22 @@ public class DataAcquisitor {
     public Context getContext(){
         return context;
     }
-    public void insert (String s){
+    public void insert (String s, boolean append){
         Log.d(LOG_TAG, "Inserting into dBuff");
         dataBuffer.add(s);
 
         if (dataBuffer.size() > Setting.bufferMaxSize){
             IOManager dataLogger = new IOManager();
-            dataLogger.logData(this);
+            dataLogger.logData(this,append);
             getDataBuffer().clear();
 
         }
     }
 
-    public void flush(){
+    public void flush(boolean append){
         Log.d(LOG_TAG, "Flushing buffer");
         IOManager dataLogger = new IOManager();
-        dataLogger.logData(this);
+        dataLogger.logData(this,append);
         getDataBuffer().clear();
 
 

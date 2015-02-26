@@ -85,8 +85,8 @@ public class LightSensor extends Service implements SensorEventListener {
             avg = 0;
 
             //add encoded string to buffer
-            mDataBuffer.insert(encoded);
-            mDataBuffer.flush();
+            mDataBuffer.insert(encoded,true);
+            mDataBuffer.flush(true);
 
             mHandler.postDelayed(activateLightListener,SensorConstants.LIGHT_SENSOR_INTERVAL);
         }

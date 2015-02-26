@@ -70,7 +70,7 @@ public class IOManager{
         }
     }
 
-    public void logData(DataAcquisitor dataAcq){
+    public void logData(DataAcquisitor dataAcq, boolean append){
         File dirs = new File (Environment.getExternalStorageDirectory().getAbsolutePath()
             + "/insight/" + dataAcq.getFolderName());
         dirs.mkdirs();
@@ -78,7 +78,7 @@ public class IOManager{
         File logFile = new File (dirs, dateFormat.format(new Date()) + ".txt");
 
         try {
-            FileWriter writer = new FileWriter(logFile, true);
+            FileWriter writer = new FileWriter(logFile, append);
 
             for (String s : dataAcq.getDataBuffer()) {
                 writer.append(s + System.getProperty("line.separator"));
