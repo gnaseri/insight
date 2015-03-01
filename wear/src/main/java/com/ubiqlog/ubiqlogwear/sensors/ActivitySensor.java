@@ -1,10 +1,10 @@
 package com.ubiqlog.ubiqlogwear.sensors;
 
-import android.app.Activity;
+import android.app.Service;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.wearable.view.WatchViewStub;
+import android.os.IBinder;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -17,7 +17,6 @@ import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.data.Value;
 import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
-import com.ubiqlog.ubiqlogwear.R;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -27,47 +26,44 @@ import java.util.concurrent.TimeUnit;
    Currently, the watch does not have the sensors to
    get changeOfStep, perform activity recognition, or get speed
  */
-public class ActivitySensor extends Activity implements GoogleApiClient.ConnectionCallbacks,
+public class ActivitySensor extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
     private static final String LOG_TAG = ActivitySensor.class.getSimpleName();
 
     private ActivityDataHelper.StepList stepList;
 
-    private TextView mTextView;
     private GoogleApiClient mFitnessClient;
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(LOG_TAG, "Destroying ActivitySensor");
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_activity_sensor);
+    public void onDestroy() {
+        stepList.getmDataBuffer().flush(true);
+        super.onDestroy();
+
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
         buildFitnessActivity();
         stepList = new ActivityDataHelper.StepList(this);
 
-
-        final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
-        stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
-            @Override
-            public void onLayoutInflated(WatchViewStub stub) {
-                mTextView = (TextView) stub.findViewById(R.id.text);
-            }
-        });
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(LOG_TAG, "Started Activity Monitoring");
         if (mFitnessClient != null) {
             mFitnessClient.connect();
         }
-
+        return super.onStartCommand(intent, flags, startId);
     }
+
 
     private void buildFitnessActivity() {
         mFitnessClient = new GoogleApiClient.Builder(this)
@@ -94,12 +90,6 @@ public class ActivitySensor extends Activity implements GoogleApiClient.Connecti
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(LOG_TAG, "Connection failed: " + connectionResult.getErrorCode());
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mTextView.setText("Connect account with handheld device");
-            }
-        });
 
     }
 
@@ -127,24 +117,19 @@ public class ActivitySensor extends Activity implements GoogleApiClient.Connecti
                 if (val != null) {
 
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ActivityDataHelper.Step newStep = new ActivityDataHelper.Step(val.asInt(), new Date());
+                    ActivityDataHelper.Step newStep = new ActivityDataHelper.Step(val.asInt(), new Date());
 
-                            //This method writes to file when walking gap conditions are met
-                            stepList.insert(newStep);
-                            if (mTextView != null) {
-                                mTextView.setText(val.asInt() + " steps");
+                    //This method writes to file when walking gap conditions are met
+                    stepList.insert(newStep);
 
-                            }
-                        }
-                    });
+                    Log.d(LOG_TAG, "Detected datapoint field: " + field.getName());
+                    Log.d(LOG_TAG, "Detected datapoint value: " + val);
                 }
-                Log.d(LOG_TAG, "Detected datapoint field: " + field.getName());
-                Log.d(LOG_TAG, "Detected datapoint value: " + val);
             }
         }
-    }
 
+    }
 }
+
+
+

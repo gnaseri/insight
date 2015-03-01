@@ -60,16 +60,9 @@
         <service android:name=".sensors.AppUsageSensor"
             android:enabled="true"
             android:exported="false" />
-
-        <activity
-            android:name=".sensors.ActivitySensor"
-            android:label="@string/title_activity_activity_sensor">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <service android:name=".sensors.ActivitySensor"
+            android:enabled="true"
+            android:exported="false"/>
         <activity
             android:name=".ui.HeartRateActivity"
             android:label="@string/title_activity_heart_rate"

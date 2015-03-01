@@ -10,6 +10,7 @@ import android.support.wearable.view.WearableListView;
 import com.ubiqlog.ubiqlogwear.Adapters.MyAdapter;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.common.MainListItem;
+import com.ubiqlog.ubiqlogwear.sensors.ActivitySensor;
 import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;
 import com.ubiqlog.ubiqlogwear.sensors.LightSensor;
 import com.ubiqlog.ubiqlogwear.utils.FeatureCheck;
@@ -133,6 +134,7 @@ public class MainActivity extends Activity  {
     //TODO Integrate this into autostart
     private void startAllServices(){
         startService(new Intent(this,BatterySensor.class));
+        startService(new Intent(this, ActivitySensor.class));
         //TODO Activity Sensor have hooks applied and needs to be redone
         //Notification and Bluetooth autostart due to dataLayer
         // HeartRate needs hooks applied to activity

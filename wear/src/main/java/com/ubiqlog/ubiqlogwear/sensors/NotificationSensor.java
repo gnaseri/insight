@@ -83,11 +83,20 @@ public class NotificationSensor extends WearableListenerService {
     }
 
     @Override
+    public void onDestroy() {
+        mBTBuffer.flush(true);
+        mNotifBuffer.flush(true);
+        mHeartBuffer.flush(true);
+        super.onDestroy();
+    }
+
+    @Override
     public void onPeerConnected(Node peer) {
         Log.d(TAG, "Bluetooth connected");
         String encoded = JSONUtil.encodeBT("Connected", new Date());
         Log.d(TAG,encoded);
         mBTBuffer.insert(encoded,true);
+        mBTBuffer.flush(true);
     }
 
     @Override
@@ -96,6 +105,7 @@ public class NotificationSensor extends WearableListenerService {
         String encoded = JSONUtil.encodeBT("Disconnected", new Date());
         Log.d(TAG,encoded);
         mBTBuffer.insert(encoded,true);
+        mBTBuffer.flush(true);
     }
 
     @Override

@@ -17,4 +17,6 @@ public final class SensorConstants {
     public static long WALKDETECTION_INTERVAL = 30000L; //30 seconds
 
     public static long LIGHT_SENSOR_INTERVAL = 600000L; // 10 minutes
+
+    public static int LIGHT_SAMPLE_AMNT = 3;
 }

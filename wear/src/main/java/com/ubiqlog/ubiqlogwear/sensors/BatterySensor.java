@@ -75,6 +75,7 @@ public class BatterySensor extends Service {
                     Log.d(TAG, "Charging:" + isCharging);
                     String encoded = JSONUtil.encodeBattery(level, isCharging, new Date());
                     mDataBuffer.insert(encoded,true);
+                    mDataBuffer.flush(true);
                 }
 
             }

@@ -47,7 +47,10 @@ public class ActivityDataHelper {
 
         public StepList(Context context) {
             stepBuff = new ArrayList<Step>();
-            mDataBuffer = new DataAcquisitor(context, context.getClass().getSimpleName());
+            mDataBuffer = new DataAcquisitor(context, "Activity");
+        }
+        public DataAcquisitor getmDataBuffer(){
+            return mDataBuffer;
         }
 
         public synchronized void insert(Step s) {

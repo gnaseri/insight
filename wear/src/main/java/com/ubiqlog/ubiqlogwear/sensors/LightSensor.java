@@ -71,9 +71,9 @@ public class LightSensor extends Service implements SensorEventListener {
     public void onSensorChanged(SensorEvent event) {
         //Light sensor returns one value
 
-        //After taking 5 readings, unregister the listener
+        //After taking 3 readings, unregister the listener
         //Call handler again in SensorConstant.Interval
-        if (count > 5){
+        if (count > SensorConstants.LIGHT_SAMPLE_AMNT){
             mSensorManager.unregisterListener(this);
             count = 0;
 
@@ -106,6 +106,7 @@ public class LightSensor extends Service implements SensorEventListener {
 
     @Override
     public void onDestroy() {
+        mDataBuffer.flush(true);
         mSensorManager.unregisterListener(this);
         Log.d(LOG_TAG, "Light sensor stopped");
         super.onDestroy();

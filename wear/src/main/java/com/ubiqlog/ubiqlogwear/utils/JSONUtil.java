@@ -78,14 +78,18 @@ public class JSONUtil {
                                             int culmStepAmt, int stepDiff) {
 
         JSONObject jsonObject = new JSONObject();
+        JSONObject timeObject = new JSONObject();
         JSONObject sensorData = new JSONObject();
         try {
             jsonObject.put("sensor_name", "Activity");
-            jsonObject.put("timestamp", endTime);
 
-            sensorData.put("start_time", startTime);
-            sensorData.put("end_time", endTime);
-            sensorData.put("culm_step_amount", culmStepAmt);
+            timeObject.put("start_time", startTime);
+            timeObject.put("end_time",endTime);
+
+            jsonObject.put("timestamp", timeObject);
+
+
+            sensorData.put("step_counts", culmStepAmt);
             sensorData.put("step_delta", stepDiff);
 
             jsonObject.put("sensor_data", sensorData);
@@ -243,11 +247,13 @@ public class JSONUtil {
         try {
             JSONObject jObj = new JSONObject(encoded);
             Date date = (Date) jObj.get("timestamp");
+            JSONObject timeObj = jObj.getJSONObject("timestamp");
+            Date startDate = (Date) timeObj.get("start_time");
+            Date endDate = (Date) timeObj.get("end_time");
 
             JSONObject sensorData = jObj.getJSONObject("sensor_data");
-            Date startDate = (Date) sensorData.get("start_time");
-            Date endDate = (Date) sensorData.get("end_time");
-            Integer culmAmt = sensorData.getInt("culm_step_amount");
+
+            Integer culmAmt = sensorData.getInt("step_counts");
             Integer stepDelta = sensorData.getInt("step_delta");
 
             return new Object[]{date, startDate, endDate, culmAmt, stepDelta};
