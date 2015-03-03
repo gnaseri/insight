@@ -21,7 +21,7 @@ import java.util.HashSet;
  */
 public class WearableSendSync  {
     private static final String TAG = WearableSendSync.class.getSimpleName();
-    public static final String START_HIST_SYNC = "/start/HistorySYNC";
+    public static final String START_HIST_SYNC = "/start/HeartSync";
 
     public static void sendSyncToDevice(GoogleApiClient mGoogleApiClient){
         Log.d(TAG, "Sending sync message");

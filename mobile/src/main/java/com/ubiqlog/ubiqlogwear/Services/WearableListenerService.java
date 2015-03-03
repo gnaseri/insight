@@ -19,12 +19,12 @@ import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
 public class WearableListenerService extends com.google.android.gms.wearable.WearableListenerService {
     private final String TAG = this.getClass().getSimpleName();
     private static GoogleApiClient mGoogleApiClient;
-    private static final String SYNC_KEY = "/start/HistorySYNC";
+    private static final String HEART_SYNC_KEY = "/start/HeartSync";
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
         super.onMessageReceived(messageEvent);
-        if (messageEvent.getPath().equals(SYNC_KEY)) {
+        if (messageEvent.getPath().equals(HEART_SYNC_KEY)) {
             Log.d("WEAR", "SYNC REQUESTED");
             buildGoogleAPIClient();
             mGoogleApiClient.connect();
