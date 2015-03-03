@@ -12,10 +12,9 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
+import com.ubiqlog.ubiqlogwear.Util.CalendarUtil;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +23,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class ActivitySensor {
     private static final String TAG = ActivitySensor.class.getSimpleName();
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy HH:mm:ss");
 
     public static void getDataInformation(GoogleApiClient mClient, DataReadRequest request){
         PendingResult <DataReadResult> pendingResult =
@@ -55,8 +53,8 @@ public class ActivitySensor {
             Log.d(TAG, "Data Returned of type:" + dp.getDataType().getName());
             Log.d(TAG, "Data Point:");
             Log.i(TAG, "\tType: " + dp.getDataType().getName());
-            Log.i(TAG, "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-            Log.i(TAG, "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
+            Log.i(TAG, "\tStart: " + CalendarUtil.dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+            Log.i(TAG, "\tEnd: " + CalendarUtil.dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
             for (Field field : dp.getDataType().getFields()) {
                 Log.i(TAG, "\tField: " + field.getName() +
                         " Value: " + dp.getValue(field)
@@ -67,22 +65,13 @@ public class ActivitySensor {
     }
     public static DataReadRequest buildDataReadRequestPoints() {
         Calendar cal = Calendar.getInstance();
-        Date now = new Date();
-        long endTime = cal.getTimeInMillis();
-
-        cal.add(Calendar.HOUR_OF_DAY, -cal.get(Calendar.HOUR_OF_DAY));
-        cal.add(Calendar.MINUTE, -cal.get(Calendar.MINUTE));
-        cal.add(Calendar.SECOND, -cal.get(Calendar.SECOND));
-        long startTime = cal.getTimeInMillis();
-
-        Log.i(TAG, "Range start:" + dateFormat.format(startTime));
-        Log.i(TAG, "Range End: " + dateFormat.format(endTime));
+        Long[] startEndTimes = CalendarUtil.getStartandEndTime(cal);
 
         DataReadRequest dataReadRequest = new DataReadRequest.Builder()
 
                 .aggregate(DataType.TYPE_ACTIVITY_SEGMENT,DataType.AGGREGATE_ACTIVITY_SUMMARY)
                 .bucketByActivitySegment(1, TimeUnit.MINUTES)
-                .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+                .setTimeRange(startEndTimes[0], startEndTimes[1], TimeUnit.MILLISECONDS)
                 .build();
         return dataReadRequest;
 
