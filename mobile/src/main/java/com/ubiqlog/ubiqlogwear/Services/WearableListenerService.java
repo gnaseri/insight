@@ -20,18 +20,23 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
     private final String TAG = this.getClass().getSimpleName();
     private static GoogleApiClient mGoogleApiClient;
     private static final String HEART_SYNC_KEY = "/start/HeartSync";
+    private static final String ACTV_SYNC_KEY = "/start/ActvSync";
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
         super.onMessageReceived(messageEvent);
         if (messageEvent.getPath().equals(HEART_SYNC_KEY)) {
-            Log.d("WEAR", "SYNC REQUESTED");
+            Log.d("WEAR", "HEARTSYNC REQUESTED");
             buildGoogleAPIClient();
             mGoogleApiClient.connect();
             fetchHeartDataSet(this);
             //mGoogleApiClient.disconnect();
 
         }
+        if (messageEvent.getPath().equals(ACTV_SYNC_KEY)){
+            Log.d(TAG, "ACTIVITY SYNC REQUESTED");
+        }
+
     }
 
     //Send the dataSet to the wearable
