@@ -33,9 +33,9 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-
-        <service android:name=".Services.AppUsageSensor"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+        <service
+            android:name=".Services.AppUsageSensor"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
@@ -55,11 +55,16 @@
             android:label="@string/title_activity_heart_rate" >
         </activity>
 
-        <service android:name=".Services.WearableListenerService">
+        <service android:name=".Services.WearableListenerService" >
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
         </service>
+
+        <activity
+            android:name=".UI.ActivitySegmentActivity"
+            android:label="@string/title_activity_activity_segment" >
+        </activity>
     </application>
 
 </manifest>

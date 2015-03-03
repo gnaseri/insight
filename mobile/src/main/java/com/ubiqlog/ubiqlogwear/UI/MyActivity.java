@@ -21,6 +21,7 @@ public class MyActivity extends Activity {
         Button notif_btn = (Button) findViewById(R.id.notif_btn);
         Button appUsage_btn = (Button) findViewById(R.id.appusage_btn);
         Button testHR_btn = (Button) findViewById(R.id.hr_btn);
+        Button activ_btn = (Button) findViewById(R.id.activ_btn);
 
         auth_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,6 +50,12 @@ public class MyActivity extends Activity {
             }
         });
 
+        activ_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MyActivity.this, ActivitySegmentActivity.class));
+            }
+        });
     }
 
 

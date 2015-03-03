@@ -33,6 +33,14 @@
         android:text="Launch HR"
         android:id="@+id/hr_btn"
         android:layout_below="@+id/appusage_btn"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Launch HR"
+        android:id="@+id/activ_btn"
+        android:layout_below="@+id/hr_btn"/>
+
+
 
 
 </RelativeLayout>

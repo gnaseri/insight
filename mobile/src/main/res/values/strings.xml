@@ -9,5 +9,6 @@
     <string name="notif_prompt">Authorize Insight for Notification Access</string>
     <string name="title_activity_test_heart_rate">TestHeartRate</string>
     <string name="title_activity_heart_rate">HeartRateActivity</string>
+    <string name="title_activity_activity_segment">ActivitySegmentActivity</string>
 
 </resources>
