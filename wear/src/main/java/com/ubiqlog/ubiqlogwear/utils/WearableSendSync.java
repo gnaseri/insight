@@ -22,18 +22,19 @@ import java.util.HashSet;
 public class WearableSendSync  {
     private static final String TAG = WearableSendSync.class.getSimpleName();
     public static final String START_HIST_SYNC = "/start/HeartSync";
+    public static final String START_ACTV_SYNC = "/start/ActvSync";
 
-    public static void sendSyncToDevice(GoogleApiClient mGoogleApiClient){
+    public static void sendSyncToDevice(GoogleApiClient mGoogleApiClient, String key){
         Log.d(TAG, "Sending sync message");
         Collection<String> nodes = getNodes(mGoogleApiClient);
         for (String n : nodes){
-            sendSyncMessage(mGoogleApiClient, n);
+            sendSyncMessage(mGoogleApiClient, n, key);
         }
     }
 
-    private static void sendSyncMessage (GoogleApiClient mGoogleApiClient,String nodeId){
+    private static void sendSyncMessage (GoogleApiClient mGoogleApiClient,String nodeId, String key){
         Wearable.MessageApi.sendMessage(
-                mGoogleApiClient, nodeId, START_HIST_SYNC, new byte[0]).setResultCallback(
+                mGoogleApiClient, nodeId, key, new byte[0]).setResultCallback(
                 new ResultCallback<MessageApi.SendMessageResult>() {
                     @Override
                     public void onResult(MessageApi.SendMessageResult sendMessageResult) {

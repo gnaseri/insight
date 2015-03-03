@@ -1,33 +1,9 @@
 package com.ubiqlog.ubiqlogwear.ui;
 
-import android.app.Activity;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Parcel;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+public class HeartRateActivity{
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.data.FreezableUtils;
-import com.google.android.gms.fitness.data.DataPoint;
-import com.google.android.gms.fitness.data.DataSet;
-import com.google.android.gms.fitness.data.Field;
-import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.DataEvent;
-import com.google.android.gms.wearable.DataEventBuffer;
-import com.google.android.gms.wearable.DataItem;
-import com.google.android.gms.wearable.DataMap;
-import com.google.android.gms.wearable.DataMapItem;
-import com.google.android.gms.wearable.Wearable;
-import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
+} /* This class is now depreciated and will be removed shortly
 
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class HeartRateActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, DataApi.DataListener {
@@ -134,7 +110,7 @@ public class HeartRateActivity extends Activity implements GoogleApiClient.Conne
             }
         }
     }
-    /* This function sends the sync command to the watch, which returns heartRate history API info*/
+     This function sends the sync command to the watch, which returns heartRate history API info
     private class SyncTask extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -143,4 +119,4 @@ public class HeartRateActivity extends Activity implements GoogleApiClient.Conne
             return null;
         }
     }
-}
+} */

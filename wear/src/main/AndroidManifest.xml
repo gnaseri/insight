@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.ubiqlog.ubiqlogwear">
+    package="com.ubiqlog.ubiqlogwear" >
 
     <uses-feature android:name="android.hardware.type.watch" />
 
     <uses-permission android:name="android.permission.BODY_SENSORS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+        android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" >
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <activity
             android:name=".ui.MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,59 +28,64 @@
         </activity>
         <activity
             android:name=".ui.wActivity"
-            android:label="@string/title_activity_wactivity"></activity>
+            android:label="@string/title_activity_wactivity" />
         <activity
             android:name=".ui.wAppUsage"
-            android:label="@string/title_activity_wappusage"></activity>
+            android:label="@string/title_activity_wappusage" />
         <activity
             android:name=".ui.wHeartRate"
-            android:label="@string/title_activity_wheartrate"></activity>
+            android:label="@string/title_activity_wheartrate" />
         <activity
             android:name=".ui.wAmbientLight"
-            android:label="@string/title_activity_wambientlight"></activity>
+            android:label="@string/title_activity_wambientlight" />
         <activity
             android:name=".ui.wBattery"
-            android:label="@string/title_activity_wbattery"></activity>
+            android:label="@string/title_activity_wbattery" />
         <activity
             android:name=".ui.wBluetooth"
-            android:label="@string/title_activity_wbluetooth"></activity>
+            android:label="@string/title_activity_wbluetooth" />
         <activity
             android:name=".ui.wNotifications"
-            android:label="@string/title_activity_wnotifications"></activity>
+            android:label="@string/title_activity_wnotifications" />
 
         <service
             android:name=".sensors.BatterySensor"
             android:enabled="true"
             android:exported="false" />
-        <service android:name=".sensors.NotificationSensor">
+        <service android:name=".sensors.NotificationSensor" >
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
         </service>
-        <service android:name=".sensors.AppUsageSensor"
+        <service
+            android:name=".sensors.AppUsageSensor"
             android:enabled="true"
             android:exported="false" />
-        <service android:name=".sensors.ActivitySensor"
+        <service
+            android:name=".sensors.ActivitySensor"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
+
         <activity
             android:name=".ui.HeartRateActivity"
             android:label="@string/title_activity_heart_rate"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ubiqlog.ubiqlogwear.ui.MainActivity" />
         </activity>
 
-
-
-
-
-       <!-- <service android:name=".sensors.NotificationReceiver">
+        <!--
+        <service android:name=".sensors.NotificationReceiver">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER"></action>
             </intent-filter>
-        </service> -->
+        </service>
+        -->
+        <activity
+            android:name=".ui.wActivityFit"
+            android:label="@string/title_activity_w_activity_fit" >
+        </activity>
     </application>
 
 </manifest>
