@@ -27,7 +27,6 @@
                 android:text="Activity Title"
                 android:textSize="@dimen/textsize_m2"
                 android:gravity="center_vertical|center_horizontal"
-                android:layout_marginLeft="5dp"
                 android:typeface="monospace"
                 android:layout_alignParentBottom="true" />
 
