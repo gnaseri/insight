@@ -15,6 +15,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.result.DataReadResult;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageApi;
@@ -87,6 +88,21 @@ public class WearableDataLayer implements MessageApi.MessageListener{
                 Wearable.DataApi.putDataItem(mClient,putDataReq);
         p.recycle();
 
+    }
+
+    public static void sendDataResult(GoogleApiClient mClient, DataReadResult dr, final String KEY_NAME){
+        Parcel p = Parcel.obtain();
+        dr.writeToParcel(p,0);
+        byte[] bytes = p.marshall();
+        Log.d(TAG, "Sending activity data");
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/actv");
+        putDataMapReq.getDataMap().putLong("time", new Date().getTime());
+        putDataMapReq.getDataMap().putByteArray(KEY_NAME,bytes);
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        //Send Data To wearable
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mClient,putDataReq);
+        p.recycle();
     }
 
     public static void sendNotificationtoWear (GoogleApiClient mClient, StatusBarNotification sbn,

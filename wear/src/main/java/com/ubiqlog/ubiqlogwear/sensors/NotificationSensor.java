@@ -158,6 +158,9 @@ public class NotificationSensor extends WearableListenerService {
 
 
                 }
+                if (item.getUri().getPath().compareTo("/actv") == 0){
+                    Log.d(TAG, "Activity Data");
+                }
 
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
                 // DataItem deleted

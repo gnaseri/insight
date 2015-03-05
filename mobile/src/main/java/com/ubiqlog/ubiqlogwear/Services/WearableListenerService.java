@@ -33,11 +33,18 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
             //mGoogleApiClient.disconnect();
 
         }
-        if (messageEvent.getPath().equals(ACTV_SYNC_KEY)){
+        if (messageEvent.getPath().equals(ACTV_SYNC_KEY)) {
             Log.d(TAG, "ACTIVITY SYNC REQUESTED");
-        }
+            buildGoogleAPIClient();
+            mGoogleApiClient.connect();
 
+            Handler actvHandler = buildActivityHandler();
+            actvHandler.post(new ActivitySensor.ActivityInformationRunnable(mGoogleApiClient, this));
+
+        }
     }
+
+
 
     //Send the dataSet to the wearable
     public static void sendToWearable(DataSet dataSet) {
@@ -68,6 +75,13 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
         heartThread.start();
         Handler heartHandler = new Handler(heartThread.getLooper());
         return heartHandler;
+    }
+
+    private static Handler buildActivityHandler() {
+        HandlerThread actvThread = new HandlerThread("Actvthread", android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        actvThread.start();
+        Handler actvHandler = new Handler(actvThread.getLooper());
+        return actvHandler;
     }
 
 

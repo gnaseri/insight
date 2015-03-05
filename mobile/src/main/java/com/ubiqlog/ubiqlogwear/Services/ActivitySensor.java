@@ -1,5 +1,6 @@
 package com.ubiqlog.ubiqlogwear.Services;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -12,7 +13,9 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
+import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
 import com.ubiqlog.ubiqlogwear.Util.CalendarUtil;
+import com.ubiqlog.ubiqlogwear.Util.GoogleFitConnection;
 
 import java.util.Calendar;
 import java.util.List;
@@ -24,13 +27,38 @@ import java.util.concurrent.TimeUnit;
 public class ActivitySensor {
     private static final String TAG = ActivitySensor.class.getSimpleName();
 
-    public static void getDataInformation(GoogleApiClient mClient, DataReadRequest request){
+
+    public static class ActivityInformationRunnable implements Runnable{
+        private GoogleApiClient mGoogleApiClient;
+        private Context mcontext;
+
+        public ActivityInformationRunnable(GoogleApiClient mGoogleApiClient, Context context){
+            this.mGoogleApiClient = mGoogleApiClient;
+            this.mcontext = context;
+        }
+        @Override
+        public void run() {
+            GoogleFitConnection googleFitConnection = new GoogleFitConnection(mcontext);
+            GoogleApiClient mFitClient = googleFitConnection.buildFitClient();
+            mFitClient.connect();
+            DataReadResult dr = getDataInformation(mFitClient, buildDataReadRequestPoints());
+            Log.d(TAG,"SENDING DATARESULTS");
+            mFitClient.disconnect();
+            mGoogleApiClient.connect();
+            WearableDataLayer.sendDataResult(mGoogleApiClient, dr, "ACTV"); //TODO FIX KEY
+
+        }
+    }
+
+    public static DataReadResult getDataInformation(GoogleApiClient mClient, DataReadRequest request){
         PendingResult <DataReadResult> pendingResult =
                 Fitness.HistoryApi.readData(mClient,request);
         DataReadResult dataReadResult = pendingResult.await();
+        printReadResult(dataReadResult);
+        return dataReadResult;
 
         //print info
-        printReadResult(dataReadResult);
+        //printReadResult(dataReadResult);
 
 
 
