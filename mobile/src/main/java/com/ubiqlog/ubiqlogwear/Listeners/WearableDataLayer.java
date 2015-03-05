@@ -71,7 +71,7 @@ public class WearableDataLayer implements MessageApi.MessageListener{
         dataSet.writeToParcel(p,0);
         byte[] bytes = p.marshall();
         Log.d(TAG, "Sending data");
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/data");
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/heartrate");
         putDataMapReq.getDataMap().putLong("time", new Date().getTime());
         putDataMapReq.getDataMap().putByteArray(KEY_NAME,bytes);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();

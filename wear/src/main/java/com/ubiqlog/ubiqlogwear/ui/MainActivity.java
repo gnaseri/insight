@@ -8,6 +8,7 @@ import android.support.wearable.view.WatchViewStub;
 import android.support.wearable.view.WearableListView;
 
 import com.ubiqlog.ubiqlogwear.Adapters.MyAdapter;
+import com.ubiqlog.ubiqlogwear.Alarm.AlarmReceiver;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.common.MainListItem;
 import com.ubiqlog.ubiqlogwear.sensors.ActivitySensor;
@@ -38,7 +39,7 @@ public class MainActivity extends Activity  {
         listArray.add(meTitle);
         MainListItem activityItem = new MainListItem(
                 getResources().getString(R.string.activity_title),
-                R.drawable.ic_activity, wActivity.class);//ActivitySensor.class
+                R.drawable.ic_activity, wActivityFit.class);//ActivitySensor.class
         listArray.add(activityItem);
         MainListItem heartrateItem = new MainListItem(
                 getString(R.string.heart_rate_title),
@@ -107,7 +108,9 @@ public class MainActivity extends Activity  {
                 roundBack = (BoxInsetLayout) stub.findViewById(R.id.roundLayout);
                 if (roundBack != null) {
 
-
+                    //Start Alarm manager
+                    AlarmReceiver alarmReceiver = new AlarmReceiver();
+                  //  alarmReceiver.setTestAlarmManager(MainActivity.this);
                     listView = (WearableListView) roundBack.findViewById(R.id.wearable_list);
                     listView.setAdapter(new MyAdapter(MainActivity.this, createMeListItems()));
                     listView.setClickListener(new WearableListView.ClickListener() {

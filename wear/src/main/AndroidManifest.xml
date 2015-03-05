@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -66,14 +67,7 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity
-            android:name=".ui.HeartRateActivity"
-            android:label="@string/title_activity_heart_rate"
-            android:parentActivityName=".ui.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ubiqlog.ubiqlogwear.ui.MainActivity" />
-        </activity>
+
 
         <!--
         <service android:name=".sensors.NotificationReceiver">
@@ -86,6 +80,8 @@
             android:name=".ui.wActivityFit"
             android:label="@string/title_activity_w_activity_fit" >
         </activity>
+
+        <receiver  android:process=":remote" android:name=".Alarm.AlarmReceiver"></receiver>
     </application>
 
 </manifest>

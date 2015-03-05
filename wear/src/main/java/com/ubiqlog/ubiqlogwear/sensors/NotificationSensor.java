@@ -151,7 +151,7 @@ public class NotificationSensor extends WearableListenerService {
 
 
                 }
-                if (item.getUri().getPath().compareTo("/data") == 0){
+                if (item.getUri().getPath().compareTo("/heartrate") == 0){
                     Log.d(TAG, "Heartrate");
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     final byte[] bytes = dataMap.getByteArray(HEART_KEY);
