@@ -38,7 +38,7 @@ public class MainActivity extends Activity  {
         listArray.add(meTitle);
         MainListItem activityItem = new MainListItem(
                 getResources().getString(R.string.activity_title),
-                R.drawable.ic_activity, wActivityFit.class);//ActivitySensor.class
+                R.drawable.ic_activity, wActivity.class);//ActivitySensor.class
         listArray.add(activityItem);
         MainListItem heartrateItem = new MainListItem(
                 getString(R.string.heart_rate_title),
