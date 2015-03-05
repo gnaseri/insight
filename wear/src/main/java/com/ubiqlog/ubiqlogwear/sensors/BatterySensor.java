@@ -9,6 +9,7 @@ import android.os.BatteryManager;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 
@@ -74,7 +75,7 @@ public class BatterySensor extends Service {
                     Log.d(TAG,"Level:" + level);
                     Log.d(TAG, "Charging:" + isCharging);
                     String encoded = JSONUtil.encodeBattery(level, isCharging, new Date());
-                    mDataBuffer.insert(encoded,true);
+                    mDataBuffer.insert(encoded,true, Setting.bufferMaxSize);
                     mDataBuffer.flush(true);
                 }
 

@@ -22,6 +22,7 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 import com.ubiqlog.ubiqlogwear.common.NotificationParcel;
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 
@@ -51,6 +52,7 @@ public class NotificationSensor extends WearableListenerService {
     private DataAcquisitor mBTBuffer;
     private DataAcquisitor mNotifBuffer;
     private DataAcquisitor mHeartBuffer;
+    private static DataAcquisitor mActivBuffer;
 
     private String lastPackageName;
     private String lastExtraText;
@@ -69,6 +71,8 @@ public class NotificationSensor extends WearableListenerService {
         mBTBuffer = new DataAcquisitor(this,"Bluetooth");
         mNotifBuffer = new DataAcquisitor(this,"Notif");
         mHeartBuffer = new DataAcquisitor(this,"HeartRate");
+        mActivBuffer = new DataAcquisitor(this,"ActivFit");
+
         mClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
@@ -89,7 +93,8 @@ public class NotificationSensor extends WearableListenerService {
     public void onDestroy() {
         mBTBuffer.flush(true);
         mNotifBuffer.flush(true);
-        mHeartBuffer.flush(true);
+        mHeartBuffer.flush(false);
+        mActivBuffer.flush(true);
         super.onDestroy();
     }
 
@@ -98,8 +103,7 @@ public class NotificationSensor extends WearableListenerService {
         Log.d(TAG, "Bluetooth connected");
         String encoded = JSONUtil.encodeBT("Connected", new Date());
         Log.d(TAG,encoded);
-        mBTBuffer.insert(encoded,true);
-        mBTBuffer.flush(true);
+        mBTBuffer.insert(encoded,true,Setting.bufferMaxSize);
     }
 
     @Override
@@ -107,8 +111,8 @@ public class NotificationSensor extends WearableListenerService {
         Log.d(TAG, "Bluetooth Disconnected");
         String encoded = JSONUtil.encodeBT("Disconnected", new Date());
         Log.d(TAG,encoded);
-        mBTBuffer.insert(encoded,true);
-        mBTBuffer.flush(true);
+        mBTBuffer.insert(encoded,true, Setting.bufferMaxSize);
+
     }
 
     @Override
@@ -143,8 +147,7 @@ public class NotificationSensor extends WearableListenerService {
                     lastTitle = np.EXTRA_TITLE;
                     String encoded = JSONUtil.encodeNotification(np);
                     Log.d(TAG, encoded);
-                    mNotifBuffer.insert(encoded,true);
-                    mNotifBuffer.flush(true);
+                    mNotifBuffer.insert(encoded,true, Setting.bufferMaxSize);
 
 
                 }
@@ -167,7 +170,7 @@ public class NotificationSensor extends WearableListenerService {
                     final byte[] bytes = dataMap.getByteArray(ACTV_KEY);
                     Log.d(TAG, "Parceable retrieved size: " + bytes.length);
                     DataReadResult result = unMarshallActivityResult(bytes);
-                    printReadResult(result);
+                    writeResults(result);
 
                 }
 
@@ -244,7 +247,7 @@ public class NotificationSensor extends WearableListenerService {
      */
     private void writeHeartRateValues(ArrayList<String> encoded){
         for (String s : encoded){
-            mHeartBuffer.insert(s,false);
+            mHeartBuffer.insert(s,false, Setting.bufferMaxSize);
         }
         mHeartBuffer.flush(false);
     }
@@ -257,8 +260,21 @@ public class NotificationSensor extends WearableListenerService {
             List<DataSet> dataSets = bucket.getDataSets();
             for (DataSet dataSet: dataSets){
                 processDataSet(dataSet);
+                Log.d(TAG, "Data: " + encodeActvDataSet(dataSet));
             }
         }
+    }
+
+    private static void writeResults (DataReadResult dataReadResult){
+        for (Bucket bucket : dataReadResult.getBuckets()){
+            List<DataSet> dataSets = bucket.getDataSets();
+            for (DataSet dataSet: dataSets){
+
+                String encoded = encodeActvDataSet(dataSet);
+                mActivBuffer.insert(encoded,false, Integer.MAX_VALUE);
+            }
+        }
+        mActivBuffer.flush(false);
     }
 
     private static void processDataSet(DataSet dataSet){
@@ -275,6 +291,32 @@ public class NotificationSensor extends WearableListenerService {
             }
         }
         Log.d(TAG, "-----------------");
+    }
+
+    private static String encodeActvDataSet(DataSet dataSet){
+        Long startTime = null;
+        Long endTime = null;
+        String activity = null;
+        Integer duration = null;
+
+        String encoded;
+
+        for (DataPoint dp : dataSet.getDataPoints()){
+            startTime = dp.getStartTime(TimeUnit.MILLISECONDS);
+            endTime = dp.getEndTime(TimeUnit.MILLISECONDS);
+            for (Field field : dp.getDataType().getFields()){
+                if (field.getName().equals("activity")){
+                    activity = dp.getValue(field).asActivity();
+                }
+                if (field.getName().equals("duration")){
+                    duration = dp.getValue(field).asInt();
+                }
+            }
+
+        }
+        encoded = JSONUtil.encodeActivitySegments(new Date(startTime),new Date(endTime),activity,duration);
+        return encoded;
+
     }
 
 }

@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 
@@ -85,7 +86,7 @@ public class LightSensor extends Service implements SensorEventListener {
             avg = 0;
 
             //add encoded string to buffer
-            mDataBuffer.insert(encoded,true);
+            mDataBuffer.insert(encoded,true, Setting.bufferMaxSize);
             mDataBuffer.flush(true);
 
             mHandler.postDelayed(activateLightListener,SensorConstants.LIGHT_SENSOR_INTERVAL);

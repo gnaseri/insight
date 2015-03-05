@@ -150,6 +150,33 @@ public class JSONUtil {
         return null;
     }
 
+    public static String encodeActivitySegments (Date startTime, Date endTime, String activity,
+                                                 Integer duration){
+        JSONObject jsonObject = new JSONObject();
+        JSONObject sensorData = new JSONObject();
+        JSONObject timeData = new JSONObject();
+
+        try{
+            jsonObject.put("sensor_name","Activity");
+
+            timeData.put("start_time", startTime);
+            timeData.put("end_time",endTime);
+
+            jsonObject.put("timestamp", timeData);
+
+            sensorData.put("activity",activity);
+            sensorData.put("duration",duration);
+
+            jsonObject.put("sensor_data",sensorData);
+
+            return jsonObject.toString();
+
+        } catch(JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+
+    }
 
 
     /* Decode Methods*/
@@ -264,4 +291,5 @@ public class JSONUtil {
         }
         return null;
     }
+
 }

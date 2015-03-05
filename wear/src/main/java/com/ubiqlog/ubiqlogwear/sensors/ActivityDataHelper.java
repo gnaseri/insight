@@ -3,6 +3,7 @@ package com.ubiqlog.ubiqlogwear.sensors;
 import android.content.Context;
 import android.util.Log;
 
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 
@@ -76,7 +77,7 @@ public class ActivityDataHelper {
                         Log.d(LOG_TAG,encoded);
 
                         //Send to DataAcquisitor
-                        mDataBuffer.insert(encoded,true);
+                        mDataBuffer.insert(encoded,true, Setting.bufferMaxSize);
                         mDataBuffer.flush(true);
                         stepBuff.clear();
                     }
