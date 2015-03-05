@@ -7,10 +7,12 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.data.FreezableUtils;
+import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.data.Value;
+import com.google.android.gms.fitness.result.DataReadResult;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
@@ -39,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 public class NotificationSensor extends WearableListenerService {
     private final String NOTIF_KEY = "com.insight.notif";
     private final String HEART_KEY = "com.insight.heartrate";
+    private final String ACTV_KEY = "com.insight.activity";
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy HH:mm:ss");
 
@@ -160,6 +163,12 @@ public class NotificationSensor extends WearableListenerService {
                 }
                 if (item.getUri().getPath().compareTo("/actv") == 0){
                     Log.d(TAG, "Activity Data");
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    final byte[] bytes = dataMap.getByteArray(ACTV_KEY);
+                    Log.d(TAG, "Parceable retrieved size: " + bytes.length);
+                    DataReadResult result = unMarshallActivityResult(bytes);
+                    printReadResult(result);
+
                 }
 
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
@@ -187,6 +196,16 @@ public class NotificationSensor extends WearableListenerService {
         DataSet dataSet = DataSet.CREATOR.createFromParcel(parcel);
         parcel.recycle();
         return dataSet;
+    }
+    private DataReadResult unMarshallActivityResult (byte[] bytes){
+        Parcel parcel = Parcel.obtain();
+        parcel.unmarshall(bytes,0,bytes.length);
+        parcel.setDataPosition(0);
+
+        DataReadResult result = DataReadResult.CREATOR.createFromParcel(parcel);
+        parcel.recycle();;
+        return result;
+
     }
 
     private static void dumpHeartDataPoints(DataSet dataSet) {
@@ -228,6 +247,34 @@ public class NotificationSensor extends WearableListenerService {
             mHeartBuffer.insert(s,false);
         }
         mHeartBuffer.flush(false);
+    }
+
+    private static void printReadResult(DataReadResult dataReadResult){
+        Log.d(TAG, "Printing results");
+        Log.d(TAG, "Bucketsize: " + dataReadResult.getBuckets().size());
+
+        for (Bucket bucket : dataReadResult.getBuckets()){
+            List<DataSet> dataSets = bucket.getDataSets();
+            for (DataSet dataSet: dataSets){
+                processDataSet(dataSet);
+            }
+        }
+    }
+
+    private static void processDataSet(DataSet dataSet){
+        for (DataPoint dp : dataSet.getDataPoints()) {
+            Log.d(TAG, "Data Returned of type:" + dp.getDataType().getName());
+            Log.d(TAG, "Data Point:");
+            Log.i(TAG, "\tType: " + dp.getDataType().getName());
+            Log.i(TAG, "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+            Log.i(TAG, "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
+            for (Field field : dp.getDataType().getFields()) {
+                Log.i(TAG, "\tField: " + field.getName() +
+                        " Value: " + dp.getValue(field)
+                        + "Type: " + dp.getValue(field).asActivity());
+            }
+        }
+        Log.d(TAG, "-----------------");
     }
 
 }

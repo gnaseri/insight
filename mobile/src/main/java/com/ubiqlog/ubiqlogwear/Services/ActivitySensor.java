@@ -45,7 +45,7 @@ public class ActivitySensor {
             Log.d(TAG,"SENDING DATARESULTS");
             mFitClient.disconnect();
             mGoogleApiClient.connect();
-            WearableDataLayer.sendDataResult(mGoogleApiClient, dr, "ACTV"); //TODO FIX KEY
+            WearableDataLayer.sendDataResult(mGoogleApiClient, dr, WearableDataLayer.ACTV_HIST_KEY);
 
         }
     }
@@ -56,11 +56,6 @@ public class ActivitySensor {
         DataReadResult dataReadResult = pendingResult.await();
         printReadResult(dataReadResult);
         return dataReadResult;
-
-        //print info
-        //printReadResult(dataReadResult);
-
-
 
     }
 

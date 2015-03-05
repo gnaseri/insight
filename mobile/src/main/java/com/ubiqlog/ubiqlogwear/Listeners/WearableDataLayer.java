@@ -26,15 +26,13 @@ import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.Objects.NotificationParcel;
 import com.ubiqlog.ubiqlogwear.UI.HeartRateActivity;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Date;
 
 public class WearableDataLayer implements MessageApi.MessageListener{
     private static final String TAG = WearableDataLayer.class.getSimpleName();
 
     public static final String HEART_HIST_KEY = "com.insight.heartrate";
+    public static final String ACTV_HIST_KEY = "com.insight.activity";
     private static final String SYNC_KEY = "/start/HistorySYNC";
     private static Context mContext;
 
@@ -66,13 +64,7 @@ public class WearableDataLayer implements MessageApi.MessageListener{
         return mGoogleApiClient;
 
     }
-    private static DataMap buildDataMap(DataSet dataSet){
-        byte[] arr = serialize(dataSet);
-        Log.d(TAG,"DataSet of size:" + arr.length);
-        DataMap dataMap = new DataMap();
-        dataMap.putByteArray(HEART_HIST_KEY,arr);
-        return dataMap;
-    }
+
 
     public static void sendData(GoogleApiClient mClient, DataSet dataSet, final String KEY_NAME){
         Parcel p = Parcel.obtain();
@@ -142,22 +134,6 @@ public class WearableDataLayer implements MessageApi.MessageListener{
     }
 
 
-
-    private static byte[] serialize (DataSet dataSet){
-        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-        try {
-            ObjectOutputStream o = new ObjectOutputStream(bOut);
-            o.writeObject(dataSet);
-            o.close();
-
-            Log.d(TAG, "In Serialize: bytes: " + bOut.size());
-
-            return bOut.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
