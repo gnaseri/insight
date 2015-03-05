@@ -4,13 +4,20 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,7 +55,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Manouchehr on 2/13/2015.
  */
 public class wActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
-GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.OnConnectionFailedListener {
 
     private final String TAG = this.getClass().getSimpleName();
     private GoogleApiClient mFitnessClient;
@@ -59,22 +66,25 @@ GoogleApiClient.OnConnectionFailedListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chart);
 
+        Date date = new Date();
+
         buildFitnessActivity();
         stepList = new ActivityDataHelper.StepList(this);
+
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
         tvTitle.setText(R.string.title_activity_wactivity);
 
-        Date date = new Date();
         displayData(date);
+
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (mFitnessClient != null){
+        if (mFitnessClient != null) {
             mFitnessClient.connect();
         }
     }
@@ -93,12 +103,17 @@ GoogleApiClient.OnConnectionFailedListener{
 
         if (activities_list.size() <= 0) return;
 
+        final TextView tvDate = (TextView) findViewById(R.id.tvDate);
+        tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
+
+        final TextView tvLastSync = (TextView) findViewById(R.id.tvLastSync);
+        tvLastSync.setText("Last Sync: " + new SimpleDateFormat("MM/dd/yyyy hh:mm").format(date));
+
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
         final LinearLayout frameBox = (LinearLayout) findViewById(R.id.frameBox);
 
-
-        // remove all added views before except linksbox
-        frameBox.removeViewsInLayout(0, frameBox.getChildCount() - 1);
+        // remove all added views before except linksbox and tvLastSync label
+        frameBox.removeViewsInLayout(1, frameBox.getChildCount() - 2);
 
         FrameLayout chart;
         LinearLayout.LayoutParams cParams;
@@ -110,36 +125,63 @@ GoogleApiClient.OnConnectionFailedListener{
             cParams.gravity = (Gravity.TOP | Gravity.CENTER_HORIZONTAL);
 
             boolean showFooter = false;
-            boolean showHeader = false;
 
             if (i == 0) {
                 //first item
-                showHeader = true;
-                cParams.setMargins(0, 0, 0, -12);
+                cParams.setMargins(0, 0, 0, -10);// setMargins(left, top, right, bottom)
 
             } else if (i == activities_list.size() - 1) {
                 //last item
                 showFooter = true;
-                cParams.setMargins(0, -12, 0, 0);
+                cParams.setMargins(0, -12, 0, -5);
 
             } else {
                 //middle items
-                cParams.setMargins(0, -12, 0, -12);
+                cParams.setMargins(0, -12, 0, -10);
 
             }
             chart.setLayoutParams(cParams);
-            chart.setPadding(12, -5, 5, -5);
-            chart.addView(createGraph(date, activities_list.get(i), showFooter, showHeader));
-            frameBox.addView(chart, i);
+            chart.setPadding(15, -5, 5, -5); // setPadding(left, top, right, bottom)
+            chart.addView(createGraph(date, activities_list.get(i), showFooter));
+            frameBox.addView(chart, i + 1);
         }
 
-        final TextView tvDate = new TextView(this);
-        tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
-        tvDate.setTextSize(getSizeInDP(8));
 
-        //  frameBox.addView(tvDate, 0);
+        // add a cursor point to show the user the scroll feature ////////////////////////////////////////////////////////
+        final AnimationSet aniSetCursor = new AnimationSet(true);
+        final AlphaAnimation aniAlpha = new AlphaAnimation(1.0f, 0.0f);
+        aniAlpha.setDuration(1500);
+        aniAlpha.setRepeatCount(2);
+        aniAlpha.setFillAfter(true);
+        aniSetCursor.addAnimation(aniAlpha);
 
-        //render Links box
+        TranslateAnimation aniMove = new TranslateAnimation(0.0f, 0.0f, -10.0f, 20.0f);          //  TranslateAnimation(xFrom, xTo, yFrom, yTo)
+        aniMove.setDuration(1500);
+        aniMove.setRepeatCount(2);
+        aniSetCursor.addAnimation(aniMove);
+
+        final ImageView linksCursor = (ImageView) findViewById(R.id.linksCursor);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics); // get screen properties ex. size
+        RelativeLayout.LayoutParams linksCursorParams = (RelativeLayout.LayoutParams) linksCursor.getLayoutParams();
+        linksCursorParams.setMargins(0, displayMetrics.heightPixels - 35, 0, 0); // set position of cursor in bottom of screen
+        linksCursor.setTag(null);
+        linksCursor.startAnimation(aniSetCursor);
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int scrollY = scrollView.getScrollY();
+                if (scrollY > 10 && linksCursor.getTag() == null) {
+                    aniAlpha.setRepeatCount(0);
+                    linksCursor.startAnimation(aniAlpha);
+                    linksCursor.setTag("displayed");
+                }
+            }
+        });
+
+
+        //render Links box //////////////////////////////////////////////////////////////////////////////////////////
         final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -147,6 +189,7 @@ GoogleApiClient.OnConnectionFailedListener{
         params.setMargins(0, 0, 0, 0);
 
         final LinearLayout linksBox = (LinearLayout) findViewById(R.id.linksBox);
+        linksBox.removeAllViews();
         linksBox.setLayoutParams(params);
 
         // create links to some dates
@@ -168,14 +211,12 @@ GoogleApiClient.OnConnectionFailedListener{
 
     }
 
-    private View createGraph(Date date, String title, boolean isVisibleFooter, boolean isVisibleHeader) {
+    private View createGraph(Date date, String title, boolean isVisibleFooter) {
         Log.i("Activity " + title, "In Create Chart");
-        // We start creating the XYSeries to plot the temperature
+
         XYSeries series1 = new XYSeries("Activity " + title);
 
-
-        // We start filling the series
-        // with random values for Y:0-30 to X:0-24
+        // filling the series with random values for Y:0-30 to X:0-24
         Random rand = new Random();
         for (int i = 1; i < 23; i++) {
             series1.add(i, rand.nextInt(30));
@@ -189,24 +230,21 @@ GoogleApiClient.OnConnectionFailedListener{
         //renderer1.setPointStrokeWidth(2);
 
 
-        // Now we add our series
+        // add series
         XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
         dataset.addSeries(series1);
 
-        // Finaly we create the multiple series renderer to control the graph
+        // create the multiple series renderer to control the graph
         XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
         mRenderer.addSeriesRenderer(renderer1);
         mRenderer.setYAxisMin(0);
         mRenderer.setYLabels(0);
-        mRenderer.addYTextLabel(0, title);
+        mRenderer.addYTextLabel(0, title); // set Title in the middle of chart
         mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
         mRenderer.setYLabelsPadding(-1f);
 
         mRenderer.setXAxisMin(0);
         mRenderer.setXAxisMax(23);
-
-        if (isVisibleHeader)
-            mRenderer.setChartTitle(new SimpleDateFormat("MM/dd/yyyy").format(date));
 
         if (isVisibleFooter) {
             mRenderer.addXTextLabel(0, "00:00");
@@ -220,12 +258,14 @@ GoogleApiClient.OnConnectionFailedListener{
         mRenderer.setXLabelsAlign(Paint.Align.CENTER);
         mRenderer.setXLabels(0);
         mRenderer.setShowAxes(false);
+        mRenderer.setLabelsTextSize(getResources().getDimension(R.dimen.textsize_s1));
+
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
-        // Disable Pan on two axis
-        mRenderer.setPanEnabled(false, false);
+
+        mRenderer.setPanEnabled(false, false);// Disable Pan on two axis
         mRenderer.setShowGrid(false);
         mRenderer.setBackgroundColor(Color.WHITE);
-        mRenderer.setMarginsColor(Color.WHITE);
+        mRenderer.setMargins(new int[]{5, 38, 10, 30}); //setMargins(top, left, bottom, right) defaults(20,30,10,20)
         mRenderer.setAxesColor(Color.BLACK);
         mRenderer.setApplyBackgroundColor(true);
         mRenderer.setShowLegend(false);//hide info label
@@ -270,7 +310,7 @@ GoogleApiClient.OnConnectionFailedListener{
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(wActivity.this,"Connect account with handheld device", Toast.LENGTH_LONG).show();
+                Toast.makeText(wActivity.this, "Connect account with handheld device", Toast.LENGTH_LONG).show();
             }
         });
 
