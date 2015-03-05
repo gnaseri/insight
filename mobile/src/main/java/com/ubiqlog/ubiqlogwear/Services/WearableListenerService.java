@@ -9,9 +9,15 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.data.DataSet;
-import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
+
+import java.util.Date;
 
 /**
  * Created by User on 2/25/15.
@@ -23,28 +29,35 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
     private static final String ACTV_SYNC_KEY = "/start/ActvSync";
 
     @Override
-    public void onMessageReceived(MessageEvent messageEvent) {
-        super.onMessageReceived(messageEvent);
-        if (messageEvent.getPath().equals(HEART_SYNC_KEY)) {
-            Log.d("WEAR", "HEARTSYNC REQUESTED");
-            buildGoogleAPIClient();
-            mGoogleApiClient.connect();
-            fetchHeartDataSet(this);
-            //mGoogleApiClient.disconnect();
+    public void onDataChanged(DataEventBuffer events) {
+        Log.d (TAG, "On data Changed");
+        for (DataEvent event : events) {
+            if (event.getType() == DataEvent.TYPE_CHANGED) {
+                DataItem item = event.getDataItem();
 
+                if (item.getUri().getPath().compareTo(HEART_SYNC_KEY) == 0){
+                    Log.d(TAG, "HEART SYNC REQ");
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    Date date = new Date(dataMap.getLong("time"));
+                    buildGoogleAPIClient();
+                    mGoogleApiClient.connect();
+                    fetchHeartDataSet(this, date);
+
+                }
+                if (item.getUri().getPath().compareTo(ACTV_SYNC_KEY) == 0){
+                    Log.d(TAG,"ACTIVITY SYNC REQ");
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    Date date = new Date(dataMap.getLong("time"));
+                    buildGoogleAPIClient();
+                    mGoogleApiClient.connect();
+
+                    Handler actvHandler = buildActivityHandler();
+                    actvHandler.post(new ActivitySensor.ActivityInformationRunnable(mGoogleApiClient, this, date));
+                }
+            }
         }
-        if (messageEvent.getPath().equals(ACTV_SYNC_KEY)) {
-            Log.d(TAG, "ACTIVITY SYNC REQUESTED");
-            buildGoogleAPIClient();
-            mGoogleApiClient.connect();
 
-            Handler actvHandler = buildActivityHandler();
-            actvHandler.post(new ActivitySensor.ActivityInformationRunnable(mGoogleApiClient, this));
-
-        }
     }
-
-
 
     //Send the dataSet to the wearable
     public static void sendToWearable(DataSet dataSet) {
@@ -56,7 +69,7 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
         It starts a thread to fetch the heartDataSet and calls to sendToWearable, sending
         the dataset to the wearable
      */
-    public static void fetchHeartDataSet(Context context) {
+    public static void fetchHeartDataSet(Context context, Date date) {
         GoogleApiClient fitClient = HeartRateSensor.buildFitClient(context);
         fitClient.connect();
 
@@ -67,7 +80,7 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
             public void setDataSet(DataSet dataSet) {
                 sendToWearable(dataSet);
             }
-        });
+        }, date);
     }
 
     private static Handler buildHandler() {

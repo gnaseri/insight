@@ -3,13 +3,18 @@ package com.ubiqlog.ubiqlogwear.utils;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 
 /**
@@ -24,11 +29,12 @@ public class WearableSendSync  {
     public static final String START_HIST_SYNC = "/start/HeartSync";
     public static final String START_ACTV_SYNC = "/start/ActvSync";
 
-    public static void sendSyncToDevice(GoogleApiClient mGoogleApiClient, String key){
+    public static void sendSyncToDevice(GoogleApiClient mGoogleApiClient, String key, Date date){
         Log.d(TAG, "Sending sync message");
         Collection<String> nodes = getNodes(mGoogleApiClient);
         for (String n : nodes){
-            sendSyncMessage(mGoogleApiClient, n, key);
+            //sendSyncMessage(mGoogleApiClient, n, key);
+            sendSyncDataItem(mGoogleApiClient,n,key, date);
         }
     }
 
@@ -45,6 +51,20 @@ public class WearableSendSync  {
                     }
                 }
         );
+    }
+    /* This function is used to send sync Request. It includes the time so the handheld can make the
+    correct time call
+     */
+    private static void sendSyncDataItem (GoogleApiClient mGoogleApiClient, String nodeId, String key, Date date){
+
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create(key);
+        putDataMapReq.getDataMap().putLong("time", date.getTime());
+
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        //Send Data To wearable
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mGoogleApiClient,putDataReq);
+
     }
 
     private static Collection<String> getNodes(GoogleApiClient mGoogleApiClient) {

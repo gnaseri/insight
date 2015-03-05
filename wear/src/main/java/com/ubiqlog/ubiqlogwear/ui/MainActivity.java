@@ -39,7 +39,7 @@ public class MainActivity extends Activity  {
         listArray.add(meTitle);
         MainListItem activityItem = new MainListItem(
                 getResources().getString(R.string.activity_title),
-                R.drawable.ic_activity, wActivityFit.class);//ActivitySensor.class
+                R.drawable.ic_activity, wActivity.class);//ActivitySensor.class
         listArray.add(activityItem);
         MainListItem heartrateItem = new MainListItem(
                 getString(R.string.heart_rate_title),
@@ -110,7 +110,7 @@ public class MainActivity extends Activity  {
 
                     //Start Alarm manager
                     AlarmReceiver alarmReceiver = new AlarmReceiver();
-                  //  alarmReceiver.setTestAlarmManager(MainActivity.this);
+                    alarmReceiver.setMidnightAlarmManager(MainActivity.this);
                     listView = (WearableListView) roundBack.findViewById(R.id.wearable_list);
                     listView.setAdapter(new MyAdapter(MainActivity.this, createMeListItems()));
                     listView.setClickListener(new WearableListView.ClickListener() {

@@ -93,7 +93,7 @@ public class NotificationSensor extends WearableListenerService {
     public void onDestroy() {
         mBTBuffer.flush(true);
         mNotifBuffer.flush(true);
-        mHeartBuffer.flush(false);
+        mHeartBuffer.flush(true);
         mActivBuffer.flush(true);
         super.onDestroy();
     }

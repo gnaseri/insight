@@ -252,7 +252,7 @@ public class wHeartRate extends Activity {
                     })
                     .addApi(Wearable.API).build();
             mGoogleAPIClient.blockingConnect(10, TimeUnit.SECONDS);
-            WearableSendSync.sendSyncToDevice(mGoogleAPIClient,WearableSendSync.START_HIST_SYNC);
+            WearableSendSync.sendSyncToDevice(mGoogleAPIClient,WearableSendSync.START_HIST_SYNC, new Date());
             return null;
         }
     }

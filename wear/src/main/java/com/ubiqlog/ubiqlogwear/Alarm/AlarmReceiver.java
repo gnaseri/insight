@@ -16,6 +16,7 @@ import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,8 +26,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     PendingIntent alarmIntent;
     AlarmManager alarm;
 
-    /* Returns an alarm manager that will fire at 11:59:59 and ever day there after*/
-    public AlarmManager getAlarmManager(Context context){
+    /* Returns an alarm manager that will fire at 11:59 and ever day there after*/
+    public AlarmManager setMidnightAlarmManager(Context context){
         PendingIntent alarmIntent;
         Intent intent = new Intent(context, AlarmReceiver.class);
         alarmIntent = PendingIntent.getBroadcast(context,0,intent,0);
@@ -35,7 +36,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY,23);
         calendar.set(Calendar.MINUTE,59);
-        calendar.set(Calendar.SECOND,59);
+
 
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
@@ -68,6 +69,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.d("AlarmRecv", "ALARM ");
         Toast.makeText(context, "ALARM", Toast.LENGTH_LONG).show();
+        final Date date = new Date();
         HandlerThread ht = new HandlerThread("HeartThread", android.os.Process.THREAD_PRIORITY_BACKGROUND);
         ht.start();
         Handler h = new Handler(ht.getLooper());
@@ -88,7 +90,12 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                         })
                         .addApi(Wearable.API).build();
                 mGoogleAPIClient.blockingConnect(10, TimeUnit.SECONDS);
-                WearableSendSync.sendSyncToDevice(mGoogleAPIClient, WearableSendSync.START_ACTV_SYNC);
+                /* Sync msg & time to handheld */
+                WearableSendSync.sendSyncToDevice(mGoogleAPIClient, WearableSendSync.START_ACTV_SYNC, date);
+                WearableSendSync.sendSyncToDevice(mGoogleAPIClient, WearableSendSync.START_HIST_SYNC, date);
+
+               // WearableSendSync.sendSyncToDevice(mGoogleAPIClient, WearableSendSync.START_ACTV_SYNC);
+               // WearableSendSync.sendSyncToDevice(mGoogleAPIClient,WearableSendSync.START_HIST_SYNC);
             }
         });
 

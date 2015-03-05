@@ -18,6 +18,7 @@ import com.ubiqlog.ubiqlogwear.Util.CalendarUtil;
 import com.ubiqlog.ubiqlogwear.Util.GoogleFitConnection;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -31,17 +32,19 @@ public class ActivitySensor {
     public static class ActivityInformationRunnable implements Runnable{
         private GoogleApiClient mGoogleApiClient;
         private Context mcontext;
+        private Date date;
 
-        public ActivityInformationRunnable(GoogleApiClient mGoogleApiClient, Context context){
+        public ActivityInformationRunnable(GoogleApiClient mGoogleApiClient, Context context, Date date){
             this.mGoogleApiClient = mGoogleApiClient;
             this.mcontext = context;
+            this.date = date;
         }
         @Override
         public void run() {
             GoogleFitConnection googleFitConnection = new GoogleFitConnection(mcontext);
             GoogleApiClient mFitClient = googleFitConnection.buildFitClient();
             mFitClient.connect();
-            DataReadResult dr = getDataInformation(mFitClient, buildDataReadRequestPoints());
+            DataReadResult dr = getDataInformation(mFitClient, buildDataReadRequestPoints(date));
             Log.d(TAG,"SENDING DATARESULTS");
             mFitClient.disconnect();
             mGoogleApiClient.connect();
@@ -86,8 +89,9 @@ public class ActivitySensor {
         }
         Log.d(TAG, "-----------------");
     }
-    public static DataReadRequest buildDataReadRequestPoints() {
+    public static DataReadRequest buildDataReadRequestPoints(Date date) {
         Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
         Long[] startEndTimes = CalendarUtil.getStartandEndTime(cal);
 
         DataReadRequest dataReadRequest = new DataReadRequest.Builder()

@@ -17,6 +17,7 @@ import com.ubiqlog.ubiqlogwear.Util.CalendarUtil;
 import com.ubiqlog.ubiqlogwear.Util.GoogleFitConnection;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,10 +46,13 @@ public class HeartRateSensor {
     public static class HeartResultsRunnable implements Runnable {
         private GoogleApiClient mGoogleApiClient;
         private SyncRequestInterface sync;
+        private Date date;
 
-        public HeartResultsRunnable(GoogleApiClient googleApiClient, SyncRequestInterface sync) {
+        public HeartResultsRunnable(GoogleApiClient googleApiClient, SyncRequestInterface sync
+                ,Date date) {
             this.mGoogleApiClient = googleApiClient;
             this.sync = sync;
+            this.date = date;
         }
 
         @Override
@@ -64,8 +68,9 @@ public class HeartRateSensor {
     }
 
 
-    public static void getDataPoints(Handler h, GoogleApiClient client, SyncRequestInterface sync) {
-        h.post(new HeartResultsRunnable(client,sync));
+    public static void getDataPoints(Handler h, GoogleApiClient client, SyncRequestInterface sync
+                ,Date date) {
+        h.post(new HeartResultsRunnable(client,sync, date));
     }
 
     private static DataReadRequest buildDataReadRequestPoints() {

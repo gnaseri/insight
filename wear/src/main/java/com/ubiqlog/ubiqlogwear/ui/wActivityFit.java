@@ -12,6 +12,7 @@ import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class wActivityFit extends Activity {
@@ -72,7 +73,7 @@ public class wActivityFit extends Activity {
             mGoogleApiClient.blockingConnect(10, TimeUnit.SECONDS);
             if (mGoogleApiClient.isConnected()){
                 WearableSendSync.sendSyncToDevice(mGoogleApiClient,
-                                                    WearableSendSync.START_ACTV_SYNC);
+                                                    WearableSendSync.START_ACTV_SYNC, new Date());
             }
             return null;
 
