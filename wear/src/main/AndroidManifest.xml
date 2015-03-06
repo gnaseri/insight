@@ -67,6 +67,11 @@
             android:enabled="true"
             android:exported="false" />
 
+        <service
+            android:name=".sensors.LightSensor"
+            android:enabled="true"
+            android:exported="false" />
+
 
 
         <!--
