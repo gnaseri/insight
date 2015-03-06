@@ -118,6 +118,7 @@ public class wAmbientLight extends Activity {
         params.setMargins(0, 0, 0, 0);
 
         final LinearLayout linksBox = (LinearLayout) findViewById(R.id.linksBox);
+        linksBox.removeAllViews();
         linksBox.setLayoutParams(params);
 
         // create links to some dates

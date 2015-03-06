@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -35,6 +36,7 @@ import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.sensors.ActivityDataHelper;
+import com.ubiqlog.ubiqlogwear.utils.IOManager;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -77,6 +79,8 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         tvTitle.setText(R.string.title_activity_wactivity);
 
         displayData(date);
+
+
 
 
     }
