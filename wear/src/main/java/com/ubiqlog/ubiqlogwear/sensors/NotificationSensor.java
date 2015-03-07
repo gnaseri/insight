@@ -91,7 +91,6 @@ public class NotificationSensor extends WearableListenerService {
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "On Destroy");
         mBTBuffer.flush(true);
         mNotifBuffer.flush(true);
         mHeartBuffer.flush(true);

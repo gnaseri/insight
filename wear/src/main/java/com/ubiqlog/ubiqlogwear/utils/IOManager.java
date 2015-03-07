@@ -93,7 +93,6 @@ public class IOManager {
             FileWriter writer = new FileWriter(logFile, append);
 
             for (String s : dataAcq.getDataBuffer()) {
-                Log.d(LOG_TAG, "Writing: " + s);
                 writer.append(s + System.getProperty("line.separator"));
 
             }
