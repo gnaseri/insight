@@ -91,6 +91,7 @@ public class NotificationSensor extends WearableListenerService {
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "On Destroy");
         mBTBuffer.flush(true);
         mNotifBuffer.flush(true);
         mHeartBuffer.flush(true);
@@ -148,6 +149,7 @@ public class NotificationSensor extends WearableListenerService {
                     String encoded = JSONUtil.encodeNotification(np);
                     Log.d(TAG, encoded);
                     mNotifBuffer.insert(encoded,true, Setting.bufferMaxSize);
+                    mNotifBuffer.flush(true);
 
 
                 }
@@ -235,6 +237,7 @@ public class NotificationSensor extends WearableListenerService {
                 bpm = dp.getValue(field);
                 Log.d(TAG, "BPM:" + bpm);
                 String encoded = JSONUtil.encodeHeartRate(start,bpm.asFloat());
+                Log.d(TAG, encoded);
                 encodedDp.add(encoded);
             }
 

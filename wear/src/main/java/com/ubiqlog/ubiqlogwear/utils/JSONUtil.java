@@ -135,7 +135,7 @@ public class JSONUtil {
         JSONObject jsonObject = new JSONObject();
         JSONObject sensorData = new JSONObject();
         try {
-            jsonObject.put("sensor_name", "Activity");
+            jsonObject.put("sensor_name", "HeartRate");
             jsonObject.put("timestamp", timestamp);
 
             sensorData.put("bpm", bpm);

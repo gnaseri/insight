@@ -41,7 +41,7 @@ public class DataAcquisitor {
     }
 
     public void flush(boolean append){
-        Log.d(LOG_TAG, "Flushing buffer");
+        Log.d(LOG_TAG, "Flushing buffer" + this.getFolderName());
         IOManager dataLogger = new IOManager();
         dataLogger.logData(this,append);
         getDataBuffer().clear();

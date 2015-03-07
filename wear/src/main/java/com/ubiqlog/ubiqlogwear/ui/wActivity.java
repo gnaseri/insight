@@ -3,8 +3,8 @@ package com.ubiqlog.ubiqlogwear.ui;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -34,9 +34,10 @@ import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.data.Value;
 import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
+import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.sensors.ActivityDataHelper;
-import com.ubiqlog.ubiqlogwear.utils.IOManager;
+import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -91,6 +92,7 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         if (mFitnessClient != null) {
             mFitnessClient.connect();
         }
+        new SyncFitActivityData().execute();
     }
 
     private void displayData(Date date) {
@@ -366,4 +368,32 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         }
     }
 
+
+    private class SyncFitActivityData extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(wActivity.this)
+                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                        @Override
+                        public void onConnected(Bundle bundle) {
+                            Log.d(TAG, "Connected");
+                        }
+
+                        @Override
+                        public void onConnectionSuspended(int i) {
+
+                        }
+                    })
+                    .addApi(Wearable.API)
+                    .build();
+            mGoogleApiClient.blockingConnect(10, TimeUnit.SECONDS);
+            if (mGoogleApiClient.isConnected()){
+                WearableSendSync.sendSyncToDevice(mGoogleApiClient,
+                        WearableSendSync.START_ACTV_SYNC, new Date());
+            }
+            return null;
+
+        }
+    }
 }
