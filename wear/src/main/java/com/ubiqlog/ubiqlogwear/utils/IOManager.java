@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +59,7 @@ public class IOManager {
         File dir = new File(context.getFilesDir().getAbsolutePath() + "/log_" + File.separatorChar
                 + dataAcq.getFolderName());
         dir.mkdirs();
-        File logFile = new File(dir,  Setting.filenameFormat.format(new Date()) + ".txt");
+        File logFile = new File(dir, Setting.filenameFormat.format(new Date()) + ".txt");
 
         Log.d(LOG_TAG, logFile.getAbsolutePath());
 
@@ -83,7 +84,7 @@ public class IOManager {
                 + "/insight/" + dataAcq.getFolderName());
         dirs.mkdirs();
 
-        File logFile = new File(dirs,  Setting.filenameFormat.format(new Date()) + ".txt");
+        File logFile = new File(dirs, Setting.filenameFormat.format(new Date()) + ".txt");
 
         try {
             FileWriter writer = new FileWriter(logFile, append);
@@ -121,7 +122,7 @@ public class IOManager {
 
     /**
      * @param folder Folder name e.g. 'BatterySensor', 'Bluetooth', 'Notif', 'HeartRate'
-     * @param count Maximum count of files to return
+     * @param count  Maximum count of files to return
      * @return Limited amount of *.txt files ordered by lastModified date
      */
     public File[] getLastFilesInDir(String folder, int count) {
@@ -160,6 +161,51 @@ public class IOManager {
             System.arraycopy(files, 0, result, 0, result.length);
             return result;
         }
+    }
+
+
+    public String getFileContent(File file) {
+        String sCurrentLine;
+        String sContent = "\n";
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            while ((sCurrentLine = br.readLine()) != null) {
+                sContent += sCurrentLine + "\n";
+            }
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sContent;
+    }
+
+    public String getFileContent(String filename) {
+        String sCurrentLine;
+        String sContent = "\n";
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(filename));
+            while ((sCurrentLine = br.readLine()) != null) {
+                sContent += sCurrentLine + "\n";
+            }
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sContent;
+    }
+
+    public Date parseDataFilename2Date(String dataFilename) {
+        String fileDate = dataFilename.toLowerCase().replace(".txt", ""); // remove .txt postfix from filename
+        try {
+            return Setting.filenameFormat.parse(fileDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

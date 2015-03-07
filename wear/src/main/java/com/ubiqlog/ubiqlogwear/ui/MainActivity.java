@@ -3,18 +3,22 @@ package com.ubiqlog.ubiqlogwear.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.wearable.view.BoxInsetLayout;
 import android.support.wearable.view.WatchViewStub;
 import android.support.wearable.view.WearableListView;
+import android.util.Log;
 
 import com.ubiqlog.ubiqlogwear.Adapters.MyAdapter;
 import com.ubiqlog.ubiqlogwear.Alarm.AlarmReceiver;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.common.MainListItem;
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.sensors.ActivitySensor;
 import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;
 import com.ubiqlog.ubiqlogwear.sensors.LightSensor;
 import com.ubiqlog.ubiqlogwear.utils.FeatureCheck;
+import com.ubiqlog.ubiqlogwear.utils.IOManager;
 
 import java.util.ArrayList;
 
@@ -22,13 +26,15 @@ import java.util.ArrayList;
  * Created by Cole
  */
 
-public class MainActivity extends Activity  {
+public class MainActivity extends Activity {
 
 
     public static String LOG_TAG = MainActivity.class.getSimpleName();
 
     private WearableListView listView;
     private BoxInsetLayout roundBack;
+
+    IOManager ioManager = new IOManager();
 
 
     // Create the list view items to be displayed in the homescreen Listview
@@ -133,15 +139,31 @@ public class MainActivity extends Activity  {
 
             }
         });
+
+
+//        Log.d("BatterySensor>>>", ioManager.getFiles(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/BatterySensor/").toString());
+//        Log.d("Bluetooth>>>", ioManager.getFiles(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/Bluetooth/").toString());
+//        Log.d("Notif>>>", ioManager.getFiles(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/Notif/").toString());
+//        Log.d("HeartRate>>>", ioManager.getFiles(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/HeartRate/").toString());
+//
+//        Log.d("file", "<Battery 3-7--------------------------------------------------------------------");
+//        Log.d("file", ioManager.getFileContent(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/BatterySensor/3-7-2015.txt"));
+//        Log.d("file", "------------------------------------------------------------------------------/>");
+//
+//        Log.d("file", "<Bluetooth 3-4---------------------------------------------------------------");
+//        Log.d("file", ioManager.getFileContent(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/Bluetooth/3-4-2015.txt"));
+//        Log.d("file", "---------------------------------------------------------------------------/>");
+
     }
+
     //TODO Integrate this into autostart
-    private void startAllServices(){
-        startService(new Intent(this,BatterySensor.class));
+    private void startAllServices() {
+        startService(new Intent(this, BatterySensor.class));
         startService(new Intent(this, ActivitySensor.class));
         //TODO Activity Sensor have hooks applied and needs to be redone
         //Notification and Bluetooth autostart due to dataLayer
         // HeartRate needs hooks applied to activity
-        if (FeatureCheck.hasLightFeature(this)){
+        if (FeatureCheck.hasLightFeature(this)) {
             startService(new Intent(this, LightSensor.class));
         }
     }

@@ -1,5 +1,7 @@
 package com.ubiqlog.ubiqlogwear.utils;
 
+import android.util.Log;
+
 import com.ubiqlog.ubiqlogwear.common.NotificationParcel;
 import com.ubiqlog.ubiqlogwear.common.Setting;
 
@@ -19,7 +21,7 @@ public class JSONUtil {
         JSONObject sensorDataObj = new JSONObject();
         try {
             jsonObject.put("sensor_name", "Battery");
-            jsonObject.put("timestamp", timeStamp);
+            jsonObject.put("timestamp", Setting.timestampFormat.format(timeStamp));
 
             sensorDataObj.put("percent", percent);
             sensorDataObj.put("charging", charging);
@@ -40,7 +42,7 @@ public class JSONUtil {
         JSONObject sensorData = new JSONObject();
         try {
             jsonObject.put("sensor_name", "Light");
-            jsonObject.put("timestamp", timeStamp);
+            jsonObject.put("timestamp", Setting.timestampFormat.format(timeStamp));
 
             sensorData.put("lux", lux);
 
@@ -60,7 +62,7 @@ public class JSONUtil {
         JSONObject sensorData = new JSONObject();
         try {
             jsonObject.put("sensor_name", "BT");
-            jsonObject.put("timestamp", timeStamp);
+            jsonObject.put("timestamp", Setting.timestampFormat.format(timeStamp));
 
             sensorData.put("state", state);
 
@@ -86,7 +88,7 @@ public class JSONUtil {
             timeObject.put("start_time", startTime);
             timeObject.put("end_time", endTime);
 
-            jsonObject.put("timestamp", timeObject);
+            jsonObject.put("timestamp", Setting.timestampFormat.format(timeObject));
 
 
             sensorData.put("step_counts", culmStepAmt);
@@ -150,28 +152,28 @@ public class JSONUtil {
         return null;
     }
 
-    public static String encodeActivitySegments (Date startTime, Date endTime, String activity,
-                                                 Integer duration){
+    public static String encodeActivitySegments(Date startTime, Date endTime, String activity,
+                                                Integer duration) {
         JSONObject jsonObject = new JSONObject();
         JSONObject sensorData = new JSONObject();
         JSONObject timeData = new JSONObject();
 
-        try{
-            jsonObject.put("sensor_name","Activity");
+        try {
+            jsonObject.put("sensor_name", "Activity");
 
             timeData.put("start_time", startTime);
-            timeData.put("end_time",endTime);
+            timeData.put("end_time", endTime);
 
             jsonObject.put("timestamp", timeData);
 
-            sensorData.put("activity",activity);
-            sensorData.put("duration",duration);
+            sensorData.put("activity", activity);
+            sensorData.put("duration", duration);
 
-            jsonObject.put("sensor_data",sensorData);
+            jsonObject.put("sensor_data", sensorData);
 
             return jsonObject.toString();
 
-        } catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;
@@ -199,7 +201,34 @@ public class JSONUtil {
             boolean charging = sensorData.getBoolean("charging");
 
             return new Object[]{date, percent, charging};
-            
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    /**
+     * @param encoded
+     * @return obj[0] : Date timestamp
+     * obj[1] : String state e.g. 'Disconnected'
+     */
+    public Object[] decodeBT(String encoded) {
+        try {
+            JSONObject jObj = new JSONObject(encoded);
+
+            Date date = Setting.timestampFormat.parse(jObj.get("timestamp").toString());
+
+            JSONObject sensorData = jObj.getJSONObject("sensor_data");
+
+            String state = sensorData.getString("state");
+
+            return new Object[]{date, state};
+
         } catch (JSONException e) {
             e.printStackTrace();
 
