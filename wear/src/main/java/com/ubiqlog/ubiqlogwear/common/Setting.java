@@ -19,6 +19,6 @@ public final class Setting {
     public static final String dataFilename_HeartRate ="HeartRate";
 
     public static final SimpleDateFormat filenameFormat = new SimpleDateFormat("M-d-yyyy");
-    public static final SimpleDateFormat timestampFormat = new SimpleDateFormat("E MMM d HH:mm:ss zzz yyyy");
+    public static final SimpleDateFormat timestampFormat = new SimpleDateFormat("E MMM d HH:mm:ss zzz yyyy"); // e.g. 'Wed Mar 04 00:03:56 GMT+01:00 2015'
 
 }

@@ -2,15 +2,25 @@ package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.common.Setting;
+import com.ubiqlog.ubiqlogwear.utils.IOManager;
+import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 import com.ubiqlog.ubiqlogwear.utils.MultipleListItemsAdapter;
 import com.ubiqlog.ubiqlogwear.utils.RowData;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,6 +33,10 @@ public class wBluetooth extends Activity {
     private static final String LOG_TAG = wBluetooth.class.getSimpleName();
     private MultipleListItemsAdapter mAdapter;
 
+    JSONUtil jsonUtil = new JSONUtil();
+    IOManager ioManager = new IOManager();
+    File[] lastDataFilesList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,20 +47,29 @@ public class wBluetooth extends Activity {
         TextView tvTitle = (TextView) findViewById(R.id.tvTitle);
         tvTitle.setText(R.string.title_activity_wbluetooth);
 
-        displayDataList(new Date());
+        Date date;
+        lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_Bluetooth, Setting.linksButtonCount);
+        if (lastDataFilesList != null && lastDataFilesList.length > 0)
+            date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());
+        else
+            date = new Date();
+
+        displayDataList(date);
     }
 
     public void displayDataList(Date date) {
         mAdapter = new MultipleListItemsAdapter(this);
 
         //generate sample data
-        for (RowData rData : generateTestData(date)) {
+        for (RowData rData : getDataFromFile(date)) {
             mAdapter.addItem(rData);
         }
 
-        //generate sample dates(past three days) for links buttons
-        for (int i = 0; i < 3; i++)
-            mAdapter.addLinkButtonItem(new SimpleDateFormat("MM/dd/yyyy").format(new Date(date.getTime() - (i + 1) * 24 * 60 * 60 * 1000)));
+        // create links to datefiles
+        for (File file : lastDataFilesList) {
+            final Date tmpDate = ioManager.parseDataFilename2Date(file.getName());
+            mAdapter.addLinkButtonItem(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
+        }
 
         //set adapter to listView
         ListView list = (ListView) findViewById(R.id.listView);
@@ -67,15 +90,28 @@ public class wBluetooth extends Activity {
         });
     }
 
-    public List<RowData> generateTestData(Date time) {
+    public List<RowData> getDataFromFile(Date date) {
         List<RowData> rDatas = new ArrayList<RowData>();
-        String status[] = {"Connect", "Disconnect", "Unknown"};
-        for (int j = 0; j < 10; j++) {
-            Random randomGenerator = new Random();
-            RowData rData = new RowData(new Date(time.getTime() + j * 3 * 60 * 1000), status[randomGenerator.nextInt(3)], R.drawable.ic_bar_bullet);
-            rDatas.add(rData);
+
+        try {
+            String sCurrentLine;
+            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_Bluetooth) + Setting.filenameFormat.format(date) + ".txt"));
+            while ((sCurrentLine = br.readLine()) != null) {
+                Object[] decodedRow = jsonUtil.decodeBT(sCurrentLine); // [0]:Date, [1]:State
+                if (decodedRow != null) {
+                    Date rowDate = (Date) decodedRow[0];
+                    String rowState = String.valueOf(decodedRow[1]);
+                    RowData rData = new RowData(rowDate, rowState, R.drawable.ic_bar_bullet);
+                    rDatas.add(rData);
+                    // Log.d(">>", "ts:" + rowDate.toString() + ", st:" + rowState);
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return rDatas;
-
     }
 }

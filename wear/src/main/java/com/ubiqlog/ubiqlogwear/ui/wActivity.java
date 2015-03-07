@@ -36,6 +36,7 @@ import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.sensors.ActivityDataHelper;
 import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
 
@@ -64,6 +65,7 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
     private GoogleApiClient mFitnessClient;
     private ActivityDataHelper.StepList stepList;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,8 +82,6 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         tvTitle.setText(R.string.title_activity_wactivity);
 
         displayData(date);
-
-
 
 
     }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -48,6 +49,7 @@ import java.util.Date;
 public class wBattery extends Activity {
     JSONUtil jsonUtil = new JSONUtil();
     IOManager ioManager = new IOManager();
+    File[] lastDataFilesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +61,14 @@ public class wBattery extends Activity {
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
         tvTitle.setText(R.string.title_activity_wbattery);
 
-        Date date = new Date();
-        displayData(date);
+        Date date;
+        lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_Battery, Setting.linksButtonCount);
+        if (lastDataFilesList != null && lastDataFilesList.length > 0)
+            date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());
+        else
+            date = new Date();
 
+        displayData(date);
     }
 
     private void displayData(Date date) {
@@ -132,28 +139,21 @@ public class wBattery extends Activity {
         linksBox.removeAllViews();
         linksBox.setLayoutParams(params);
 
-        // create links to some dates
-        for (File file : ioManager.getLastFilesInDir(Setting.dataFilename_Battery, Setting.linksButtonCount)) {
-            try {
-                final Button btn1 = new Button(this);
-                final Date tmpDate;
-                String fileDate = file.getName().toLowerCase().replace(".txt", ""); // remove .txt postfix from filename
-                tmpDate = Setting.filenameFormat.parse(fileDate);
-                btn1.setText(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
-                btn1.setBackgroundColor(getResources().getColor(R.color.chart_button_bgcolor));
-                btn1.setBackground(getResources().getDrawable(R.drawable.listview_bg_title));
-                btn1.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        displayData(tmpDate);
-                        scrollView.scrollTo(0, 0);
-                    }
-                });
-                linksBox.addView(btn1, params);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
+        // create links to datefiles
+        for (File file : lastDataFilesList) {
+            final Button btn1 = new Button(this);
+            final Date tmpDate = ioManager.parseDataFilename2Date(file.getName());
+            btn1.setText(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
+            btn1.setBackgroundColor(getResources().getColor(R.color.chart_button_bgcolor));
+            btn1.setBackground(getResources().getDrawable(R.drawable.listview_bg_title));
+            btn1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    displayData(tmpDate);
+                    scrollView.scrollTo(0, 0);
+                }
+            });
+            linksBox.addView(btn1, params);
         }
 
 
@@ -171,27 +171,29 @@ public class wBattery extends Activity {
             BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_Battery) + Setting.filenameFormat.format(date) + ".txt"));
             ArrayList<BatteryDataRecord> dataRecords = new ArrayList<>();
             while ((sCurrentLine = br.readLine()) != null) {
-                Object[] decodedStatus = jsonUtil.decodeBattery(sCurrentLine);
-                BatteryDataRecord dataRecord = new BatteryDataRecord();
+                Object[] decodedRow = jsonUtil.decodeBattery(sCurrentLine);// [0]:Date, [1]:Percent, [2]:isCharging
+                if (decodedRow != null) {
+                    BatteryDataRecord dataRecord = new BatteryDataRecord();
 
-                SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
 
-                dataRecord.timeStamp = (Date) decodedStatus[0];
-                dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
-                dataRecord.percent = (int) decodedStatus[1];
-                dataRecord.isCharging = (boolean) decodedStatus[2];
-                dataRecord.density = 1; // density of records in same hours
+                    dataRecord.timeStamp = (Date) decodedRow[0];
+                    dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
+                    dataRecord.percent = (int) decodedRow[1];
+                    dataRecord.isCharging = (boolean) decodedRow[2];
+                    dataRecord.density = 1; // density of records in same hours
 
-                //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", " + "tsh:" + dataRecord.timeStampHour + ", " + dataRecord.percent + "%, " + "chrg:" + dataRecord.isCharging + ", " + "dns:" + dataRecord.density);
+                    //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", " + "tsh:" + dataRecord.timeStampHour + ", " + dataRecord.percent + "%, " + "chrg:" + dataRecord.isCharging + ", " + "dns:" + dataRecord.density);
 
-                //check if previous record's hour is the same with current record,
-                //calculate the average 'percent' and update previous record
-                if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
-                    BatteryDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
-                    lastDataRecord.density += 1;
-                    lastDataRecord.percent += dataRecord.percent;
-                } else {
-                    dataRecords.add(dataRecord);
+                    //check if previous record's hour is the same with current record,
+                    //calculate the average 'percent' and update previous record
+                    if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
+                        BatteryDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
+                        lastDataRecord.density += 1;
+                        lastDataRecord.percent += dataRecord.percent;
+                    } else {
+                        dataRecords.add(dataRecord);
+                    }
                 }
             }
 
