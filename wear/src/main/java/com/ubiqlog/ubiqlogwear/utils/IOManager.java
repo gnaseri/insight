@@ -1,6 +1,5 @@
 package com.ubiqlog.ubiqlogwear.utils;
 
-import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -23,60 +22,6 @@ import java.util.Date;
 public class IOManager {
 
     public static final String LOG_TAG = IOManager.class.getSimpleName();
-
-    /*
-    public void logData( Context context, ArrayList<String> data) {
-        Log.d(LOG_TAG,"Started Saving Data");
-        FileWriter writer;
-
-
-        File logFile = new File (context.getFilesDir().getAbsolutePath() + "/log_" +
-                dateFormat.format(new Date()) + ".txt");
-
-        //Setup File for writing
-        try {
-            writer = new FileWriter(logFile,true);
-
-            for (String s : data){
-                writer.append(s + System.getProperty("line.separator"));
-            }
-
-            writer.flush();
-            writer.close();
-
-            Log.d (LOG_TAG, "Finished Writing to file");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-	}*/
-
-    public void logData(Context context, DataAcquisitor dataAcq) {
-        Log.d(LOG_TAG, "Started Saving Data");
-        FileWriter writer;
-
-
-        File dir = new File(context.getFilesDir().getAbsolutePath() + "/log_" + File.separatorChar
-                + dataAcq.getFolderName());
-        dir.mkdirs();
-        File logFile = new File(dir, Setting.filenameFormat.format(new Date()) + ".txt");
-
-        Log.d(LOG_TAG, logFile.getAbsolutePath());
-
-        //Setup File for writing
-        try {
-            writer = new FileWriter(logFile, true);
-
-            for (String s : dataAcq.getDataBuffer()) {
-                writer.append(s + System.getProperty("line.separator"));
-            }
-
-            writer.flush();
-            writer.close();
-            Log.d(LOG_TAG, "Finished Writing to file");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void logData(DataAcquisitor dataAcq, boolean append) {
 

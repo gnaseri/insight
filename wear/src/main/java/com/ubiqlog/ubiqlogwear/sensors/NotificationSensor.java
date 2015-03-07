@@ -127,7 +127,7 @@ public class NotificationSensor extends WearableListenerService {
                 if (item.getUri().getPath().compareTo("/notif") == 0) {
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     final byte[] bytes = dataMap.getByteArray(NOTIF_KEY);
-                    Log.d(TAG, "Parcelable retrieved of size:" + bytes.length);
+
                     NotificationParcel np = unMarshall(bytes);
                     if (lastPackageName == null){
                         lastPackageName = np.PACKAGE_NAME;
@@ -156,12 +156,10 @@ public class NotificationSensor extends WearableListenerService {
                     Log.d(TAG, "Heartrate");
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     final byte[] bytes = dataMap.getByteArray(HEART_KEY);
-                    Log.d(TAG, "Parcelable retrieved of size:" + bytes.length);
                     DataSet dataSet = unMarshallHeartData(bytes);
-                   // dumpHeartDataPoints(dataSet);
                     ArrayList <String> encodedDataSet = encodeDataSet(dataSet);
                     writeHeartRateValues(encodedDataSet);
-                    //String encoded = JSONUtil.encodeNotification(np);
+
 
 
                 }
@@ -169,7 +167,7 @@ public class NotificationSensor extends WearableListenerService {
                     Log.d(TAG, "Activity Data");
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     final byte[] bytes = dataMap.getByteArray(ACTV_KEY);
-                    Log.d(TAG, "Parceable retrieved size: " + bytes.length);
+
                     DataReadResult result = unMarshallActivityResult(bytes);
                     writeResults(result);
 
@@ -207,7 +205,7 @@ public class NotificationSensor extends WearableListenerService {
         parcel.setDataPosition(0);
 
         DataReadResult result = DataReadResult.CREATOR.createFromParcel(parcel);
-        parcel.recycle();;
+        parcel.recycle();
         return result;
 
     }
