@@ -80,10 +80,6 @@
             </intent-filter>
         </service>
         -->
-        <activity
-            android:name=".ui.wActivityFit"
-            android:label="@string/title_activity_w_activity_fit" >
-        </activity>
 
         <receiver  android:process=":remote" android:name=".Alarm.AlarmReceiver"></receiver>
     </application>
