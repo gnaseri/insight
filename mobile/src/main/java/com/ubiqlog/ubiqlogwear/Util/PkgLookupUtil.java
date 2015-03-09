@@ -20,11 +20,17 @@ import java.io.IOException;
  */
 public class PkgLookupUtil {
 
+    public static final int ENTRIES_COUNT = 10;
 
-    public static void lookup(Context context) {
+    public static class GenreResponse{
+        public String genre;
+
+    }
+    public static String lookup(Context context) {
         Log.d("LOOKUP", "Looking up");
-        AccountManager am = AccountManager.get(context);
+        AccountManager am = AccountManager.get(context.getApplicationContext());
         Account[] accounts = am.getAccountsByType("com.google");
+        final GenreResponse genreResponse = new GenreResponse();
         if (accounts.length > 0) {
             try {
                 AccountManagerFuture<Bundle> accountManagerFuture =
@@ -36,20 +42,27 @@ public class PkgLookupUtil {
                 MarketSession session = new MarketSession();
                 session.setAuthSubToken(authToken);
                 Market.AppsRequest appsRequest = Market.AppsRequest.newBuilder()
-                        .setQuery("maps")
-                        .setStartIndex(0).setEntriesCount(10)
+                        .setQuery("pname:com.urbandroid.sleep")
+                        .setStartIndex(0).setEntriesCount(ENTRIES_COUNT)
                         .setWithExtendedInfo(true)
                         .build();
                 Log.d("LOOKUP", "finished looking up");
                 session.append(appsRequest, new MarketSession.Callback<Market.AppsResponse>() {
                     @Override
                     public void onResult(Market.ResponseContext responseContext, Market.AppsResponse appsResponse) {
-                        Log.d("Lookup", "in response");
-                        for (int i = 0; i < appsResponse.getEntriesCount(); i++) {
-                            Log.d("LOOKUP", appsResponse.getApp(i).getTitle());
+                        for (int i = 0; i < appsResponse.getAppCount(); i++) {
+                            Log.d("LOOKUP", appsResponse.getApp(i).getTitle()
+                            +   appsResponse.getApp(i).getAppType());
+                            String tmp = appsResponse.getApp(i).getAppType().toString();
+                            genreResponse.genre = tmp;
+                            return;
                         }
+                        //In the event the packageName doesn't return anything
+                        genreResponse.genre = "";
                     }
+
                 });
+                session.flush();
 
 
             } catch (AuthenticatorException e) {
@@ -60,6 +73,8 @@ public class PkgLookupUtil {
                 e.printStackTrace();
             }
         }
+        return genreResponse.genre;
+
 
 
     }
