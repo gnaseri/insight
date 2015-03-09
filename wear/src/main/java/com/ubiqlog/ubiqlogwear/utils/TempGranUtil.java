@@ -8,23 +8,7 @@ import java.util.Date;
  */
 public class TempGranUtil {
 
-    /**
-     * Convert start and endtime by temporal granularity
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    public static Date[] convertDatesByTempGran (Date startTime, Date endTime){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(startTime);
 
-        Date newStartDate = new Date(setCalByTempGran(cal).getTimeInMillis()); //convert startTime
-
-        cal.setTime(endTime);
-        Date newEndDate = new Date(setCalByTempGran(cal).getTimeInMillis()); //convert endTime
-
-        return new Date[]{newStartDate,newEndDate};
-    }
 
     public static String getTemporalTimeStamp(Date timeStamp){
         Calendar cal = Calendar.getInstance();
@@ -34,7 +18,7 @@ public class TempGranUtil {
         return hourOfDay + ":00";
     }
 
-    public static Calendar setCalByTempGran(Calendar cal){
+    private static Calendar setCalByTempGran(Calendar cal){
         if (cal.get(Calendar.MINUTE) > 30){
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) + 1);
@@ -51,6 +35,24 @@ public class TempGranUtil {
         encoded.append(sensor + ",");
         encoded.append(data + ",");
         encoded.append(timeStamp + ",");
+        encoded.append(getTemporalTimeStamp(timeStamp));
+        return encoded.toString();
+    }
+
+    public static String encodeRawData (String sensor, String data, Date timeStamp){
+        StringBuilder encoded = new StringBuilder("");
+        encoded.append(sensor + ",");
+        encoded.append(data + ",");
+        encoded.append(timeStamp);
+        return encoded.toString();
+    }
+    //TODO Need to implement semantic abstraction
+    public static String encodeTemporalSemantic (String sensor, String data, Date timeStamp){
+        StringBuilder encoded = new StringBuilder("");
+        encoded.append(sensor + ",");
+        encoded.append(data + ",");
+        encoded.append(timeStamp + ",");
+        // encoded.append (SemanticAbstraction + ",")
         encoded.append(getTemporalTimeStamp(timeStamp));
         return encoded.toString();
     }

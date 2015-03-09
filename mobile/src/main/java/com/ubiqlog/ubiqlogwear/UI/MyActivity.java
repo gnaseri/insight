@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -85,7 +86,10 @@ public class MyActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            PkgLookupUtil.lookup(MyActivity.this);
+            //TODO Handle application returned
+
+            String s = PkgLookupUtil.lookup(MyActivity.this);
+            Log.d("Lookup", "String ret:" + s);
             return null;
         }
     }
