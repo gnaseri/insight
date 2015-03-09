@@ -25,7 +25,7 @@ public class IOManager {
 
     public void logData(DataAcquisitor dataAcq, boolean append) {
 
-        if (dataAcq.getDataBuffer().size() <= 0){
+        if (dataAcq.getDataBuffer().size() <= 0) {
             return;
         }
         File dirs = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
@@ -75,11 +75,15 @@ public class IOManager {
      * @return Limited amount of *.txt files ordered by lastModified date
      */
     public File[] getLastFilesInDir(String folder, int count) {
-        // filter files to return just txt files and readable
+        // filter files to return just txt files and not empty
         FilenameFilter myFilter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 if (name.toLowerCase().endsWith(".txt")) {
-                    return true;
+                    File f = new File(dir.getAbsolutePath() + "/" + name);
+                    if (f.isFile() && f.length() > 0)
+                        return true;
+                    else
+                        return false;
                 } else {
                     return false;
                 }

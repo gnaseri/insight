@@ -87,8 +87,8 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         tvTitle.setText(R.string.title_activity_wactivity);
 
         Date date;
-        //lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_HeartRate, Setting.linksButtonCount);
-        lastDataFilesList = new File[]{new File("sdcard/2-9-2015.txt"), new File("sdcard/2-8-2015.txt")}; // reading from temp file TODO Remove this line and uncomment previous line
+        lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_ActivFit, Setting.linksButtonCount);
+        //lastDataFilesList = new File[]{new File("sdcard/2-9-2015.txt"), new File("sdcard/2-8-2015.txt")}; // reading from temp file
         if (lastDataFilesList != null && lastDataFilesList.length > 0)
             date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());//
         else
@@ -111,8 +111,8 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         HashMap<String, ArrayList<ActivityDataRecord>> dataMapList = new HashMap<>();
         try {
             String sCurrentLine;
-            //BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_ActivFit) + Setting.filenameFormat.format(date) + ".txt"));
-            BufferedReader br = new BufferedReader(new FileReader(new File("sdcard/" + Setting.filenameFormat.format(date) + ".txt"))); // reading from temp file TODO Remove this line and uncomment previous line
+            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_ActivFit) + Setting.filenameFormat.format(date) + ".txt"));
+            //BufferedReader br = new BufferedReader(new FileReader(new File("sdcard/" + Setting.filenameFormat.format(date) + ".txt"))); // reading from temp file
 
             while ((sCurrentLine = br.readLine()) != null) {
                 Object[] decodedRow = jsonUtil.decodeActivityFit(sCurrentLine);// [0]:startTime, [1]:endTime, [2]:activityType, [3]:duration
@@ -188,7 +188,7 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
             } else if (i == dataMapList.size() - 1) {
                 //last item
                 showFooter = true;
-                cParams.setMargins(0, -10, 0, -5);
+                cParams.setMargins(0, -10, 0, 0);
 
             } else {
                 //middle items
@@ -273,7 +273,7 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
 
         // filling the series with random values for Y:0 to X:0-24
         for (int i = 0; i <= 23; i++) {
-            series1.add(i, 1);
+            series1.add(i,2);
         }
 
         for (ActivityDataRecord record : dataRecords) {
@@ -317,16 +317,16 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         mRenderer.setXLabelsAlign(Paint.Align.CENTER);
 
         mRenderer.setShowAxes(false);
-        mRenderer.setLabelsTextSize(getResources().getDimension(R.dimen.textsize_s1));
+        mRenderer.setLabelsTextSize(getResources().getDimension(R.dimen.textsize_s22));
 
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
         mRenderer.setShowGridX(true);
         mRenderer.setShowGridY(false);
-        mRenderer.setGridColor(Color.RED);
+        mRenderer.setGridColor(Color.WHITE);
         mRenderer.setPanEnabled(false, false);// Disable Pan on two axis
         mRenderer.setZoomEnabled(false, false);
         mRenderer.setBackgroundColor(Color.TRANSPARENT);
-        mRenderer.setMargins(new int[]{10, 50, 10, 30}); //setMargins(top, left, bottom, right) defaults(20,30,10,20)
+        mRenderer.setMargins(new int[]{10, 70, 10, 30}); //setMargins(top, left, bottom, right) defaults(20,30,10,20)
         mRenderer.setAxesColor(Color.WHITE);
         mRenderer.setApplyBackgroundColor(true);
         mRenderer.setShowLegend(false);//hide info label

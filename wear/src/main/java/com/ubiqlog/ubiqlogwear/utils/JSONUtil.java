@@ -310,12 +310,11 @@ public class JSONUtil {
             JSONObject sensorData = jObj.getJSONObject("sensor_data");
             String packageName = sensorData.getString("package_name");
             String title = sensorData.getString("title");
-            String text = sensorData.getString("text");
+            //String text = sensorData.getString("text");
             Integer flags = sensorData.getInt("flags");
             String category = sensorData.getString("category");
 
-
-            return new Object[]{date, packageName, title, text, flags, category};
+            return new Object[]{date, packageName, title, flags, category}; //text,
 
         } catch (JSONException e) {
             e.printStackTrace();

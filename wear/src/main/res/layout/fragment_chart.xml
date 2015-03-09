@@ -64,7 +64,7 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="Last Sync: 12/02/2015 19:22"
                     android:id="@+id/tvLastSync"
-                    android:textSize="@dimen/textsize_s1"
+                    android:textSize="@dimen/textsize_s2"
                     android:textColor="@color/chart_labels_color"
                     android:gravity="center"
                     android:layout_alignParentBottom="false"
