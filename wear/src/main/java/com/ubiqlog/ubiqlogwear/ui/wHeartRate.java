@@ -10,7 +10,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationSet;
@@ -26,7 +25,10 @@ import android.widget.TextView;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.utils.GoogleFitConnection;
+import com.ubiqlog.ubiqlogwear.utils.IOManager;
+import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
 
 import org.achartengine.ChartFactory;
@@ -37,9 +39,13 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -48,6 +54,9 @@ import java.util.concurrent.TimeUnit;
 
 
 public class wHeartRate extends Activity {
+    JSONUtil jsonUtil = new JSONUtil();
+    IOManager ioManager = new IOManager();
+    File[] lastDataFilesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +70,14 @@ public class wHeartRate extends Activity {
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
         tvTitle.setText(R.string.title_activity_wheartrate);
 
-        Date date = new Date();
+        Date date;
+        //lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_HeartRate, Setting.linksButtonCount);
+        lastDataFilesList = new File[]{new File("sdcard/2-7-2015.txt"),new File("sdcard/2-6-2015.txt")}; // reading from temp file TODO Remove this line and uncomment previous line
+        if (lastDataFilesList != null && lastDataFilesList.length > 0)
+            date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());
+        else
+            date = new Date();
+
         displayData(date);
 
     }
@@ -77,7 +93,8 @@ public class wHeartRate extends Activity {
         tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
 
         final TextView tvLastSync = (TextView) findViewById(R.id.tvLastSync);
-        tvLastSync.setText("Last Sync: " + new SimpleDateFormat("MM/dd/yyyy hh:mm").format(date));
+        //tvLastSync.setText("Last Sync: " + new SimpleDateFormat("MM/dd/yyyy hh:mm").format(date));
+        tvLastSync.setHeight(0);
 
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
         final LinearLayout frameBox = (LinearLayout) findViewById(R.id.frameBox);
@@ -139,14 +156,13 @@ public class wHeartRate extends Activity {
         linksBox.removeAllViews();
         linksBox.setLayoutParams(params);
 
-        // create links to some dates
-        for (int i = 0; i < 7; i++) {
+        // create links to datefiles
+        for (File file : lastDataFilesList) {
             final Button btn1 = new Button(this);
-            final Date tmpDate = new Date(date.getTime() - (i + 1) * 24 * 60 * 60 * 1000);
+            final Date tmpDate = ioManager.parseDataFilename2Date(file.getName());
             btn1.setText(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
             btn1.setBackgroundColor(getResources().getColor(R.color.chart_button_bgcolor));
             btn1.setBackground(getResources().getDrawable(R.drawable.listview_bg_title));
-            btn1.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 30));
             btn1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -164,11 +180,53 @@ public class wHeartRate extends Activity {
 
         XYSeries series1 = new XYSeries("Heart Rate");
 
-        // filling the series with random values for Y:0-100 to X:0-24
-        Random rand = new Random();
         for (int i = 0; i < 24; i++) {
-            series1.add(i + 1, rand.nextInt(50));
+            series1.add(i + 1, 0);
         }
+
+        // start filling the series
+        try {
+            String sCurrentLine;
+            //BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_LightSensor) + Setting.filenameFormat.format(date) + ".txt"));
+            BufferedReader br = new BufferedReader(new FileReader(new File("sdcard/" + Setting.filenameFormat.format(date) + ".txt"))); // reading from temp file TODO Remove this line and uncomment previous line
+            ArrayList<HeartRateDataRecord> dataRecords = new ArrayList<>();
+            while ((sCurrentLine = br.readLine()) != null) {
+                Object[] decodedRow = jsonUtil.decodeHeartRate(sCurrentLine);// [0]:Date, [1]:bpm
+                if (decodedRow != null) {
+                    HeartRateDataRecord dataRecord = new HeartRateDataRecord();
+
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
+
+                    dataRecord.timeStamp = (Date) decodedRow[0];
+                    dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
+                    dataRecord.bpm = (int) decodedRow[1];
+                    dataRecord.density = 1; // density of records in same hours
+
+                    //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", tsh:" + dataRecord.timeStampHour + ", bpm:" + dataRecord.bpm + ", dns:" + dataRecord.density);
+
+                    //check if previous record's hour is the same with current record,
+                    //calculate the average 'bpm' values and update previous record
+                    if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
+                        HeartRateDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
+                        lastDataRecord.density += 1;
+                        lastDataRecord.bpm += dataRecord.bpm;
+                    } else {
+                        dataRecords.add(dataRecord);
+                    }
+                }
+            }
+
+
+            for (HeartRateDataRecord record : dataRecords) {
+                series1.add(record.timeStampHour, record.bpm / record.density);
+                //Log.d(">>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", avgbpm:" + record.bpm / record.density + ", dns:" + record.density);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
 
         XYSeriesRenderer renderer1 = new XYSeriesRenderer();
         renderer1.setLineWidth(getResources().getInteger(R.integer.chart_line_width));
@@ -206,7 +264,7 @@ public class wHeartRate extends Activity {
         mRenderer.setYLabelsAlign(Paint.Align.CENTER);
         mRenderer.setYLabelsPadding(5.0f);
 
-        mRenderer.setBarSpacing(0.20);
+        mRenderer.setBarSpacing(0.15);
 
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
         // Disable Pan on two axis
@@ -233,6 +291,12 @@ public class wHeartRate extends Activity {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());
     }
 
+    private class HeartRateDataRecord {
+        public Date timeStamp;
+        public int timeStampHour;
+        public int bpm;
+        public int density; // density of records in same hour
+    }
     /* This function sends the sync command to the watch, which returns heartRate history API info*/
     private class SyncTask extends AsyncTask<Void, Void, Void> {
 
@@ -252,7 +316,7 @@ public class wHeartRate extends Activity {
                     })
                     .addApi(Wearable.API).build();
             mGoogleAPIClient.blockingConnect(10, TimeUnit.SECONDS);
-            WearableSendSync.sendSyncToDevice(mGoogleAPIClient,WearableSendSync.START_HIST_SYNC, new Date());
+            WearableSendSync.sendSyncToDevice(mGoogleAPIClient, WearableSendSync.START_HIST_SYNC, new Date());
             return null;
         }
     }

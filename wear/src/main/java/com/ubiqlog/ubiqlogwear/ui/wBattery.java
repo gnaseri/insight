@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -38,7 +37,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -200,7 +198,7 @@ public class wBattery extends Activity {
 
             for (BatteryDataRecord record : dataRecords) {
                 series1.add(record.timeStampHour, record.percent / record.density);
-                // Log.d(">>>", "ts:" + record.timeStamp.toString() + ", " + "tsh:" + record.timeStampHour + ", " + record.percent / record.density + "%, " + "chrg:" + record.isCharging + ", " + "dns:" + record.density);
+                // Log.d(">>>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", " + record.percent / record.density + "%, chrg:" + record.isCharging + ", dns:" + record.density);
             }
 
         } catch (IOException e) {

@@ -141,18 +141,6 @@ public class MainActivity extends Activity {
         });
 
 
-//        Log.d("BatterySensor>>>", ioManager.getFiles(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/BatterySensor/").toString());
-//        Log.d("Bluetooth>>>", ioManager.getFiles(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/Bluetooth/").toString());
-//        Log.d("Notif>>>", ioManager.getFiles(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/Notif/").toString());
-//        Log.d("HeartRate>>>", ioManager.getFiles(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/HeartRate/").toString());
-//
-//        Log.d("file", "<Battery 3-7--------------------------------------------------------------------");
-//        Log.d("file", ioManager.getFileContent(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/BatterySensor/3-7-2015.txt"));
-//        Log.d("file", "------------------------------------------------------------------------------/>");
-//
-//        Log.d("file", "<Bluetooth 3-4---------------------------------------------------------------");
-//        Log.d("file", ioManager.getFileContent(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/Bluetooth/3-4-2015.txt"));
-//        Log.d("file", "---------------------------------------------------------------------------/>");
 
     }
 
