@@ -82,7 +82,6 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         buildFitnessActivity();
         stepList = new ActivityDataHelper.StepList(this);
 
-
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
         tvTitle.setText(R.string.title_activity_wactivity);
@@ -96,18 +95,16 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
             date = new Date();
 
         displayData(date);
-
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-/*        if (mFitnessClient != null) {
+        if (mFitnessClient != null) {
             mFitnessClient.connect();
         }
         new SyncFitActivityData().execute();
-*/
+
     }
 
     private HashMap<String, ArrayList<ActivityDataRecord>> fetchData(Date date) {
@@ -315,7 +312,6 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
             mRenderer.addXTextLabel(23, "23:59");
         }
 
-
         mRenderer.setBarSpacing(0.25);
 
         mRenderer.setXLabelsAlign(Paint.Align.CENTER);
@@ -385,7 +381,7 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(wActivity.this, "Connect account with handheld device", Toast.LENGTH_LONG).show();
+                Toast.makeText(wActivity.this, "Connect account with handheld device", Toast.LENGTH_SHORT).show();
             }
         });
 
