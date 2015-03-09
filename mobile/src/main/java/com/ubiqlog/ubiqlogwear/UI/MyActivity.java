@@ -87,6 +87,7 @@ public class MyActivity extends Activity {
         @Override
         protected Void doInBackground(Void... params) {
             //TODO Handle application returned
+
             String s = PkgLookupUtil.lookup(MyActivity.this);
             Log.d("Lookup", "String ret:" + s);
             return null;
