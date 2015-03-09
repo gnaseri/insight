@@ -22,6 +22,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.common.Setting;
+import com.ubiqlog.ubiqlogwear.utils.IOManager;
+import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -30,14 +33,21 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 
 /**
  * Created by Manouchehr on 2/13/2015.
  */
 public class wAmbientLight extends Activity {
+    JSONUtil jsonUtil = new JSONUtil();
+    IOManager ioManager = new IOManager();
+    File[] lastDataFilesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +59,13 @@ public class wAmbientLight extends Activity {
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
         tvTitle.setText(R.string.title_activity_wambientlight);
 
-        Date date = new Date();
+        Date date;
+        lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_LightSensor, Setting.linksButtonCount);
+        if (lastDataFilesList != null && lastDataFilesList.length > 0)
+            date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());
+        else
+            date = new Date();
+
         displayData(date);
 
     }
@@ -59,7 +75,8 @@ public class wAmbientLight extends Activity {
         tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
 
         final TextView tvLastSync = (TextView) findViewById(R.id.tvLastSync);
-        tvLastSync.setText("Last Sync: " + new SimpleDateFormat("MM/dd/yyyy hh:mm").format(date));
+        //tvLastSync.setText("Last Sync: " + new SimpleDateFormat("MM/dd/yyyy hh:mm").format(date));
+        tvLastSync.setHeight(0);
 
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
         final LinearLayout frameBox = (LinearLayout) findViewById(R.id.frameBox);
@@ -121,10 +138,10 @@ public class wAmbientLight extends Activity {
         linksBox.removeAllViews();
         linksBox.setLayoutParams(params);
 
-        // create links to some dates
-        for (int i = 0; i < 7; i++) {
+        // create links to datefiles
+        for (File file : lastDataFilesList) {
             final Button btn1 = new Button(this);
-            final Date tmpDate = new Date(date.getTime() - (i + 1) * 24 * 60 * 60 * 1000);
+            final Date tmpDate = ioManager.parseDataFilename2Date(file.getName());
             btn1.setText(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
             btn1.setBackgroundColor(getResources().getColor(R.color.chart_button_bgcolor));
             btn1.setBackground(getResources().getDrawable(R.drawable.listview_bg_title));
@@ -140,18 +157,54 @@ public class wAmbientLight extends Activity {
 
     }
 
+
     private View createGraph(Date date) {
-        Log.i("Ambient Light", "In Create Chart");
+        Log.i("LightSensor", "In Create Chart");
         // We start creating the XYSeries to plot the temperature
-        XYSeries series1 = new XYSeries("Ambient Light");
+        XYSeries series1 = new XYSeries("LightSensor");
 
 
-        // We start filling the series
-        // with random values for Y:0-100 to X:0-24
-        Random rand = new Random();
-        for (int i = 1; i < 23; i++) {
-            series1.add(i, rand.nextInt(99));
+        // start filling the series
+        try {
+            String sCurrentLine;
+            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_LightSensor) + Setting.filenameFormat.format(date) + ".txt"));
+            ArrayList<LightDataRecord> dataRecords = new ArrayList<>();
+            while ((sCurrentLine = br.readLine()) != null) {
+                Object[] decodedRow = jsonUtil.decodeLight(sCurrentLine);// [0]:Date, [1]:lux
+                if (decodedRow != null) {
+                    LightDataRecord dataRecord = new LightDataRecord();
+
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
+
+                    dataRecord.timeStamp = (Date) decodedRow[0];
+                    dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
+                    dataRecord.lux = Math.round(Float.valueOf(decodedRow[1].toString()));
+                    dataRecord.density = 1; // density of records in same hours
+
+                    //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", tsh:" + dataRecord.timeStampHour + ", lux:" + dataRecord.lux + ", dns:" + dataRecord.density);
+
+                    //check if previous record's hour is the same with current record,
+                    //calculate the average 'percent' and update previous record
+                    if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
+                        LightDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
+                        lastDataRecord.density += 1;
+                        lastDataRecord.lux += dataRecord.lux;
+                    } else {
+                        dataRecords.add(dataRecord);
+                    }
+                }
+            }
+
+
+            for (LightDataRecord record : dataRecords) {
+                series1.add(record.timeStampHour, record.lux / record.density);
+                //Log.d(">>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", avglux:" + record.lux / record.density + ", dns:" + record.density);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
 
         XYSeriesRenderer renderer1 = new XYSeriesRenderer();
         renderer1.setLineWidth(getResources().getInteger(R.integer.chart_line_width));
@@ -204,5 +257,12 @@ public class wAmbientLight extends Activity {
 
     private int getSizeInDP(int x) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());
+    }
+
+    private class LightDataRecord {
+        public Date timeStamp;
+        public int timeStampHour;
+        public int lux;
+        public int density; // density of records in same hour
     }
 }

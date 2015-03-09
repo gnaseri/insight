@@ -82,11 +82,10 @@ public class JSONUtil {
         try {
             jsonObject.put("sensor_name", "Activity");
 
-            timeObject.put("start_time", startTime);
-            timeObject.put("end_time", endTime);
+            timeObject.put("start_time", Setting.timestampFormat.format(startTime));
+            timeObject.put("end_time", Setting.timestampFormat.format(endTime));
 
-            jsonObject.put("timestamp", Setting.timestampFormat.format(timeObject));
-
+            jsonObject.put("timestamp", timeObject);
 
             sensorData.put("step_counts", culmStepAmt);
             sensorData.put("step_delta", stepDiff);
@@ -105,7 +104,7 @@ public class JSONUtil {
         JSONObject sensorData = new JSONObject();
         try {
             jsonObject.put("sensor_name", "Notification");
-            jsonObject.put("timestamp", new Date(in.POST_TIME));
+            jsonObject.put("timestamp", Setting.timestampFormat.format(new Date(in.POST_TIME)));
 
             sensorData.put("package_name", in.PACKAGE_NAME);
             sensorData.put("title", in.EXTRA_TITLE);
@@ -139,7 +138,7 @@ public class JSONUtil {
         JSONObject sensorData = new JSONObject();
         try {
             jsonObject.put("sensor_name", "HeartRate");
-            jsonObject.put("timestamp", timestamp);
+            jsonObject.put("timestamp", Setting.timestampFormat.format(timestamp));
 
             sensorData.put("bpm", bpm);
 
@@ -161,8 +160,8 @@ public class JSONUtil {
         try {
             jsonObject.put("sensor_name", "Activity");
 
-            timeData.put("start_time", startTime);
-            timeData.put("end_time", endTime);
+            timeData.put("start_time", Setting.timestampFormat.format(startTime));
+            timeData.put("end_time", Setting.timestampFormat.format(endTime));
 
             jsonObject.put("timestamp", timeData);
 
@@ -249,15 +248,17 @@ public class JSONUtil {
     public Object[] decodeLight(String encoded) {
         try {
             JSONObject jObj = new JSONObject(encoded);
-            Date date = (Date) jObj.get("timestamp");
+            Date date = Setting.timestampFormat.parse(jObj.get("timestamp").toString());
 
             JSONObject sensorData = jObj.getJSONObject("sensor_data");
 
-            float lux = (float) sensorData.get("lux");
+            float lux = Float.valueOf(String.format(sensorData.get("lux").toString(), ".2f"));
 
             return new Object[]{date, lux};
 
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;
@@ -277,7 +278,7 @@ public class JSONUtil {
     public Object[] decodeNotification(String encoded) {
         try {
             JSONObject jObj = new JSONObject(encoded);
-            Date date = (Date) jObj.get("timestamp");
+            Date date = Setting.timestampFormat.parse(jObj.get("timestamp").toString());
 
             JSONObject sensorData = jObj.getJSONObject("sensor_data");
             String packageName = sensorData.getString("package_name");
@@ -290,6 +291,8 @@ public class JSONUtil {
             return new Object[]{date, packageName, title, text, flags, category};
 
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;
@@ -308,7 +311,7 @@ public class JSONUtil {
     public Object[] decodeStepActivity(String encoded) {
         try {
             JSONObject jObj = new JSONObject(encoded);
-            Date date = (Date) jObj.get("timestamp");
+            Date date = Setting.timestampFormat.parse(jObj.get("timestamp").toString());
             JSONObject timeObj = jObj.getJSONObject("timestamp");
             Date startDate = (Date) timeObj.get("start_time");
             Date endDate = (Date) timeObj.get("end_time");
@@ -322,6 +325,8 @@ public class JSONUtil {
 
 
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;

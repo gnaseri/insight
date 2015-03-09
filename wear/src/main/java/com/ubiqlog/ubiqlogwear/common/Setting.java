@@ -9,7 +9,7 @@ public final class Setting {
     public static final String LOG_FOLDER = "insight" ;
     public static final String APP_FOLDER = "insight" ;
 
-    public static final int bufferMaxSize = 1; // default: 10
+    public static final int bufferMaxSize = 10; // default: 10
 
     public static final int linksButtonCount = 7;
 
@@ -17,6 +17,8 @@ public final class Setting {
     public static final String dataFilename_Bluetooth ="Bluetooth";
     public static final String dataFilename_Notifications ="Notif";
     public static final String dataFilename_HeartRate ="HeartRate";
+    public static final String dataFilename_LightSensor ="LightSensor";
+    public static final String dataFilename_ActivFit ="ActivFit";
 
     public static final SimpleDateFormat filenameFormat = new SimpleDateFormat("M-d-yyyy");
     public static final SimpleDateFormat timestampFormat = new SimpleDateFormat("E MMM d HH:mm:ss zzz yyyy"); // e.g. 'Wed Mar 04 00:03:56 GMT+01:00 2015'
