@@ -184,7 +184,7 @@ public class wAmbientLight extends Activity {
                     //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", tsh:" + dataRecord.timeStampHour + ", lux:" + dataRecord.lux + ", dns:" + dataRecord.density);
 
                     //check if previous record's hour is the same with current record,
-                    //calculate the average 'percent' and update previous record
+                    //calculate the average lux value and update previous record
                     if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
                         LightDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
                         lastDataRecord.density += 1;

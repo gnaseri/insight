@@ -264,6 +264,33 @@ public class JSONUtil {
         return null;
     }
 
+
+    /**
+     * obj[0] : date
+     * obj[1] : bpm
+     *
+     * @param encoded
+     * @return
+     */
+    public Object[] decodeHeartRate(String encoded) {
+        try {
+            JSONObject jObj = new JSONObject(encoded);
+            Date date = Setting.timestampFormat.parse(jObj.get("timestamp").toString());
+
+            JSONObject sensorData = jObj.getJSONObject("sensor_data");
+
+            int bpm = sensorData.getInt("bpm");
+
+            return new Object[]{date, bpm};
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * obj[0]:date
      * obj[1] :pkg name
