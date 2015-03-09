@@ -326,6 +326,40 @@ public class JSONUtil {
     }
 
     /**
+     * obj[0]: startTime
+     * obj[1] : endTime
+     * obj[2] : activityType
+     * obj[3] : duration
+     *
+     * @param encoded
+     * @return
+     */
+    public Object[] decodeActivityFit(String encoded) {
+        try {
+            JSONObject jObj = new JSONObject(encoded);
+
+            JSONObject timeObj = jObj.getJSONObject("timestamp");
+
+            Date startDate = Setting.timestampFormat.parse(timeObj.get("start_time").toString());
+            Date endDate = Setting.timestampFormat.parse(timeObj.get("end_time").toString());
+
+            JSONObject sensorData = jObj.getJSONObject("sensor_data");
+
+            String activityType = sensorData.getString("activity");
+            Integer duration = sensorData.getInt("duration");
+
+            return new Object[]{startDate, endDate, activityType, duration};
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * obj[0] :date
      * obj[1]: startTime
      * obj[2] : endTime
@@ -338,7 +372,7 @@ public class JSONUtil {
     public Object[] decodeStepActivity(String encoded) {
         try {
             JSONObject jObj = new JSONObject(encoded);
-            Date date = Setting.timestampFormat.parse(jObj.get("timestamp").toString());
+            Date date = (Date) jObj.get("timestamp");
             JSONObject timeObj = jObj.getJSONObject("timestamp");
             Date startDate = (Date) timeObj.get("start_time");
             Date endDate = (Date) timeObj.get("end_time");
@@ -353,10 +387,7 @@ public class JSONUtil {
 
         } catch (JSONException e) {
             e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
         }
         return null;
     }
-
 }

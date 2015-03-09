@@ -224,7 +224,7 @@ public class wAmbientLight extends Activity {
         mRenderer.setYAxisMin(0);
         mRenderer.setYAxisMax(101);
         mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
-
+        mRenderer.setYLabelsPadding(5.0f);
         mRenderer.setXAxisMin(0);
         mRenderer.setXAxisMax(23);
 
@@ -248,7 +248,7 @@ public class wAmbientLight extends Activity {
         mRenderer.setLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setXLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setYLabelsColor(0, getResources().getColor(R.color.chart_labels_color));
-
+        mRenderer.setShowTickMarks(false);
         //mRenderer.setChartTitle(new SimpleDateFormat("MM/dd/yyyy").format(date));
 
         GraphicalView chartView = ChartFactory.getLineChartView(this, dataset, mRenderer);

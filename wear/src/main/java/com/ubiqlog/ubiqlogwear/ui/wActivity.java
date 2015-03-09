@@ -38,6 +38,8 @@ import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.sensors.ActivityDataHelper;
+import com.ubiqlog.ubiqlogwear.utils.IOManager;
+import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
 
 import org.achartengine.ChartFactory;
@@ -48,11 +50,14 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -65,13 +70,14 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
     private GoogleApiClient mFitnessClient;
     private ActivityDataHelper.StepList stepList;
 
+    JSONUtil jsonUtil = new JSONUtil();
+    IOManager ioManager = new IOManager();
+    File[] lastDataFilesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chart);
-
-        Date date = new Date();
 
         buildFitnessActivity();
         stepList = new ActivityDataHelper.StepList(this);
@@ -81,6 +87,14 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
         tvTitle.setText(R.string.title_activity_wactivity);
 
+        Date date;
+        //lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_HeartRate, Setting.linksButtonCount);
+        lastDataFilesList = new File[]{new File("sdcard/2-9-2015.txt"), new File("sdcard/2-8-2015.txt")}; // reading from temp file TODO Remove this line and uncomment previous line
+        if (lastDataFilesList != null && lastDataFilesList.length > 0)
+            date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());//
+        else
+            date = new Date();
+
         displayData(date);
 
 
@@ -89,26 +103,61 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
     @Override
     protected void onStart() {
         super.onStart();
-        if (mFitnessClient != null) {
+/*        if (mFitnessClient != null) {
             mFitnessClient.connect();
         }
         new SyncFitActivityData().execute();
+*/
+    }
+
+    private HashMap<String, ArrayList<ActivityDataRecord>> fetchData(Date date) {
+        HashMap<String, ArrayList<ActivityDataRecord>> dataMapList = new HashMap<>();
+        try {
+            String sCurrentLine;
+            //BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_ActivFit) + Setting.filenameFormat.format(date) + ".txt"));
+            BufferedReader br = new BufferedReader(new FileReader(new File("sdcard/" + Setting.filenameFormat.format(date) + ".txt"))); // reading from temp file TODO Remove this line and uncomment previous line
+
+            while ((sCurrentLine = br.readLine()) != null) {
+                Object[] decodedRow = jsonUtil.decodeActivityFit(sCurrentLine);// [0]:startTime, [1]:endTime, [2]:activityType, [3]:duration
+                if (decodedRow != null) {
+                    ActivityDataRecord dataRecord = new ActivityDataRecord();
+
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
+
+                    dataRecord.startTime = (Date) decodedRow[0];
+                    dataRecord.startTimeHour = Integer.valueOf(timeFormat.format(dataRecord.startTime));
+                    dataRecord.activityType = decodedRow[2].toString();
+                    dataRecord.duration = (int) decodedRow[3];
+                    dataRecord.density = 1; // density of records in same hours
+
+                    if (!dataMapList.containsKey(dataRecord.activityType))
+                        dataMapList.put(dataRecord.activityType, new ArrayList<ActivityDataRecord>());
+
+                    ArrayList<ActivityDataRecord> dataRecords = dataMapList.get(dataRecord.activityType);
+
+                    //check if previous record's hour is the same with current record,
+                    //calculate the average 'bpm' values and update previous record
+                    if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).startTimeHour == dataRecord.startTimeHour) {
+                        ActivityDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
+                        lastDataRecord.density += 1;
+                        lastDataRecord.duration += dataRecord.duration;
+                        dataRecords.set(dataRecords.size() - 1, lastDataRecord);
+                        dataMapList.put(dataRecord.activityType, dataRecords);//update records array
+                    } else {
+                        dataMapList.get(dataRecord.activityType).add(dataRecord);
+                        //dataRecords.add(dataRecord);
+                    }
+                }
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return dataMapList;
     }
 
     private void displayData(Date date) {
-        boolean isEnabled_walk = true;
-        boolean isEnabled_run = true;
-        boolean isEnabled_vehicle = true;
-        boolean isEnabled_bicycle = true;
-
-        List<String> activities_list = new ArrayList<String>();
-        if (isEnabled_walk) activities_list.add("Walk");
-        if (isEnabled_run) activities_list.add("Run");
-        if (isEnabled_vehicle) activities_list.add("Vehicle");
-        if (isEnabled_bicycle) activities_list.add("Bicycle");
-
-        if (activities_list.size() <= 0) return;
-
         final TextView tvDate = (TextView) findViewById(R.id.tvDate);
         tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
 
@@ -118,13 +167,16 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
         final LinearLayout frameBox = (LinearLayout) findViewById(R.id.frameBox);
 
+        HashMap<String, ArrayList<ActivityDataRecord>> dataMapList = fetchData(date);
+        if (dataMapList.size() <= 0) return;
+
         // remove all added views before except linksbox and tvLastSync label
         frameBox.removeViewsInLayout(1, frameBox.getChildCount() - 2);
 
         FrameLayout chart;
         LinearLayout.LayoutParams cParams;
-
-        for (int i = 0; i < activities_list.size(); i++) {
+        int i = 0;
+        for (String activityType : dataMapList.keySet()) {
             chart = new FrameLayout(this);
             chart.removeAllViews();
             cParams = new LinearLayout.LayoutParams(getSizeInDP(190), getSizeInDP(50));
@@ -136,20 +188,21 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
                 //first item
                 cParams.setMargins(0, 0, 0, -10);// setMargins(left, top, right, bottom)
 
-            } else if (i == activities_list.size() - 1) {
+            } else if (i == dataMapList.size() - 1) {
                 //last item
                 showFooter = true;
-                cParams.setMargins(0, -12, 0, -5);
+                cParams.setMargins(0, -10, 0, -5);
 
             } else {
                 //middle items
-                cParams.setMargins(0, -12, 0, -10);
+                cParams.setMargins(0, -10, 0, -10);
 
             }
             chart.setLayoutParams(cParams);
-            chart.setPadding(15, -5, 5, -5); // setPadding(left, top, right, bottom)
-            chart.addView(createGraph(date, activities_list.get(i), showFooter));
+            chart.setPadding(10, -2, 0, -2); // setPadding(left, top, right, bottom)
+            chart.addView(createGraph(dataMapList.get(activityType), activityType, showFooter));
             frameBox.addView(chart, i + 1);
+            i += 1;
         }
 
 
@@ -198,10 +251,10 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         linksBox.removeAllViews();
         linksBox.setLayoutParams(params);
 
-        // create links to some dates
-        for (int i = 0; i < 7; i++) {
+        // create links to datefiles
+        for (File file : lastDataFilesList) {
             final Button btn1 = new Button(this);
-            final Date tmpDate = new Date(date.getTime() - (i + 1) * 24 * 60 * 60 * 1000);
+            final Date tmpDate = ioManager.parseDataFilename2Date(file.getName());
             btn1.setText(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
             btn1.setBackgroundColor(getResources().getColor(R.color.chart_button_bgcolor));
             btn1.setBackground(getResources().getDrawable(R.drawable.listview_bg_title));
@@ -217,15 +270,18 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
 
     }
 
-    private View createGraph(Date date, String title, boolean isVisibleFooter) {
+    private View createGraph(ArrayList<ActivityDataRecord> dataRecords, String title, boolean isFooterVisible) {
         Log.i("Activity " + title, "In Create Chart");
-
         XYSeries series1 = new XYSeries("Activity " + title);
 
-        // filling the series with random values for Y:0-30 to X:0-24
-        Random rand = new Random();
-        for (int i = 1; i < 23; i++) {
-            series1.add(i, rand.nextInt(30));
+        // filling the series with random values for Y:0 to X:0-24
+        for (int i = 0; i <= 23; i++) {
+            series1.add(i, 1);
+        }
+
+        for (ActivityDataRecord record : dataRecords) {
+            series1.add(record.startTimeHour, record.duration);
+            //Log.d(">>", "act:" + record.activityType + ",ts:" + record.startTime.toString() + ", tsh:" + record.startTimeHour + ", sumdur:" + record.duration + ", dns:" + record.density);
         }
 
         XYSeriesRenderer renderer1 = new XYSeriesRenderer();
@@ -247,12 +303,13 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         mRenderer.setYLabels(0);
         mRenderer.addYTextLabel(0, title); // set Title in the middle of chart
         mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
-        mRenderer.setYLabelsPadding(-1f);
+        mRenderer.setYLabelsPadding(8.0f);
 
         mRenderer.setXAxisMin(0);
         mRenderer.setXAxisMax(23);
 
-        if (isVisibleFooter) {
+        mRenderer.setXLabels(0);
+        if (isFooterVisible) {
             mRenderer.addXTextLabel(0, "00:00");
             mRenderer.addXTextLabel(12, "12:00");
             mRenderer.addXTextLabel(23, "23:59");
@@ -262,22 +319,25 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         mRenderer.setBarSpacing(0.25);
 
         mRenderer.setXLabelsAlign(Paint.Align.CENTER);
-        mRenderer.setXLabels(0);
+
         mRenderer.setShowAxes(false);
         mRenderer.setLabelsTextSize(getResources().getDimension(R.dimen.textsize_s1));
 
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
-
+        mRenderer.setShowGridX(true);
+        mRenderer.setShowGridY(false);
+        mRenderer.setGridColor(Color.RED);
         mRenderer.setPanEnabled(false, false);// Disable Pan on two axis
-        mRenderer.setShowGrid(false);
-        mRenderer.setBackgroundColor(Color.WHITE);
-        mRenderer.setMargins(new int[]{5, 38, 10, 30}); //setMargins(top, left, bottom, right) defaults(20,30,10,20)
-        mRenderer.setAxesColor(Color.BLACK);
+        mRenderer.setZoomEnabled(false, false);
+        mRenderer.setBackgroundColor(Color.TRANSPARENT);
+        mRenderer.setMargins(new int[]{10, 50, 10, 30}); //setMargins(top, left, bottom, right) defaults(20,30,10,20)
+        mRenderer.setAxesColor(Color.WHITE);
         mRenderer.setApplyBackgroundColor(true);
         mRenderer.setShowLegend(false);//hide info label
         mRenderer.setLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setXLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setYLabelsColor(0, getResources().getColor(R.color.chart_labels_color));
+        mRenderer.setShowTickMarks(false);
         GraphicalView chartView = ChartFactory.getBarChartView(this, dataset, mRenderer, BarChart.Type.DEFAULT);
         return chartView;
     }
@@ -286,6 +346,15 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());
     }
 
+    private class ActivityDataRecord {
+        public Date startTime;
+        public Date endTime;
+        public int startTimeHour;
+        //public int endTimeHour; // we calc just startTime
+        public String activityType;
+        public int duration;
+        public int density; // density of records in same hour
+    }
 
     private void buildFitnessActivity() {
         mFitnessClient = new GoogleApiClient.Builder(this)
@@ -369,7 +438,7 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
     }
 
 
-    private class SyncFitActivityData extends AsyncTask<Void,Void,Void> {
+    private class SyncFitActivityData extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -388,7 +457,7 @@ public class wActivity extends Activity implements GoogleApiClient.ConnectionCal
                     .addApi(Wearable.API)
                     .build();
             mGoogleApiClient.blockingConnect(10, TimeUnit.SECONDS);
-            if (mGoogleApiClient.isConnected()){
+            if (mGoogleApiClient.isConnected()) {
                 WearableSendSync.sendSyncToDevice(mGoogleApiClient,
                         WearableSendSync.START_ACTV_SYNC, new Date());
             }
