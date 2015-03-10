@@ -26,7 +26,7 @@ public class PkgLookupUtil {
         public String genre;
 
     }
-    public static String lookup(Context context) {
+    public static String lookup(Context context, String packageName) {
         Log.d("LOOKUP", "Looking up");
         AccountManager am = AccountManager.get(context.getApplicationContext());
         Account[] accounts = am.getAccountsByType("com.google");
@@ -42,7 +42,7 @@ public class PkgLookupUtil {
                 MarketSession session = new MarketSession();
                 session.setAuthSubToken(authToken);
                 Market.AppsRequest appsRequest = Market.AppsRequest.newBuilder()
-                        .setQuery("pname:com.urbandroid.sleep")
+                        .setQuery("pname:" + packageName)
                         .setStartIndex(0).setEntriesCount(ENTRIES_COUNT)
                         .setWithExtendedInfo(true)
                         .build();

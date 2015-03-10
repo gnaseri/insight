@@ -8,6 +8,7 @@ import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -152,6 +153,21 @@ public class IOManager {
         try {
             return Setting.filenameFormat.parse(fileDate);
         } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public byte[] convertFileToBytes(File file){
+        byte[] bytes = new byte[(int)file.length()];
+        try{
+            FileInputStream fileInputStream = new FileInputStream(file);
+            fileInputStream.read(bytes);
+            return bytes;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;

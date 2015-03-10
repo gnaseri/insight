@@ -17,6 +17,10 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -27,6 +31,7 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
     private static GoogleApiClient mGoogleApiClient;
     private static final String HEART_SYNC_KEY = "/start/HeartSync";
     private static final String ACTV_SYNC_KEY = "/start/ActvSync";
+    private static final String NOTIF_FILE_KEY = "/get/notifFile";
 
     @Override
     public void onDataChanged(DataEventBuffer events) {
@@ -53,6 +58,13 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
 
                     Handler actvHandler = buildActivityHandler();
                     actvHandler.post(new ActivitySensor.ActivityInformationRunnable(mGoogleApiClient, this, date));
+                }
+                if (item.getUri().getPath().compareTo(NOTIF_FILE_KEY) == 0){
+                    Log.d(TAG, "NOTIF FILE");
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    handleNotifFile(dataMap);
+
+
                 }
             }
         }
@@ -120,5 +132,23 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
                     }
                 })
                 .build();
+    }
+
+    private void handleNotifFile(DataMap dataMap){
+        byte[] bytes = dataMap.getByteArray("NOTIF_FILE");
+        File dirs = new File (this.getFilesDir() + "/notif");
+        dirs.mkdirs();
+        File tmp = new File(dirs, "tmp.txt");
+
+            try {
+                FileOutputStream fos = new FileOutputStream(tmp);
+                fos.write(bytes);
+                fos.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
     }
 }

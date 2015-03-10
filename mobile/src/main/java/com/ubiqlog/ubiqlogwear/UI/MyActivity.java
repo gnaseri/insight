@@ -2,9 +2,7 @@ package com.ubiqlog.ubiqlogwear.UI;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,7 +10,6 @@ import android.widget.Button;
 
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.Services.WearableListenerService;
-import com.ubiqlog.ubiqlogwear.Util.PkgLookupUtil;
 
 public class MyActivity extends Activity {
 
@@ -56,7 +53,6 @@ public class MyActivity extends Activity {
         activ_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new PkgLookup().execute();
                 startActivity(new Intent(MyActivity.this, ActivitySegmentActivity.class));
             }
         });
@@ -82,15 +78,4 @@ public class MyActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class PkgLookup extends AsyncTask<Void, Void, Void>{
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            //TODO Handle application returned
-
-            String s = PkgLookupUtil.lookup(MyActivity.this);
-            Log.d("Lookup", "String ret:" + s);
-            return null;
-        }
-    }
 }

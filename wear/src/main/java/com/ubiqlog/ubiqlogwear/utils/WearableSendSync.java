@@ -13,6 +13,7 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -36,6 +37,15 @@ public class WearableSendSync  {
             //sendSyncMessage(mGoogleApiClient, n, key);
             sendSyncDataItem(mGoogleApiClient,n,key, date);
         }
+    }
+    private static Collection<String> getNodes(GoogleApiClient mGoogleApiClient) {
+        HashSet<String> results = new HashSet<String>();
+        NodeApi.GetConnectedNodesResult nodes =
+                Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).await();
+        for (Node node : nodes.getNodes()) {
+            results.add(node.getId());
+        }
+        return results;
     }
 
     private static void sendSyncMessage (GoogleApiClient mGoogleApiClient,String nodeId, String key){
@@ -67,14 +77,29 @@ public class WearableSendSync  {
 
     }
 
-    private static Collection<String> getNodes(GoogleApiClient mGoogleApiClient) {
-        HashSet<String> results = new HashSet<String>();
-        NodeApi.GetConnectedNodesResult nodes =
-                Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).await();
-        for (Node node : nodes.getNodes()) {
-            results.add(node.getId());
+    public static void sendDailyNotifFileWrapper(GoogleApiClient mGoogleApiClient){
+        Collection<String> nodes = getNodes(mGoogleApiClient);
+        for (String n : nodes){
+            sendDailyNotifFile(mGoogleApiClient, n);
         }
-        return results;
     }
+    private static void sendDailyNotifFile(GoogleApiClient mGoogleApiClient, String nodeId){
+        IOManager ioManager = new IOManager();
+        File[] notifFileArr = ioManager.getLastFilesInDir("Notif", 1); //only get the last file
+        File notifFile = notifFileArr[0];
+
+        //Convert to byte arr
+        byte [] bytes = ioManager.convertFileToBytes(notifFile);
+
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/get/notifFile");
+        putDataMapReq.getDataMap().putLong("time", new Date().getTime());
+        putDataMapReq.getDataMap().putByteArray("NOTIF_FILE", bytes);
+
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        //Send Data To wearable
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mGoogleApiClient,putDataReq);
+    }
+
 }
 
