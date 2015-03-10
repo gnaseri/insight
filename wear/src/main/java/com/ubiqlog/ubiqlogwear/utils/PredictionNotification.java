@@ -22,6 +22,7 @@ public class PredictionNotification {
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle(title)
                         .setContentText(description)
+                        .setPriority(2)
                         .setLargeIcon(background);
 
         // Get an instance of the NotificationManager service

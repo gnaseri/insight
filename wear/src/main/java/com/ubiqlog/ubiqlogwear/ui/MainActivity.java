@@ -16,6 +16,7 @@ import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;
 import com.ubiqlog.ubiqlogwear.sensors.LightSensor;
 import com.ubiqlog.ubiqlogwear.utils.FeatureCheck;
 import com.ubiqlog.ubiqlogwear.utils.IOManager;
+import com.ubiqlog.ubiqlogwear.utils.PredictionNotification;
 
 import java.util.ArrayList;
 
@@ -133,6 +134,9 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+        PredictionNotification pNotif = new PredictionNotification();
+        pNotif.show(this,"Caution","You are using battery lower than average!" );
 
     }
 
