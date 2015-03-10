@@ -2,10 +2,8 @@ package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -26,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 
 public class wBluetooth extends Activity {
@@ -75,7 +72,7 @@ public class wBluetooth extends Activity {
         ListView list = (ListView) findViewById(R.id.listView);
         list.setAdapter(mAdapter);
 
-        // list item's 'clicable' property on activity is disabled. User can only click on 'LinkButtons'
+        // list item's 'clickable' property on activity is disabled. User can only click on 'LinkButtons'
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {

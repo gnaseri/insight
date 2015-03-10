@@ -210,7 +210,7 @@ public class wAppUsage extends Activity {
         mRenderer.setLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setXLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setYLabelsColor(0, getResources().getColor(R.color.chart_labels_color));
-
+        mRenderer.setShowTickMarks(false);
         // Vertical bars
         mRenderer.setOrientation(XYMultipleSeriesRenderer.Orientation.VERTICAL);
 

@@ -10,6 +10,7 @@
     <dimen name="domain_tick_label_font_size">16dp</dimen>
     <dimen name="textsize_s1">8sp</dimen>
     <dimen name="textsize_s2">9sp</dimen>
+    <dimen name="textsize_s22">10sp</dimen>
     <dimen name="textsize_s3">11sp</dimen>
     <dimen name="textsize_m1">12sp</dimen>
     <dimen name="textsize_m2">14sp</dimen>

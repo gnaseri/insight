@@ -56,8 +56,6 @@ public class MainActivity extends Activity {
         listArray.addAll(createSystemListItems());
 
         return listArray.toArray(new MainListItem[listArray.size()]);
-
-
     }
 
     private ArrayList<MainListItem> createSystemListItems() {
@@ -136,9 +134,6 @@ public class MainActivity extends Activity {
 
             }
         });
-
-
-
     }
 
     //TODO Integrate this into autostart
