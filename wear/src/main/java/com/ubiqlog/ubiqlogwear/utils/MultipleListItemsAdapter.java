@@ -1,9 +1,5 @@
 package com.ubiqlog.ubiqlogwear.utils;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.TreeSet;
-
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,6 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.TreeSet;
 
 /**
  * Created by Manouchehr on 2/4/2015.

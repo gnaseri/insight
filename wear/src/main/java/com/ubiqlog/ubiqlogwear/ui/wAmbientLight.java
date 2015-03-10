@@ -181,7 +181,7 @@ public class wAmbientLight extends Activity {
                     dataRecord.lux = Math.round(Float.valueOf(decodedRow[1].toString()));
                     dataRecord.density = 1; // density of records in same hours
 
-                    //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", tsh:" + dataRecord.timeStampHour + ", lux:" + dataRecord.lux + ", dns:" + dataRecord.density);
+                    //Log.i(">>", "ts:" + dataRecord.timeStamp.toString() + ", tsh:" + dataRecord.timeStampHour + ", lux:" + dataRecord.lux + ", dns:" + dataRecord.density);
 
                     //check if previous record's hour is the same with current record,
                     //calculate the average lux value and update previous record
@@ -189,6 +189,7 @@ public class wAmbientLight extends Activity {
                         LightDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
                         lastDataRecord.density += 1;
                         lastDataRecord.lux += dataRecord.lux;
+                        dataRecords.set(dataRecords.size() - 1, lastDataRecord);
                     } else {
                         dataRecords.add(dataRecord);
                     }
@@ -198,7 +199,7 @@ public class wAmbientLight extends Activity {
 
             for (LightDataRecord record : dataRecords) {
                 series1.add(record.timeStampHour, record.lux / record.density);
-                //Log.d(">>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", avglux:" + record.lux / record.density + ", dns:" + record.density);
+                //Log.i(">>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", avglux:" + record.lux / record.density + ", dns:" + record.density);
             }
 
         } catch (IOException e) {
@@ -222,7 +223,7 @@ public class wAmbientLight extends Activity {
         XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
         mRenderer.addSeriesRenderer(renderer1);
         mRenderer.setYAxisMin(0);
-        mRenderer.setYAxisMax(101);
+        //mRenderer.setYAxisMax(101);
         mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
         mRenderer.setYLabelsPadding(5.0f);
         mRenderer.setXAxisMin(0);
@@ -240,7 +241,7 @@ public class wAmbientLight extends Activity {
         mRenderer.setPanEnabled(false, false);
         mRenderer.setShowGrid(false);
         mRenderer.setBackgroundColor(Color.WHITE);
-        mRenderer.setMargins(new int[]{10, 20, 5, 20});  //setMargins(top, left, bottom, right) defaults(20,30,10,20) ** more space in left and right for labels
+        mRenderer.setMargins(new int[]{10, 35, 5, 20});  //setMargins(top, left, bottom, right) defaults(20,30,10,20) ** more space in left and right for labels
         mRenderer.setMarginsColor(Color.WHITE);
         mRenderer.setAxesColor(Color.BLACK);
         mRenderer.setApplyBackgroundColor(true);

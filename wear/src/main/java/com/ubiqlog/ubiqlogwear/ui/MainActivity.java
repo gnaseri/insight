@@ -131,9 +131,9 @@ public class MainActivity extends Activity {
                         }
                     });
                 }
-
             }
         });
+
     }
 
     //TODO Integrate this into autostart
@@ -147,6 +147,7 @@ public class MainActivity extends Activity {
             startService(new Intent(this, LightSensor.class));
         }
     }
+
 }
 
 

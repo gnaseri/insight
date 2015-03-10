@@ -8,7 +8,6 @@
     <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -23,6 +22,7 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -65,13 +65,10 @@
             android:name=".sensors.ActivitySensor"
             android:enabled="true"
             android:exported="false" />
-
         <service
             android:name=".sensors.LightSensor"
             android:enabled="true"
             android:exported="false" />
-
-
 
         <!--
         <service android:name=".sensors.NotificationReceiver">
@@ -81,7 +78,34 @@
         </service>
         -->
 
-        <receiver  android:process=":remote" android:name=".Alarm.AlarmReceiver"></receiver>
+        <receiver
+            android:name=".Alarm.AlarmReceiver"
+            android:process=":remote" />
+
+        <activity
+            android:name=".ui.temp.MyStubBroadcastActivity"
+            android:label="MyStubBroadcastActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.temp.SampleNotification"
+            android:allowEmbedded="true"
+            android:exported="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.DeviceDefault.Light" >
+        </activity>
+
+        <receiver
+            android:name=".ui.temp.MyPostNotificationReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.ubiqlog.ubiqlogwear.SHOW_NOTIFICATION" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
