@@ -81,6 +81,7 @@ public class HomeActivity extends Activity {
                 label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
                 label.setText(itemLabel);
                 label.setLines(2);
+                label.setTextColor(Color.parseColor("#ca8b02"));
                 label.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                 label.setGravity(Gravity.TOP | Gravity.CENTER);
                 contentItem.addView(label);
