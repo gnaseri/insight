@@ -16,86 +16,22 @@ import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;
 import com.ubiqlog.ubiqlogwear.sensors.LightSensor;
 import com.ubiqlog.ubiqlogwear.utils.FeatureCheck;
 import com.ubiqlog.ubiqlogwear.utils.IOManager;
+import com.ubiqlog.ubiqlogwear.utils.MenuItems;
 import com.ubiqlog.ubiqlogwear.utils.PredictionNotification;
-
-import java.util.ArrayList;
 
 /**
  * Created by Cole
  */
 
-public class MainActivity extends Activity {
+public class OldMailActivity extends Activity {
 
 
-    public static String LOG_TAG = MainActivity.class.getSimpleName();
+    public static String LOG_TAG = OldMailActivity.class.getSimpleName();
 
     private WearableListView listView;
     private BoxInsetLayout roundBack;
 
     IOManager ioManager = new IOManager();
-
-
-    // Create the list view items to be displayed in the homescreen Listview
-    private MainListItem[] createMeListItems() {
-        ArrayList<MainListItem> listArray = new ArrayList<MainListItem>();
-        MainListItem meTitle = new MainListItem(getString(R.string.me_title),
-                null, null);
-        listArray.add(meTitle);
-        MainListItem activityItem = new MainListItem(
-                getResources().getString(R.string.activity_title),
-                R.drawable.ic_activity, wActivity.class);//ActivitySensor.class
-        listArray.add(activityItem);
-        MainListItem heartrateItem = new MainListItem(
-                getString(R.string.heart_rate_title),
-                R.drawable.ic_heart, wHeartRate.class);
-        listArray.add(heartrateItem);
-        MainListItem appUsageItem = new MainListItem(
-                getString(R.string.app_usage_title),
-                R.drawable.ic_appusage, wAppUsage.class);
-
-        listArray.add(appUsageItem);
-        listArray.addAll(createSystemListItems());
-
-        return listArray.toArray(new MainListItem[listArray.size()]);
-    }
-
-    private ArrayList<MainListItem> createSystemListItems() {
-        ArrayList<MainListItem> systemItemList = new ArrayList<MainListItem>();
-        MainListItem systemTitle = new MainListItem(
-                getString(R.string.system_title),
-                null, null);
-        systemItemList.add(systemTitle);
-
-        MainListItem battItem = new MainListItem(
-                getString(R.string.battery_title),
-                R.drawable.ic_battery,
-                wBattery.class);//BatteryLevelActivity.class
-
-        systemItemList.add(battItem);
-
-        MainListItem notifItem = new MainListItem(
-                getString(R.string.notification_title),
-                R.drawable.ic_notif,
-                wNotifications.class);
-        systemItemList.add(notifItem);
-
-        if (FeatureCheck.hasBluetoothFeature(this)) {
-            // create MainListItem bluetooth
-
-            MainListItem bluetoothItem = new MainListItem(
-                    getString(R.string.bluetooth_title),
-                    R.drawable.ic_bluetooth, wBluetooth.class);
-            systemItemList.add(bluetoothItem);
-        }
-        if (FeatureCheck.hasLightFeature(this)) {
-            MainListItem ambLightItem = new MainListItem(
-                    getString(R.string.amblight_title),
-                    R.drawable.ic_light, wAmbientLight.class);
-            systemItemList.add(ambLightItem);
-        }
-
-        return systemItemList;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,12 +45,12 @@ public class MainActivity extends Activity {
             public void onLayoutInflated(WatchViewStub stub) {
                 roundBack = (BoxInsetLayout) stub.findViewById(R.id.roundLayout);
                 if (roundBack != null) {
-
+                    MenuItems menuItems = new MenuItems(OldMailActivity.this);
                     //Start Alarm manager
                     AlarmReceiver alarmReceiver = new AlarmReceiver();
-                    alarmReceiver.setMidnightAlarmManager(MainActivity.this);
+                    alarmReceiver.setMidnightAlarmManager(OldMailActivity.this);
                     listView = (WearableListView) roundBack.findViewById(R.id.wearable_list);
-                    listView.setAdapter(new MyAdapter(MainActivity.this, createMeListItems()));
+                    listView.setAdapter(new MyAdapter(OldMailActivity.this, menuItems.createMeListItems()));
                     listView.setClickListener(new WearableListView.ClickListener() {
                         @Override
                         public void onClick(WearableListView.ViewHolder viewHolder) {
@@ -122,7 +58,7 @@ public class MainActivity extends Activity {
                             MainListItem listItem = (MainListItem) viewHolder.itemView.getTag();
                             if (!listItem.getTitle().equals("Me") &&
                                     !listItem.getTitle().equals("System"))
-                                startActivity(listItem.getIntent(MainActivity.this));
+                                startActivity(listItem.getIntent(OldMailActivity.this));
 
                         }
 
@@ -136,7 +72,7 @@ public class MainActivity extends Activity {
         });
 
         PredictionNotification pNotif = new PredictionNotification();
-        pNotif.show(this,"Caution","You are using battery lower than average!" );
+        pNotif.show(this, "Caution", "You are using battery lower than average!");
 
     }
 
