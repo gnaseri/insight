@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ubiqlog.ubiqlogwear" >
-
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
@@ -69,6 +69,8 @@
             android:name=".UI.ActivitySegmentActivity"
             android:label="@string/title_activity_activity_segment" >
         </activity>
+
+
     </application>
 
 </manifest>

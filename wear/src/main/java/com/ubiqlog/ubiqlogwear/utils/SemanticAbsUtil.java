@@ -24,7 +24,7 @@ public class SemanticAbsUtil {
 
     }
 
-    public static String getSemanticHeartRate (int heartRate){
+    public static String getSemanticHeartRate (float heartRate){
         if (heartRate < 60){
             return "low";
 
@@ -59,7 +59,7 @@ public class SemanticAbsUtil {
         return status;
     }
 
-    public static String getSemanticAmbientLight (int number){
+    public static String getSemanticAmbientLight (float number){
         if (number == 0){
             return "dark";
         }
