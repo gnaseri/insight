@@ -6,6 +6,7 @@ import android.util.Log;
 import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
+import com.ubiqlog.ubiqlogwear.utils.SemanticTempCSVUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,11 +45,13 @@ public class ActivityDataHelper {
     public static class StepList {
         ArrayList<Step> stepBuff;
         private DataAcquisitor mDataBuffer;
+        private DataAcquisitor mSA_stepBuffer;
 
 
         public StepList(Context context) {
             stepBuff = new ArrayList<Step>();
             mDataBuffer = new DataAcquisitor(context, "Activity");
+            mSA_stepBuffer = new DataAcquisitor(context, "SA/Activity");
         }
         public DataAcquisitor getmDataBuffer(){
             return mDataBuffer;
@@ -79,6 +82,13 @@ public class ActivityDataHelper {
                         //Send to DataAcquisitor
                         mDataBuffer.insert(encoded,true, Setting.bufferMaxSize);
                         mDataBuffer.flush(true);
+
+                        String encoded_SA = SemanticTempCSVUtil.encodeStepActivity(startTime,culmStepAmnt,diffInStep);
+                        mSA_stepBuffer.insert(encoded,true,Setting.bufferMaxSize);
+                        mSA_stepBuffer.flush(true);
+
+
+
                         stepBuff.clear();
                     }
 

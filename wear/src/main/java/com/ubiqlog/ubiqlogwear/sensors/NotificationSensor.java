@@ -25,6 +25,7 @@ import com.ubiqlog.ubiqlogwear.common.NotificationParcel;
 import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
+import com.ubiqlog.ubiqlogwear.utils.SemanticTempCSVUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +55,12 @@ public class NotificationSensor extends WearableListenerService {
     private DataAcquisitor mHeartBuffer;
     private static DataAcquisitor mActivBuffer;
 
+    //TemporalGran Buffers
+    private DataAcquisitor mSA_NotifBuffer;
+    private DataAcquisitor mSA_BTBuffer;
+    private DataAcquisitor mSA_HeartBuffer;
+    private static DataAcquisitor mSA_ActivBuffer;
+
     private String lastPackageName;
     private String lastExtraText;
     private String lastTitle;
@@ -72,6 +79,12 @@ public class NotificationSensor extends WearableListenerService {
         mNotifBuffer = new DataAcquisitor(this,"Notif");
         mHeartBuffer = new DataAcquisitor(this,"HeartRate");
         mActivBuffer = new DataAcquisitor(this,"ActivFit");
+
+        //TemporalGran buffers
+        mSA_BTBuffer = new DataAcquisitor(this,"SA/Bluetooth");
+        mSA_NotifBuffer = new DataAcquisitor(this,"SA/Notif");
+        mSA_HeartBuffer = new DataAcquisitor(this,"SA/HeartRate");
+        mSA_ActivBuffer = new DataAcquisitor(this,"SA/ActivFit");
 
         mClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
@@ -95,6 +108,13 @@ public class NotificationSensor extends WearableListenerService {
         mNotifBuffer.flush(true);
         mHeartBuffer.flush(true);
         mActivBuffer.flush(true);
+
+        //TempGran Buffers
+        mSA_BTBuffer.flush(true);
+        mSA_ActivBuffer.flush(true);
+        mSA_HeartBuffer.flush(true);
+        mSA_NotifBuffer.flush(true);
+
         super.onDestroy();
     }
 
@@ -104,6 +124,9 @@ public class NotificationSensor extends WearableListenerService {
         String encoded = JSONUtil.encodeBT("Connected", new Date());
         Log.d(TAG,encoded);
         mBTBuffer.insert(encoded,true,Setting.bufferMaxSize);
+
+        String encoded_SA = SemanticTempCSVUtil.encodedBT("Connected", new Date());
+        mSA_BTBuffer.insert(encoded_SA,true,Setting.bufferMaxSize);
     }
 
     @Override
@@ -112,6 +135,10 @@ public class NotificationSensor extends WearableListenerService {
         String encoded = JSONUtil.encodeBT("Disconnected", new Date());
         Log.d(TAG,encoded);
         mBTBuffer.insert(encoded,true, Setting.bufferMaxSize);
+
+        String encoded_SA = SemanticTempCSVUtil.encodedBT("Disconnected", new Date());
+        mSA_BTBuffer.insert(encoded_SA,true,Setting.bufferMaxSize);
+
 
     }
 
@@ -146,9 +173,15 @@ public class NotificationSensor extends WearableListenerService {
                     lastPackageName = np.PACKAGE_NAME;
                     lastTitle = np.EXTRA_TITLE;
                     String encoded = JSONUtil.encodeNotification(np);
+
                     Log.d(TAG, encoded);
                     mNotifBuffer.insert(encoded,true, Setting.bufferMaxSize);
                     mNotifBuffer.flush(true);
+
+                    //tempGran
+                    String encoded_SA = SemanticTempCSVUtil.encodeNotification(np);
+                    mSA_NotifBuffer.insert(encoded_SA, true, Setting.bufferMaxSize);
+                    mSA_NotifBuffer.flush(true);
 
 
                 }
@@ -160,6 +193,8 @@ public class NotificationSensor extends WearableListenerService {
                     ArrayList <String> encodedDataSet = encodeDataSet(dataSet);
                     writeHeartRateValues(encodedDataSet);
 
+                    writeSA_Heart_DataSet(dataSet);
+
 
 
                 }
@@ -169,7 +204,9 @@ public class NotificationSensor extends WearableListenerService {
                     final byte[] bytes = dataMap.getByteArray(ACTV_KEY);
 
                     DataReadResult result = unMarshallActivityResult(bytes);
-                    writeResults(result);
+                    writeActivResults(result);
+
+                    writeSA_ActivResults(result);
 
                 }
 
@@ -252,6 +289,25 @@ public class NotificationSensor extends WearableListenerService {
         mHeartBuffer.flush(false);
     }
 
+    private void writeSA_Heart_DataSet(DataSet dataSet){
+
+        for (DataPoint dp : dataSet.getDataPoints()){
+            Date start = new Date(dp.getStartTime(TimeUnit.MILLISECONDS));
+
+            Value bpm;
+            for (Field field : dp.getDataType().getFields()){
+                bpm = dp.getValue(field);
+                Log.d(TAG, "BPM:" + bpm);
+                String encoded = SemanticTempCSVUtil.encodedHeartRate(bpm.asFloat(),start);
+                Log.d(TAG, encoded);
+                mSA_HeartBuffer.insert(encoded, false, Integer.MAX_VALUE);
+            }
+
+            Log.d(TAG,"---------");
+        }
+        mSA_HeartBuffer.flush(false);
+    }
+
     private static void printReadResult(DataReadResult dataReadResult){
         Log.d(TAG, "Printing results");
         Log.d(TAG, "Bucketsize: " + dataReadResult.getBuckets().size());
@@ -265,7 +321,7 @@ public class NotificationSensor extends WearableListenerService {
         }
     }
 
-    private static void writeResults (DataReadResult dataReadResult){
+    private static void writeActivResults(DataReadResult dataReadResult){
         for (Bucket bucket : dataReadResult.getBuckets()){
             List<DataSet> dataSets = bucket.getDataSets();
             for (DataSet dataSet: dataSets){
@@ -275,6 +331,18 @@ public class NotificationSensor extends WearableListenerService {
             }
         }
         mActivBuffer.flush(false);
+    }
+
+    private static void writeSA_ActivResults (DataReadResult dataReadResult){
+        for (Bucket bucket : dataReadResult.getBuckets()){
+            List<DataSet> dataSets = bucket.getDataSets();
+            for (DataSet dataSet: dataSets){
+
+                String encoded = encodeActvDataSet(dataSet);
+                mSA_ActivBuffer.insert(encoded,false, Integer.MAX_VALUE);
+            }
+        }
+        mSA_ActivBuffer.flush(false);
     }
 
     private static void processDataSet(DataSet dataSet){

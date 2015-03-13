@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Wearable;
@@ -68,7 +67,10 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         Log.d("AlarmRecv", "ALARM ");
-        Toast.makeText(context, "ALARM", Toast.LENGTH_LONG).show();
+        sendFitDataSync(context);
+    }
+
+    private void sendFitDataSync(final Context context){
         final Date date = new Date();
         HandlerThread ht = new HandlerThread("HeartThread", android.os.Process.THREAD_PRIORITY_BACKGROUND);
         ht.start();
@@ -94,10 +96,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                 WearableSendSync.sendSyncToDevice(mGoogleAPIClient, WearableSendSync.START_ACTV_SYNC, date);
                 WearableSendSync.sendSyncToDevice(mGoogleAPIClient, WearableSendSync.START_HIST_SYNC, date);
 
-               // WearableSendSync.sendSyncToDevice(mGoogleAPIClient, WearableSendSync.START_ACTV_SYNC);
-               // WearableSendSync.sendSyncToDevice(mGoogleAPIClient,WearableSendSync.START_HIST_SYNC);
             }
         });
-
     }
 }

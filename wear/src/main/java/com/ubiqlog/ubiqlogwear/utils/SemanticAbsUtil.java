@@ -51,7 +51,7 @@ public class SemanticAbsUtil {
 
     public static String getSemanticNotificaiton (String appName){
         //TODO Lookup app genre
-        String appGenre = "";
+        String appGenre = "NA";
         return appGenre;
     }
 

@@ -47,7 +47,7 @@ public class SemanticTempCSVUtil {
 
     public static String encodeNotification (NotificationParcel in){
         StringBuilder encoded = new StringBuilder("");
-        encoded.append("notification," + in.PACKAGE_NAME + "," + in.POST_TIME + ",");
+        encoded.append("notification," + in.PACKAGE_NAME + "," + new Date(in.POST_TIME) + ",");
         encoded.append(SemanticAbsUtil.getSemanticNotificaiton(in.PACKAGE_NAME) + ",");
         encoded.append(TempGranUtil.getTemporalTimeStamp(new Date(in.POST_TIME)));
 

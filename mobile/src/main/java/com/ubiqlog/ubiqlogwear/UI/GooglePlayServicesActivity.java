@@ -17,7 +17,7 @@ import com.ubiqlog.ubiqlogwear.R;
 
 
 public class GooglePlayServicesActivity extends Activity  {
-    private static final String TAG = "GooglePlayServicesActivity";
+    private static final String TAG = GooglePlayServicesActivity.class.getSimpleName();
 
     private static final String FITNESS_IN_RES = "is_in_resolution";
 

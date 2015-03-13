@@ -47,8 +47,7 @@ public class OldMailActivity extends Activity {
                 if (roundBack != null) {
                     MenuItems menuItems = new MenuItems(OldMailActivity.this);
                     //Start Alarm manager
-                    AlarmReceiver alarmReceiver = new AlarmReceiver();
-                    alarmReceiver.setMidnightAlarmManager(OldMailActivity.this);
+
                     listView = (WearableListView) roundBack.findViewById(R.id.wearable_list);
                     listView.setAdapter(new MyAdapter(OldMailActivity.this, menuItems.createMeListItems()));
                     listView.setClickListener(new WearableListView.ClickListener() {
@@ -86,6 +85,12 @@ public class OldMailActivity extends Activity {
         if (FeatureCheck.hasLightFeature(this)) {
             startService(new Intent(this, LightSensor.class));
         }
+
+        AlarmReceiver alarmReceiver = new AlarmReceiver();
+        alarmReceiver.setMidnightAlarmManager(OldMailActivity.this);
+        //TODO Remove NotifExperiment
+        //BufferExperiment bufferExperiment = new BufferExperiment();
+        //bufferExperiment.setTestAlarmManager(this);
     }
 
 }
