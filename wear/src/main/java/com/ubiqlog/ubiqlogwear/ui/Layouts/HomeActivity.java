@@ -78,10 +78,10 @@ public class HomeActivity extends Activity {
                 //labelParams.addRule(RelativeLayout.BELOW, icon.getId());
                 label.setLayoutParams(labelParams);
                 label.setSingleLine(false);
-                label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+                label.setTextSize(getResources().getDimension(R.dimen.home_labels_fontsize));
                 label.setText(itemLabel);
                 label.setLines(2);
-                label.setTextColor(Color.parseColor("#ca8b02"));
+                label.setTextColor(getResources().getColor(R.color.home_labels_color));
                 label.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                 label.setGravity(Gravity.TOP | Gravity.CENTER);
                 contentItem.addView(label);
@@ -90,7 +90,7 @@ public class HomeActivity extends Activity {
                         GridLayout.spec(i, GridLayout.CENTER),
                         GridLayout.spec(j, GridLayout.CENTER)));
 
-                if (index == menuItems.length-1)
+                if (index == menuItems.length - 1)
                     break;
                 index += 1;
             }

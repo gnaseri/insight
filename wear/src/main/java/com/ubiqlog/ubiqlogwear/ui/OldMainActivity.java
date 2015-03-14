@@ -23,10 +23,10 @@ import com.ubiqlog.ubiqlogwear.utils.PredictionNotification;
  * Created by Cole
  */
 
-public class OldMailActivity extends Activity {
+public class OldMainActivity extends Activity {
 
 
-    public static String LOG_TAG = OldMailActivity.class.getSimpleName();
+    public static String LOG_TAG = OldMainActivity.class.getSimpleName();
 
     private WearableListView listView;
     private BoxInsetLayout roundBack;
@@ -45,11 +45,11 @@ public class OldMailActivity extends Activity {
             public void onLayoutInflated(WatchViewStub stub) {
                 roundBack = (BoxInsetLayout) stub.findViewById(R.id.roundLayout);
                 if (roundBack != null) {
-                    MenuItems menuItems = new MenuItems(OldMailActivity.this);
+                    MenuItems menuItems = new MenuItems(OldMainActivity.this);
                     //Start Alarm manager
 
                     listView = (WearableListView) roundBack.findViewById(R.id.wearable_list);
-                    listView.setAdapter(new MyAdapter(OldMailActivity.this, menuItems.createMeListItems()));
+                    listView.setAdapter(new MyAdapter(OldMainActivity.this, menuItems.createMeListItems()));
                     listView.setClickListener(new WearableListView.ClickListener() {
                         @Override
                         public void onClick(WearableListView.ViewHolder viewHolder) {
@@ -57,7 +57,7 @@ public class OldMailActivity extends Activity {
                             MainListItem listItem = (MainListItem) viewHolder.itemView.getTag();
                             if (!listItem.getTitle().equals("Me") &&
                                     !listItem.getTitle().equals("System"))
-                                startActivity(listItem.getIntent(OldMailActivity.this));
+                                startActivity(listItem.getIntent(OldMainActivity.this));
 
                         }
 
@@ -87,7 +87,7 @@ public class OldMailActivity extends Activity {
         }
 
         AlarmReceiver alarmReceiver = new AlarmReceiver();
-        alarmReceiver.setMidnightAlarmManager(OldMailActivity.this);
+        alarmReceiver.setMidnightAlarmManager(OldMainActivity.this);
         //TODO Remove NotifExperiment
         //BufferExperiment bufferExperiment = new BufferExperiment();
         //bufferExperiment.setTestAlarmManager(this);
