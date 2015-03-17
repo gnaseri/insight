@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Wearable;
+import com.ubiqlog.ubiqlogwear.sensors.ActivitySensor;
 import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
 
 import java.util.Calendar;
@@ -68,6 +69,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.d("AlarmRecv", "ALARM ");
         sendFitDataSync(context);
+        reconnectStepCount();
     }
 
     private void sendFitDataSync(final Context context){
@@ -95,8 +97,12 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                 /* Sync msg & time to handheld */
                 WearableSendSync.sendSyncToDevice(mGoogleAPIClient, WearableSendSync.START_ACTV_SYNC, date);
                 WearableSendSync.sendSyncToDevice(mGoogleAPIClient, WearableSendSync.START_HIST_SYNC, date);
+                WearableSendSync.sendDailyNotifFileWrapper(mGoogleAPIClient);
 
             }
         });
+    }
+    private void reconnectStepCount(){
+        ActivitySensor.mFitnessClient.reconnect();
     }
 }

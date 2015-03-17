@@ -25,7 +25,10 @@ import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.Objects.NotificationParcel;
 import com.ubiqlog.ubiqlogwear.UI.HeartRateActivity;
+import com.ubiqlog.ubiqlogwear.Util.FileUtils;
+import com.ubiqlog.ubiqlogwear.Util.NotifLookupUtil;
 
+import java.io.File;
 import java.util.Date;
 
 public class WearableDataLayer implements MessageApi.MessageListener{
@@ -131,6 +134,24 @@ public class WearableDataLayer implements MessageApi.MessageListener{
         });
         p.recycle();
 
+    }
+
+    public static void sendSACompleteToWear (Context context,GoogleApiClient mClient, String filename){
+        File file = new File (context.getFilesDir() + NotifLookupUtil.sa_completeDir + "/" + NotifLookupUtil.completeFileName);
+
+
+        //Convert to byte arr
+        byte [] bytes = FileUtils.convertFileToBytes(file);
+
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/post/SA/notifFile");
+        putDataMapReq.getDataMap().putLong("time", new Date().getTime());
+        putDataMapReq.getDataMap().putString("filename", filename);
+        putDataMapReq.getDataMap().putByteArray("SA_Notif_File", bytes);
+
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        //Send Data To wearable
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mClient,putDataReq);
     }
 
 

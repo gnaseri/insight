@@ -85,7 +85,7 @@ public class WearableSendSync  {
     }
     private static void sendDailyNotifFile(GoogleApiClient mGoogleApiClient, String nodeId){
         IOManager ioManager = new IOManager();
-        File[] notifFileArr = ioManager.getLastFilesInDir("Notif", 1); //only get the last file
+        File[] notifFileArr = ioManager.getLastFilesInDir("SA/Notif", 1); //only get the last file
         File notifFile = notifFileArr[0];
 
         //Convert to byte arr
@@ -93,6 +93,7 @@ public class WearableSendSync  {
 
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/get/notifFile");
         putDataMapReq.getDataMap().putLong("time", new Date().getTime());
+        putDataMapReq.getDataMap().putString("filename", notifFile.getAbsolutePath());
         putDataMapReq.getDataMap().putByteArray("NOTIF_FILE", bytes);
 
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();

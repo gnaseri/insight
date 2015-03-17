@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Manouchehr on 2/13/2015.
  */
 public class wActivity extends Activity {
-
+    private GoogleApiClient mGoogleApiClient;
     private final String TAG = this.getClass().getSimpleName();
 
     JSONUtil jsonUtil = new JSONUtil();
@@ -344,7 +344,7 @@ public class wActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(wActivity.this)
+            mGoogleApiClient = new GoogleApiClient.Builder(wActivity.this)
                     .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                         @Override
                         public void onConnected(Bundle bundle) {

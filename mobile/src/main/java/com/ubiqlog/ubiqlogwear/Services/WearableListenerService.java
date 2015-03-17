@@ -16,6 +16,7 @@ import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
+import com.ubiqlog.ubiqlogwear.Util.NotifLookupUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -61,8 +62,14 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
                 }
                 if (item.getUri().getPath().compareTo(NOTIF_FILE_KEY) == 0){
                     Log.d(TAG, "NOTIF FILE");
-                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                    handleNotifFile(dataMap);
+
+                    synchronized (this){
+                        DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                        handleNotifFile(dataMap); // Creates file with SA completed and mapped
+                        WearableDataLayer.sendSACompleteToWear(this,mGoogleApiClient, getFileName(dataMap));
+                        cleanUpFiles(this);
+                    }
+
 
 
                 }
@@ -134,6 +141,7 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
                 .build();
     }
 
+    /* tmp.txt will be overwritten with each time */
     private void handleNotifFile(DataMap dataMap){
         byte[] bytes = dataMap.getByteArray("NOTIF_FILE");
         File dirs = new File (this.getFilesDir() + "/notif");
@@ -144,11 +152,23 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
                 FileOutputStream fos = new FileOutputStream(tmp);
                 fos.write(bytes);
                 fos.close();
+
+                NotifLookupUtil.handleNotifLookup(this, tmp.getAbsolutePath());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+    }
+    private String getFileName(DataMap dataMap){
+        String fileName = dataMap.getString("filename");
+        return fileName;
+    }
+
+    private void cleanUpFiles(Context context){
+        File saCompleteNotifFile = new File (context.getFilesDir() + NotifLookupUtil.sa_completeDir + "/" + NotifLookupUtil.completeFileName);
+        saCompleteNotifFile.delete();
 
     }
 }

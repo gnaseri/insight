@@ -27,6 +27,10 @@ import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 import com.ubiqlog.ubiqlogwear.utils.SemanticTempCSVUtil;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -210,6 +214,16 @@ public class NotificationSensor extends WearableListenerService {
 
                 }
 
+                if (item.getUri().getPath().compareTo("/post/SA/notifFile") == 0){
+                    Log.d(TAG, "Received SA Complete");
+                    // Overwrite previous SA File
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    overWritePreviousSAFile(dataMap);
+
+
+
+                }
+
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
                 // DataItem deleted
             }
@@ -384,6 +398,25 @@ public class NotificationSensor extends WearableListenerService {
         }
         encoded = JSONUtil.encodeActivitySegments(new Date(startTime),new Date(endTime),activity,duration);
         return encoded;
+
+    }
+
+    private void overWritePreviousSAFile(DataMap dataMap){
+        String filename = dataMap.getString("filename");
+        Log.d(TAG, "Filename: " + filename);
+        byte[] bytes = dataMap.getByteArray("SA_Notif_File");
+        File file = new File (filename);
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(file, false);
+            fos.write(bytes);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
