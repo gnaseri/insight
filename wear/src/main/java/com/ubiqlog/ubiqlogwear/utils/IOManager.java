@@ -94,19 +94,21 @@ public class IOManager {
         File dir = new File(getDataFolderFullPath(folder));
         File[] files = dir.listFiles(myFilter);
 
-        // sort files list on lastModified date
-        Arrays.sort(files, new Comparator() {
-            public int compare(Object o1, Object o2) {
-                if (((File) o1).lastModified() > ((File) o2).lastModified()) {
-                    return -1;
-                } else if (((File) o1).lastModified() < ((File) o2).lastModified()) {
-                    return +1;
-                } else {
-                    return 0;
-                }
-            }
-        });
 
+        // sort files list on lastModified date
+        if (files.length > 0) {
+            Arrays.sort(files, new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    if (((File) o1).lastModified() > ((File) o2).lastModified()) {
+                        return -1;
+                    } else if (((File) o1).lastModified() < ((File) o2).lastModified()) {
+                        return +1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
+        }
         // return limited count of files ordered by lastModified date
         if (files.length <= count)
             return files;
@@ -162,9 +164,9 @@ public class IOManager {
         return null;
     }
 
-    public byte[] convertFileToBytes(File file){
-        byte[] bytes = new byte[(int)file.length()];
-        try{
+    public byte[] convertFileToBytes(File file) {
+        byte[] bytes = new byte[(int) file.length()];
+        try {
             FileInputStream fileInputStream = new FileInputStream(file);
             fileInputStream.read(bytes);
             return bytes;
