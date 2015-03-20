@@ -352,12 +352,14 @@ public class NotificationSensor extends WearableListenerService {
             List<DataSet> dataSets = bucket.getDataSets();
             for (DataSet dataSet: dataSets){
 
-                String encoded = encodeActvDataSet(dataSet);
+                String encoded = SA_encodeActvDataSet(dataSet);
                 mSA_ActivBuffer.insert(encoded,false, Integer.MAX_VALUE);
             }
         }
         mSA_ActivBuffer.flush(false);
     }
+
+
 
     private static void processDataSet(DataSet dataSet){
         for (DataPoint dp : dataSet.getDataPoints()) {
@@ -397,6 +399,32 @@ public class NotificationSensor extends WearableListenerService {
 
         }
         encoded = JSONUtil.encodeActivitySegments(new Date(startTime),new Date(endTime),activity,duration);
+        return encoded;
+
+    }
+
+    private static String SA_encodeActvDataSet(DataSet dataSet){
+        Long startTime = null;
+        Long endTime = null;
+        String activity = null;
+        Integer duration = null;
+
+        String encoded;
+
+        for (DataPoint dp : dataSet.getDataPoints()){
+            startTime = dp.getStartTime(TimeUnit.MILLISECONDS);
+            endTime = dp.getEndTime(TimeUnit.MILLISECONDS);
+            for (Field field : dp.getDataType().getFields()){
+                if (field.getName().equals("activity")){
+                    activity = dp.getValue(field).asActivity();
+                }
+                if (field.getName().equals("duration")){
+                    duration = dp.getValue(field).asInt();
+                }
+            }
+
+        }
+        encoded = SemanticTempCSVUtil.encodedActivSegments(new Date(startTime),activity,duration);
         return encoded;
 
     }

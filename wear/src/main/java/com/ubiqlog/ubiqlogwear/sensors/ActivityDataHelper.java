@@ -84,7 +84,7 @@ public class ActivityDataHelper {
                         mDataBuffer.flush(true);
 
                         String encoded_SA = SemanticTempCSVUtil.encodeStepActivity(startTime,culmStepAmnt,diffInStep);
-                        mSA_stepBuffer.insert(encoded,true,Setting.bufferMaxSize);
+                        mSA_stepBuffer.insert(encoded_SA,true,Setting.bufferMaxSize);
                         mSA_stepBuffer.flush(true);
 
 
