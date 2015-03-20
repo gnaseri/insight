@@ -2,9 +2,12 @@ package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
@@ -43,14 +46,29 @@ public class wNotifications extends Activity {
         TextView tvTitle = (TextView) findViewById(R.id.tvTitle);
         tvTitle.setText(R.string.title_activity_wnotifications);
 
-        Date date;
         lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_Notifications, Setting.linksButtonCount);
-        if (lastDataFilesList != null && lastDataFilesList.length > 0)
-            date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());
-        else
-            date = new Date();
+        if (lastDataFilesList != null && lastDataFilesList.length > 0) {
+            Date date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());
+            displayDataList(date);
+        } else {
+            TextView tvMessage = new TextView(this);
+            tvMessage.setGravity(Gravity.CENTER_HORIZONTAL);
+            tvMessage.setText(getResources().getString(R.string.message_nodata));
+            RelativeLayout.LayoutParams tvMessageParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            tvMessageParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            tvMessageParams.topMargin = 60;
+            tvMessage.setLayoutParams(tvMessageParams);
+            RelativeLayout frameBox = (RelativeLayout) tvTitle.getParent().getParent();
+            frameBox.removeViewsInLayout(1, frameBox.getChildCount() - 1); // remove all views except title
+            frameBox.addView(tvMessage, 1);
+        }
 
-        displayDataList(date);
+        //-------------------------------- pop up a prediction on watch screen
+        /*
+        PredictionNotification predictionNotification = new PredictionNotification();
+        predictionNotification.show(this, "Caution", "Your battery is going to drain faster than average!");
+        Toast.makeText(this, "Prediction Created!", Toast.LENGTH_SHORT).show();
+        */
     }
 
     public void displayDataList(Date date) {

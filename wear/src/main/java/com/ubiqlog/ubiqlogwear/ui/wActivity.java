@@ -59,25 +59,39 @@ public class wActivity extends Activity {
     IOManager ioManager = new IOManager();
     File[] lastDataFilesList;
 
+    TextView tvDate = null;
+    TextView tvLastSync = null;
+    ScrollView scrollView = null;
+    LinearLayout frameBox = null;
+    ImageView linksCursor = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chart);
+        tvDate = (TextView) findViewById(R.id.tvDate);
+        tvLastSync = (TextView) findViewById(R.id.tvLastSync);
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
+        frameBox = (LinearLayout) findViewById(R.id.frameBox);
+        linksCursor = (ImageView) findViewById(R.id.linksCursor);
 
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
         tvTitle.setText(R.string.title_activity_wactivity);
 
-        Date date;
+
         lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_ActivFit, Setting.linksButtonCount);
         //lastDataFilesList = new File[]{new File("sdcard/2-9-2015.txt"), new File("sdcard/2-8-2015.txt")}; // reading from temp file
-        if (lastDataFilesList != null && lastDataFilesList.length > 0)
-            date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());//
-        else
-            date = new Date();
-
-        displayData(date);
+        if (lastDataFilesList != null && lastDataFilesList.length > 0) {
+            Date date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());//
+            displayData(date);
+        } else {
+            tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(new Date()));
+            tvLastSync.setText("\n" + getResources().getString(R.string.message_nodata));
+            tvLastSync.setTextSize(getResources().getDimension(R.dimen.textsize_m1));
+            linksCursor.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -135,14 +149,8 @@ public class wActivity extends Activity {
     }
 
     private void displayData(Date date) {
-        final TextView tvDate = (TextView) findViewById(R.id.tvDate);
         tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
-
-        final TextView tvLastSync = (TextView) findViewById(R.id.tvLastSync);
         tvLastSync.setText("Last Sync: " + new SimpleDateFormat("MM/dd/yyyy hh:mm").format(date));
-
-        final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
-        final LinearLayout frameBox = (LinearLayout) findViewById(R.id.frameBox);
 
         HashMap<String, ArrayList<ActivityDataRecord>> dataMapList = fetchData(date);
         if (dataMapList.size() <= 0) return;
@@ -182,7 +190,6 @@ public class wActivity extends Activity {
             i += 1;
         }
 
-
         // add a cursor point to show the user the scroll feature ////////////////////////////////////////////////////////
         final AnimationSet aniSetCursor = new AnimationSet(true);
         final AlphaAnimation aniAlpha = new AlphaAnimation(1.0f, 0.0f);
@@ -196,7 +203,6 @@ public class wActivity extends Activity {
         aniMove.setRepeatCount(2);
         aniSetCursor.addAnimation(aniMove);
 
-        final ImageView linksCursor = (ImageView) findViewById(R.id.linksCursor);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics); // get screen properties ex. size
         RelativeLayout.LayoutParams linksCursorParams = (RelativeLayout.LayoutParams) linksCursor.getLayoutParams();
@@ -253,7 +259,7 @@ public class wActivity extends Activity {
 
         // filling the series with random values for Y:0 to X:0-24
         for (int i = 0; i <= 23; i++) {
-            series1.add(i,2);
+            series1.add(i, 2);
         }
 
         for (ActivityDataRecord record : dataRecords) {
@@ -331,13 +337,6 @@ public class wActivity extends Activity {
         public int duration;
         public int density; // density of records in same hour
     }
-
-
-
-
-
-
-
 
 
     private class SyncFitActivityData extends AsyncTask<Void, Void, Void> {

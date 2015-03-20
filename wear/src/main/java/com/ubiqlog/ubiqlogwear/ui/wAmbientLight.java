@@ -49,37 +49,43 @@ public class wAmbientLight extends Activity {
     IOManager ioManager = new IOManager();
     File[] lastDataFilesList;
 
+    TextView tvDate = null;
+    TextView tvLastSync = null;
+    ScrollView scrollView = null;
+    LinearLayout frameBox = null;
+    ImageView linksCursor = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chart);
+        tvDate = (TextView) findViewById(R.id.tvDate);
+        tvLastSync = (TextView) findViewById(R.id.tvLastSync);
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
+        frameBox = (LinearLayout) findViewById(R.id.frameBox);
+        linksCursor = (ImageView) findViewById(R.id.linksCursor);
 
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
         tvTitle.setText(R.string.title_activity_wambientlight);
 
-        Date date;
         lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_LightSensor, Setting.linksButtonCount);
-        if (lastDataFilesList != null && lastDataFilesList.length > 0)
-            date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());
-        else
-            date = new Date();
-
-        displayData(date);
+        if (lastDataFilesList != null && lastDataFilesList.length > 0) {
+            Date date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());//
+            displayData(date);
+        } else {
+            tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(new Date()));
+            tvLastSync.setText("\n" + getResources().getString(R.string.message_nodata));
+            tvLastSync.setTextSize(getResources().getDimension(R.dimen.textsize_m1));
+            linksCursor.setVisibility(View.INVISIBLE);
+        }
 
     }
 
     private void displayData(Date date) {
-        final TextView tvDate = (TextView) findViewById(R.id.tvDate);
         tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
-
-        final TextView tvLastSync = (TextView) findViewById(R.id.tvLastSync);
-        //tvLastSync.setText("Last Sync: " + new SimpleDateFormat("MM/dd/yyyy hh:mm").format(date));
         tvLastSync.setHeight(0);
-
-        final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
-        final LinearLayout frameBox = (LinearLayout) findViewById(R.id.frameBox);
 
         // remove all added views before except linksbox and tvLastSync label
         frameBox.removeViewsInLayout(1, frameBox.getChildCount() - 2);
@@ -106,7 +112,6 @@ public class wAmbientLight extends Activity {
         aniMove.setRepeatCount(2);
         aniSetCursor.addAnimation(aniMove);
 
-        final ImageView linksCursor = (ImageView) findViewById(R.id.linksCursor);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics); // get screen properties ex. size
         RelativeLayout.LayoutParams linksCursorParams = (RelativeLayout.LayoutParams) linksCursor.getLayoutParams();

@@ -42,9 +42,6 @@
     <string name="hello_square">Hello Square World!</string>
     <string name="title_activity_heart_rate">HeartRateActivity</string>
     <string name="title_activity_w_activity_fit">wActivityFit</string>
-
-    <string name="hello">Hello World!</string>
-    <string name="title">Hello Notification!</string>
-    <string name="notification_posted">Notification posted</string>
+    <string name="message_nodata">\nNo Data!</string>
 
 </resources>

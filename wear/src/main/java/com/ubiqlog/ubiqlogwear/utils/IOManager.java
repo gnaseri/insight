@@ -93,10 +93,8 @@ public class IOManager {
 
         File dir = new File(getDataFolderFullPath(folder));
         File[] files = dir.listFiles(myFilter);
-
-
-        // sort files list on lastModified date
-        if (files.length > 0) {
+        if (files != null) {
+            // sort files list on lastModified date
             Arrays.sort(files, new Comparator() {
                 public int compare(Object o1, Object o2) {
                     if (((File) o1).lastModified() > ((File) o2).lastModified()) {
@@ -108,15 +106,18 @@ public class IOManager {
                     }
                 }
             });
-        }
-        // return limited count of files ordered by lastModified date
-        if (files.length <= count)
-            return files;
-        else {
-            File[] result = new File[count];
-            System.arraycopy(files, 0, result, 0, result.length);
-            return result;
-        }
+
+            // return limited count of files ordered by lastModified date
+            if (files.length <= count)
+                return files;
+            else {
+                File[] result = new File[count];
+                System.arraycopy(files, 0, result, 0, result.length);
+                return result;
+            }
+
+        } else
+            return null;
     }
 
 
