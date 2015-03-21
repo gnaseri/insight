@@ -90,8 +90,33 @@ public class ColdStart {
         String sensorTime = tokens[4];
         String weekDay = getWeekday(tokens[2]);
 
+        String tmp;
+        if ((tmp = convertBatteryData(sensorData)) != null){
+            sensorData = tmp;
+        }
+
         SA_Obj saObj = new SA_Obj(sensorName,sensorData, weekDay, sensorTime);
         return saObj;
+    }
+
+    private static String convertBatteryData (String dataToken){
+        if (dataToken.contains("Charging:")){
+            StringBuilder output = new StringBuilder("");
+
+            String[] tokens = dataToken.split(" ");
+            String percent = tokens[0];
+            String state = tokens[1];
+            output.append(percent + "-");
+            String[] chargingTokens = state.split(":");
+            if (chargingTokens[1].equals("true")){
+                output.append("Charging");
+            }
+            else{
+                output.append("Discharging");
+            }
+            return output.toString();
+        }
+        return null;
     }
 
 
