@@ -83,7 +83,7 @@
         -->
 
         <receiver
-            android:name=".Alarm.AlarmReceiver"
+            android:name=".alarm.AlarmReceiver"
             android:process=":remote" />
     </application>
 
