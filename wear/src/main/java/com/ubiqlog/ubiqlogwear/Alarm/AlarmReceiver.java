@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.Alarm;
+package com.ubiqlog.ubiqlogwear.alarm;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -39,11 +39,12 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
 
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY,
                 alarmIntent
         );
+
 
         return alarm;
     }
