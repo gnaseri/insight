@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.services;
+package com.ubiqlog.ubiqlogwear.Services;
 
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;

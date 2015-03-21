@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.adapters;
+package com.ubiqlog.ubiqlogwear.Adapters;
 
 import android.content.Context;
 import android.support.wearable.view.WearableListView;
@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.ui.MainListItem;
+import com.ubiqlog.ubiqlogwear.common.MainListItem;
 
 /**
  * Created by User on 2/4/15.

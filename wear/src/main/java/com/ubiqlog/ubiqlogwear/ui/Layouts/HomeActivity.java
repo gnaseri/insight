@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.ui.layouts;
+package com.ubiqlog.ubiqlogwear.ui.Layouts;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.ui.MainListItem;
+import com.ubiqlog.ubiqlogwear.common.MainListItem;
 import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.sensors.ActivitySensor;
 import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;

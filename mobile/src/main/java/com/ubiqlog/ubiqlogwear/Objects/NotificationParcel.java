@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.objects;
+package com.ubiqlog.ubiqlogwear.Objects;
 
 import android.app.Notification;
 import android.os.Build;

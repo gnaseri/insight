@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.util;
+package com.ubiqlog.ubiqlogwear.Util;
 
 import android.content.Context;
 import android.util.Log;

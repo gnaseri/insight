@@ -204,9 +204,7 @@ public class ColdStart {
 
     public static void getProfile(){
         Log.d("ColdStart", "Started profile");
-        ArrayList<String> dirNames = new ArrayList<>
-                (Arrays.asList("SA/BatterySensor", "SA/Bluetooth", "SA/Notif", "SA/ActivFit",
-                "SA/Activity", "SA/HeartRate"));
+        ArrayList<String> dirNames = new ArrayList<>(Arrays.asList("SA/BatterySensor", "SA/Bluetooth", "SA/Notif"));
         for (String dirName : dirNames){
             File[] files = getFirstFilesInDir(dirName, 7);
             compareAllFiles(files);

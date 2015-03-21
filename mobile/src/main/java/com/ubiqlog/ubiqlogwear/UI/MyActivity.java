@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.ui;
+package com.ubiqlog.ubiqlogwear.UI;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.services.WearableListenerService;
+import com.ubiqlog.ubiqlogwear.Services.WearableListenerService;
 
 public class MyActivity extends Activity {
 

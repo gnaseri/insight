@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.ui.layouts;
+package com.ubiqlog.ubiqlogwear.ui.Layouts;
 
 import android.content.Context;
 import android.support.wearable.view.WearableListView;

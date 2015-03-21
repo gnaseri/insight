@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.util;
+package com.ubiqlog.ubiqlogwear.Util;
 
 import java.io.File;
 import java.io.FileInputStream;

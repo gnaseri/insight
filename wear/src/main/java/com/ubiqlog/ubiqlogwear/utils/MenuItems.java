@@ -3,7 +3,7 @@ package com.ubiqlog.ubiqlogwear.utils;
 import android.app.Activity;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.ui.MainListItem;
+import com.ubiqlog.ubiqlogwear.common.MainListItem;
 import com.ubiqlog.ubiqlogwear.ui.wActivity;
 import com.ubiqlog.ubiqlogwear.ui.wAmbientLight;
 import com.ubiqlog.ubiqlogwear.ui.wAppUsage;

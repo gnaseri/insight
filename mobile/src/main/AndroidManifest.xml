@@ -17,7 +17,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".ui.MyActivity"
+            android:name=".UI.MyActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,11 +26,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.GooglePlayServicesActivity"
+            android:name=".UI.GooglePlayServicesActivity"
             android:label="@string/title_activity_google_play_services" />
 
         <service
-            android:name=".services.NotificationSensor"
+            android:name=".Services.NotificationSensor"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
             <intent-filter>
@@ -38,7 +38,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".services.AppUsageSensor"
+            android:name=".Services.AppUsageSensor"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
@@ -47,26 +47,26 @@
         </service>
 
         <activity
-            android:name=".ui.NotificationActivity"
+            android:name=".UI.NotificationActivity"
             android:label="@string/title_activity_notification" >
         </activity>
         <activity
-            android:name=".ui.TestHeartRate"
+            android:name=".UI.TestHeartRate"
             android:label="@string/title_activity_test_heart_rate" >
         </activity>
         <activity
-            android:name=".ui.HeartRateActivity"
+            android:name=".UI.HeartRateActivity"
             android:label="@string/title_activity_heart_rate" >
         </activity>
 
-        <service android:name=".services.WearableListenerService" >
+        <service android:name=".Services.WearableListenerService" >
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
         </service>
 
         <activity
-            android:name=".ui.ActivitySegmentActivity"
+            android:name=".UI.ActivitySegmentActivity"
             android:label="@string/title_activity_activity_segment" >
         </activity>
 
