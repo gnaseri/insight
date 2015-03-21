@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -17,11 +18,15 @@ import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.common.MainListItem;
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.sensors.ActivitySensor;
 import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;
 import com.ubiqlog.ubiqlogwear.sensors.LightSensor;
 import com.ubiqlog.ubiqlogwear.utils.FeatureCheck;
 import com.ubiqlog.ubiqlogwear.utils.MenuItems;
+import com.ubiqlog.ubiqlogwear.utils.coldstart.ColdStart;
+
+import java.io.File;
 
 /**
  * Created by Manouchehr on 3/10/2015.
@@ -95,6 +100,11 @@ public class HomeActivity extends Activity {
                 index += 1;
             }
         startAllServices();
+        File out = new File ( Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
+                + Setting.APP_FOLDER + "/" +  "profile");
+        if (!out.exists())
+            ColdStart.getProfile();
+
     }
 
 
