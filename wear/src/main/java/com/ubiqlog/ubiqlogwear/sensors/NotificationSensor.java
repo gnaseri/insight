@@ -7,10 +7,12 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.data.FreezableUtils;
+import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.data.Value;
+import com.google.android.gms.fitness.result.DataReadResult;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
@@ -20,9 +22,15 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 import com.ubiqlog.ubiqlogwear.common.NotificationParcel;
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
+import com.ubiqlog.ubiqlogwear.utils.SemanticTempCSVUtil;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 public class NotificationSensor extends WearableListenerService {
     private final String NOTIF_KEY = "com.insight.notif";
     private final String HEART_KEY = "com.insight.heartrate";
+    private final String ACTV_KEY = "com.insight.activity";
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy HH:mm:ss");
 
@@ -48,6 +57,13 @@ public class NotificationSensor extends WearableListenerService {
     private DataAcquisitor mBTBuffer;
     private DataAcquisitor mNotifBuffer;
     private DataAcquisitor mHeartBuffer;
+    private static DataAcquisitor mActivBuffer;
+
+    //TemporalGran Buffers
+    private DataAcquisitor mSA_NotifBuffer;
+    private DataAcquisitor mSA_BTBuffer;
+    private DataAcquisitor mSA_HeartBuffer;
+    private static DataAcquisitor mSA_ActivBuffer;
 
     private String lastPackageName;
     private String lastExtraText;
@@ -66,6 +82,14 @@ public class NotificationSensor extends WearableListenerService {
         mBTBuffer = new DataAcquisitor(this,"Bluetooth");
         mNotifBuffer = new DataAcquisitor(this,"Notif");
         mHeartBuffer = new DataAcquisitor(this,"HeartRate");
+        mActivBuffer = new DataAcquisitor(this,"ActivFit");
+
+        //TemporalGran buffers
+        mSA_BTBuffer = new DataAcquisitor(this,"SA/Bluetooth");
+        mSA_NotifBuffer = new DataAcquisitor(this,"SA/Notif");
+        mSA_HeartBuffer = new DataAcquisitor(this,"SA/HeartRate");
+        mSA_ActivBuffer = new DataAcquisitor(this,"SA/ActivFit");
+
         mClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
@@ -87,6 +111,14 @@ public class NotificationSensor extends WearableListenerService {
         mBTBuffer.flush(true);
         mNotifBuffer.flush(true);
         mHeartBuffer.flush(true);
+        mActivBuffer.flush(true);
+
+        //TempGran Buffers
+        mSA_BTBuffer.flush(true);
+        mSA_ActivBuffer.flush(true);
+        mSA_HeartBuffer.flush(true);
+        mSA_NotifBuffer.flush(true);
+
         super.onDestroy();
     }
 
@@ -95,8 +127,10 @@ public class NotificationSensor extends WearableListenerService {
         Log.d(TAG, "Bluetooth connected");
         String encoded = JSONUtil.encodeBT("Connected", new Date());
         Log.d(TAG,encoded);
-        mBTBuffer.insert(encoded,true);
-        mBTBuffer.flush(true);
+        mBTBuffer.insert(encoded,true,Setting.bufferMaxSize);
+
+        String encoded_SA = SemanticTempCSVUtil.encodedBT("Connected", new Date());
+        mSA_BTBuffer.insert(encoded_SA,true,Setting.bufferMaxSize);
     }
 
     @Override
@@ -104,8 +138,12 @@ public class NotificationSensor extends WearableListenerService {
         Log.d(TAG, "Bluetooth Disconnected");
         String encoded = JSONUtil.encodeBT("Disconnected", new Date());
         Log.d(TAG,encoded);
-        mBTBuffer.insert(encoded,true);
-        mBTBuffer.flush(true);
+        mBTBuffer.insert(encoded,true, Setting.bufferMaxSize);
+
+        String encoded_SA = SemanticTempCSVUtil.encodedBT("Disconnected", new Date());
+        mSA_BTBuffer.insert(encoded_SA,true,Setting.bufferMaxSize);
+
+
     }
 
     @Override
@@ -120,7 +158,7 @@ public class NotificationSensor extends WearableListenerService {
                 if (item.getUri().getPath().compareTo("/notif") == 0) {
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     final byte[] bytes = dataMap.getByteArray(NOTIF_KEY);
-                    Log.d(TAG, "Parcelable retrieved of size:" + bytes.length);
+
                     NotificationParcel np = unMarshall(bytes);
                     if (lastPackageName == null){
                         lastPackageName = np.PACKAGE_NAME;
@@ -139,22 +177,49 @@ public class NotificationSensor extends WearableListenerService {
                     lastPackageName = np.PACKAGE_NAME;
                     lastTitle = np.EXTRA_TITLE;
                     String encoded = JSONUtil.encodeNotification(np);
+
                     Log.d(TAG, encoded);
-                    mNotifBuffer.insert(encoded,true);
+                    mNotifBuffer.insert(encoded,true, Setting.bufferMaxSize);
                     mNotifBuffer.flush(true);
+
+                    //tempGran
+                    String encoded_SA = SemanticTempCSVUtil.encodeNotification(np);
+                    mSA_NotifBuffer.insert(encoded_SA, true, Setting.bufferMaxSize);
+                    mSA_NotifBuffer.flush(true);
 
 
                 }
-                if (item.getUri().getPath().compareTo("/data") == 0){
+                if (item.getUri().getPath().compareTo("/heartrate") == 0){
                     Log.d(TAG, "Heartrate");
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     final byte[] bytes = dataMap.getByteArray(HEART_KEY);
-                    Log.d(TAG, "Parcelable retrieved of size:" + bytes.length);
                     DataSet dataSet = unMarshallHeartData(bytes);
-                   // dumpHeartDataPoints(dataSet);
                     ArrayList <String> encodedDataSet = encodeDataSet(dataSet);
                     writeHeartRateValues(encodedDataSet);
-                    //String encoded = JSONUtil.encodeNotification(np);
+
+                    writeSA_Heart_DataSet(dataSet);
+
+
+
+                }
+                if (item.getUri().getPath().compareTo("/actv") == 0){
+                    Log.d(TAG, "Activity Data");
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    final byte[] bytes = dataMap.getByteArray(ACTV_KEY);
+
+                    DataReadResult result = unMarshallActivityResult(bytes);
+                    writeActivResults(result);
+
+                    writeSA_ActivResults(result);
+
+                }
+
+                if (item.getUri().getPath().compareTo("/post/SA/notifFile") == 0){
+                    Log.d(TAG, "Received SA Complete");
+                    // Overwrite previous SA File
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    overWritePreviousSAFile(dataMap);
+
 
 
                 }
@@ -185,6 +250,16 @@ public class NotificationSensor extends WearableListenerService {
         parcel.recycle();
         return dataSet;
     }
+    private DataReadResult unMarshallActivityResult (byte[] bytes){
+        Parcel parcel = Parcel.obtain();
+        parcel.unmarshall(bytes,0,bytes.length);
+        parcel.setDataPosition(0);
+
+        DataReadResult result = DataReadResult.CREATOR.createFromParcel(parcel);
+        parcel.recycle();
+        return result;
+
+    }
 
     private static void dumpHeartDataPoints(DataSet dataSet) {
         for (DataPoint dp : dataSet.getDataPoints()) {
@@ -210,6 +285,7 @@ public class NotificationSensor extends WearableListenerService {
                 bpm = dp.getValue(field);
                 Log.d(TAG, "BPM:" + bpm);
                 String encoded = JSONUtil.encodeHeartRate(start,bpm.asFloat());
+                Log.d(TAG, encoded);
                 encodedDp.add(encoded);
             }
 
@@ -222,9 +298,154 @@ public class NotificationSensor extends WearableListenerService {
      */
     private void writeHeartRateValues(ArrayList<String> encoded){
         for (String s : encoded){
-            mHeartBuffer.insert(s,false);
+            mHeartBuffer.insert(s,false, Setting.bufferMaxSize);
         }
         mHeartBuffer.flush(false);
+    }
+
+    private void writeSA_Heart_DataSet(DataSet dataSet){
+
+        for (DataPoint dp : dataSet.getDataPoints()){
+            Date start = new Date(dp.getStartTime(TimeUnit.MILLISECONDS));
+
+            Value bpm;
+            for (Field field : dp.getDataType().getFields()){
+                bpm = dp.getValue(field);
+                Log.d(TAG, "BPM:" + bpm);
+                String encoded = SemanticTempCSVUtil.encodedHeartRate(bpm.asFloat(),start);
+                Log.d(TAG, encoded);
+                mSA_HeartBuffer.insert(encoded, false, Integer.MAX_VALUE);
+            }
+
+            Log.d(TAG,"---------");
+        }
+        mSA_HeartBuffer.flush(false);
+    }
+
+    private static void printReadResult(DataReadResult dataReadResult){
+        Log.d(TAG, "Printing results");
+        Log.d(TAG, "Bucketsize: " + dataReadResult.getBuckets().size());
+
+        for (Bucket bucket : dataReadResult.getBuckets()){
+            List<DataSet> dataSets = bucket.getDataSets();
+            for (DataSet dataSet: dataSets){
+                processDataSet(dataSet);
+                Log.d(TAG, "Data: " + encodeActvDataSet(dataSet));
+            }
+        }
+    }
+
+    private static void writeActivResults(DataReadResult dataReadResult){
+        for (Bucket bucket : dataReadResult.getBuckets()){
+            List<DataSet> dataSets = bucket.getDataSets();
+            for (DataSet dataSet: dataSets){
+
+                String encoded = encodeActvDataSet(dataSet);
+                mActivBuffer.insert(encoded,false, Integer.MAX_VALUE);
+            }
+        }
+        mActivBuffer.flush(false);
+    }
+
+    private static void writeSA_ActivResults (DataReadResult dataReadResult){
+        for (Bucket bucket : dataReadResult.getBuckets()){
+            List<DataSet> dataSets = bucket.getDataSets();
+            for (DataSet dataSet: dataSets){
+
+                String encoded = SA_encodeActvDataSet(dataSet);
+                mSA_ActivBuffer.insert(encoded,false, Integer.MAX_VALUE);
+            }
+        }
+        mSA_ActivBuffer.flush(false);
+    }
+
+
+
+    private static void processDataSet(DataSet dataSet){
+        for (DataPoint dp : dataSet.getDataPoints()) {
+            Log.d(TAG, "Data Returned of type:" + dp.getDataType().getName());
+            Log.d(TAG, "Data Point:");
+            Log.i(TAG, "\tType: " + dp.getDataType().getName());
+            Log.i(TAG, "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+            Log.i(TAG, "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
+            for (Field field : dp.getDataType().getFields()) {
+                Log.i(TAG, "\tField: " + field.getName() +
+                        " Value: " + dp.getValue(field)
+                        + "Type: " + dp.getValue(field).asActivity());
+            }
+        }
+        Log.d(TAG, "-----------------");
+    }
+
+    private static String encodeActvDataSet(DataSet dataSet){
+        Long startTime = null;
+        Long endTime = null;
+        String activity = null;
+        Integer duration = null;
+
+        String encoded;
+
+        for (DataPoint dp : dataSet.getDataPoints()){
+            startTime = dp.getStartTime(TimeUnit.MILLISECONDS);
+            endTime = dp.getEndTime(TimeUnit.MILLISECONDS);
+            for (Field field : dp.getDataType().getFields()){
+                if (field.getName().equals("activity")){
+                    activity = dp.getValue(field).asActivity();
+                }
+                if (field.getName().equals("duration")){
+                    duration = dp.getValue(field).asInt();
+                }
+            }
+
+        }
+        encoded = JSONUtil.encodeActivitySegments(new Date(startTime),new Date(endTime),activity,duration);
+        return encoded;
+
+    }
+
+    private static String SA_encodeActvDataSet(DataSet dataSet){
+        Long startTime = null;
+        Long endTime = null;
+        String activity = null;
+        Integer duration = null;
+
+        String encoded;
+
+        for (DataPoint dp : dataSet.getDataPoints()){
+            startTime = dp.getStartTime(TimeUnit.MILLISECONDS);
+            endTime = dp.getEndTime(TimeUnit.MILLISECONDS);
+            for (Field field : dp.getDataType().getFields()){
+                if (field.getName().equals("activity")){
+                    activity = dp.getValue(field).asActivity();
+                }
+                if (field.getName().equals("duration")){
+                    duration = dp.getValue(field).asInt();
+                }
+            }
+
+        }
+        encoded = SemanticTempCSVUtil.encodedActivSegments(new Date(startTime),activity,duration);
+        return encoded;
+
+    }
+
+    private void overWritePreviousSAFile(DataMap dataMap){
+        String filename = dataMap.getString("filename");
+        Log.d(TAG, "Filename: " + filename);
+        byte[] bytes = dataMap.getByteArray("SA_Notif_File");
+        File file = new File (filename);
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(file, false);
+            fos.write(bytes);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

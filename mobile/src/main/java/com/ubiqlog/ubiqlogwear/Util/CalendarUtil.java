@@ -17,6 +17,7 @@ public class CalendarUtil {
      */
     public static Long[] getStartandEndTime(Calendar cal){
         long endTime = cal.getTimeInMillis();
+
         cal.add(Calendar.HOUR_OF_DAY, -cal.get(Calendar.HOUR_OF_DAY));
         cal.add(Calendar.MINUTE, -cal.get(Calendar.MINUTE));
         cal.add(Calendar.SECOND, -cal.get(Calendar.SECOND));

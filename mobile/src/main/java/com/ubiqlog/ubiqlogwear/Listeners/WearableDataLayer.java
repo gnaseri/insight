@@ -15,6 +15,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.result.DataReadResult;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageApi;
@@ -24,16 +25,17 @@ import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.Objects.NotificationParcel;
 import com.ubiqlog.ubiqlogwear.UI.HeartRateActivity;
+import com.ubiqlog.ubiqlogwear.Util.FileUtils;
+import com.ubiqlog.ubiqlogwear.Util.NotifLookupUtil;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.File;
 import java.util.Date;
 
 public class WearableDataLayer implements MessageApi.MessageListener{
     private static final String TAG = WearableDataLayer.class.getSimpleName();
 
     public static final String HEART_HIST_KEY = "com.insight.heartrate";
+    public static final String ACTV_HIST_KEY = "com.insight.activity";
     private static final String SYNC_KEY = "/start/HistorySYNC";
     private static Context mContext;
 
@@ -65,20 +67,14 @@ public class WearableDataLayer implements MessageApi.MessageListener{
         return mGoogleApiClient;
 
     }
-    private static DataMap buildDataMap(DataSet dataSet){
-        byte[] arr = serialize(dataSet);
-        Log.d(TAG,"DataSet of size:" + arr.length);
-        DataMap dataMap = new DataMap();
-        dataMap.putByteArray(HEART_HIST_KEY,arr);
-        return dataMap;
-    }
+
 
     public static void sendData(GoogleApiClient mClient, DataSet dataSet, final String KEY_NAME){
         Parcel p = Parcel.obtain();
         dataSet.writeToParcel(p,0);
         byte[] bytes = p.marshall();
         Log.d(TAG, "Sending data");
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/data");
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/heartrate");
         putDataMapReq.getDataMap().putLong("time", new Date().getTime());
         putDataMapReq.getDataMap().putByteArray(KEY_NAME,bytes);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
@@ -87,6 +83,21 @@ public class WearableDataLayer implements MessageApi.MessageListener{
                 Wearable.DataApi.putDataItem(mClient,putDataReq);
         p.recycle();
 
+    }
+
+    public static void sendDataResult(GoogleApiClient mClient, DataReadResult dr, final String KEY_NAME){
+        Parcel p = Parcel.obtain();
+        dr.writeToParcel(p,0);
+        byte[] bytes = p.marshall();
+        Log.d(TAG, "Sending activity data");
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/actv");
+        putDataMapReq.getDataMap().putLong("time", new Date().getTime());
+        putDataMapReq.getDataMap().putByteArray(KEY_NAME,bytes);
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        //Send Data To wearable
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mClient,putDataReq);
+        p.recycle();
     }
 
     public static void sendNotificationtoWear (GoogleApiClient mClient, StatusBarNotification sbn,
@@ -125,23 +136,25 @@ public class WearableDataLayer implements MessageApi.MessageListener{
 
     }
 
+    public static void sendSACompleteToWear (Context context,GoogleApiClient mClient, String filename){
+        File file = new File (context.getFilesDir() + NotifLookupUtil.sa_completeDir + "/" + NotifLookupUtil.completeFileName);
 
 
-    private static byte[] serialize (DataSet dataSet){
-        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-        try {
-            ObjectOutputStream o = new ObjectOutputStream(bOut);
-            o.writeObject(dataSet);
-            o.close();
+        //Convert to byte arr
+        byte [] bytes = FileUtils.convertFileToBytes(file);
 
-            Log.d(TAG, "In Serialize: bytes: " + bOut.size());
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/post/SA/notifFile");
+        putDataMapReq.getDataMap().putLong("time", new Date().getTime());
+        putDataMapReq.getDataMap().putString("filename", filename);
+        putDataMapReq.getDataMap().putByteArray("SA_Notif_File", bytes);
 
-            return bOut.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        //Send Data To wearable
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mClient,putDataReq);
     }
+
+
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {

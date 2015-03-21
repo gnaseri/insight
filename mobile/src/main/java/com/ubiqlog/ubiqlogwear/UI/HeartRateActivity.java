@@ -16,6 +16,8 @@ import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.Services.HeartRateSensor;
 
+import java.util.Date;
+
 
 /* This class will wait for a sync request from the wearable. Once it receives the sync request,
    it will send HeartRate History Data over
@@ -98,7 +100,7 @@ public class HeartRateActivity extends Activity {
             public void setDataSet(DataSet dataSet) {
                 sendToWearable(dataSet);
             }
-        });
+        }, new Date());
     }
 
     private static Handler buildHandler(){

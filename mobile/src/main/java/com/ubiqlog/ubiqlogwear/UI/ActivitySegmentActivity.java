@@ -1,7 +1,9 @@
 package com.ubiqlog.ubiqlogwear.UI;
 
 import android.app.Activity;
-import android.os.*;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,6 +13,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.Services.ActivitySensor;
 import com.ubiqlog.ubiqlogwear.Util.GoogleFitConnection;
+
+import java.util.Date;
 
 public class ActivitySegmentActivity extends Activity {
     private Button syncBTN;
@@ -40,7 +44,7 @@ public class ActivitySegmentActivity extends Activity {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                ActivitySensor.getDataInformation(mClient, ActivitySensor.buildDataReadRequestPoints());
+                ActivitySensor.getDataInformation(mClient, ActivitySensor.buildDataReadRequestPoints(new Date()));
 
 
             }

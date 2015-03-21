@@ -9,8 +9,10 @@ import android.os.BatteryManager;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
+import com.ubiqlog.ubiqlogwear.utils.SemanticTempCSVUtil;
 
 import java.util.Date;
 
@@ -21,6 +23,8 @@ public class BatterySensor extends Service {
     IntentFilter mIntentFilter;
     BatteryReceiver batteryReceiver;
     DataAcquisitor mDataBuffer;
+
+    DataAcquisitor mSA_batteryBuffer;
     private final String TAG = this.getClass().getSimpleName();
     private int lastVal;
     @Override
@@ -43,12 +47,14 @@ public class BatterySensor extends Service {
         mIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
         batteryReceiver = new BatteryReceiver();
         mDataBuffer = new DataAcquisitor(this,this.getClass().getSimpleName());
+        mSA_batteryBuffer = new DataAcquisitor(this,"SA/BatterySensor");
 
     }
 
     @Override
     public void onDestroy() {
         mDataBuffer.flush(true);
+        mSA_batteryBuffer.flush(true);
         unregisterReceiver(batteryReceiver);
         super.onDestroy();
 
@@ -74,8 +80,12 @@ public class BatterySensor extends Service {
                     Log.d(TAG,"Level:" + level);
                     Log.d(TAG, "Charging:" + isCharging);
                     String encoded = JSONUtil.encodeBattery(level, isCharging, new Date());
-                    mDataBuffer.insert(encoded,true);
+                    mDataBuffer.insert(encoded,true, Setting.bufferMaxSize);
                     mDataBuffer.flush(true);
+
+                    String encoded_SA = SemanticTempCSVUtil.encodeBattery(level,isCharging,new Date());
+                    mSA_batteryBuffer.insert(encoded_SA,true,Setting.bufferMaxSize);
+                    mSA_batteryBuffer.flush(true);
                 }
 
             }

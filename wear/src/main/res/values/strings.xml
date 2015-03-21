@@ -41,5 +41,7 @@
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
     <string name="title_activity_heart_rate">HeartRateActivity</string>
+    <string name="title_activity_w_activity_fit">wActivityFit</string>
+    <string name="message_nodata">\nNo Data!</string>
 
 </resources>

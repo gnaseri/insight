@@ -1,25 +1,24 @@
 package com.ubiqlog.ubiqlogwear.utils;
 
 import com.ubiqlog.ubiqlogwear.common.NotificationParcel;
+import com.ubiqlog.ubiqlogwear.common.Setting;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.Date;
 
 /**
  * Created by User on 2/23/15.
  */
 public class JSONUtil {
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy HH:mm:ss");
-
     public static String encodeBattery(int percent, boolean charging, Date timeStamp) {
         JSONObject jsonObject = new JSONObject();
         JSONObject sensorDataObj = new JSONObject();
         try {
             jsonObject.put("sensor_name", "Battery");
-            jsonObject.put("timestamp", timeStamp);
+            jsonObject.put("timestamp", Setting.timestampFormat.format(timeStamp));
 
             sensorDataObj.put("percent", percent);
             sensorDataObj.put("charging", charging);
@@ -40,7 +39,7 @@ public class JSONUtil {
         JSONObject sensorData = new JSONObject();
         try {
             jsonObject.put("sensor_name", "Light");
-            jsonObject.put("timestamp", timeStamp);
+            jsonObject.put("timestamp", Setting.timestampFormat.format(timeStamp));
 
             sensorData.put("lux", lux);
 
@@ -60,7 +59,7 @@ public class JSONUtil {
         JSONObject sensorData = new JSONObject();
         try {
             jsonObject.put("sensor_name", "BT");
-            jsonObject.put("timestamp", timeStamp);
+            jsonObject.put("timestamp", Setting.timestampFormat.format(timeStamp));
 
             sensorData.put("state", state);
 
@@ -83,11 +82,10 @@ public class JSONUtil {
         try {
             jsonObject.put("sensor_name", "Activity");
 
-            timeObject.put("start_time", startTime);
-            timeObject.put("end_time",endTime);
+            timeObject.put("start_time", Setting.timestampFormat.format(startTime));
+            timeObject.put("end_time", Setting.timestampFormat.format(endTime));
 
             jsonObject.put("timestamp", timeObject);
-
 
             sensorData.put("step_counts", culmStepAmt);
             sensorData.put("step_delta", stepDiff);
@@ -106,17 +104,20 @@ public class JSONUtil {
         JSONObject sensorData = new JSONObject();
         try {
             jsonObject.put("sensor_name", "Notification");
-            jsonObject.put("timestamp", new Date(in.POST_TIME));
+            jsonObject.put("timestamp", Setting.timestampFormat.format(new Date(in.POST_TIME)));
 
             sensorData.put("package_name", in.PACKAGE_NAME);
             sensorData.put("title", in.EXTRA_TITLE);
+            /* text portion has now been removed for privacy reasons */
+
             //filter sms and gmail and twitter
-            if (in.PACKAGE_NAME.equals("com.android.mms") || in.PACKAGE_NAME.equals("com.google.android.gm")
-                    || in.PACKAGE_NAME.equals("com.twitter.android") || in.PACKAGE_NAME.equals("com.facebook.orca")){
+
+            /*if (in.PACKAGE_NAME.equals("com.android.mms") || in.PACKAGE_NAME.equals("com.google.android.gm")
+                    || in.PACKAGE_NAME.equals("com.twitter.android") || in.PACKAGE_NAME.equals("com.facebook.orca")) {
                 sensorData.put("text", "");
-            }else{
+            } else {
                 sensorData.put("text", in.EXTRA_TEXT);
-            }
+            } */
             sensorData.put("flags", in.flags);
             sensorData.put("category", in.category);
 
@@ -131,13 +132,13 @@ public class JSONUtil {
         return null;
     }
 
-    public static String encodeHeartRate (Date timestamp, float bpm){
+    public static String encodeHeartRate(Date timestamp, float bpm) {
 
         JSONObject jsonObject = new JSONObject();
         JSONObject sensorData = new JSONObject();
         try {
-            jsonObject.put("sensor_name", "Activity");
-            jsonObject.put("timestamp", timestamp);
+            jsonObject.put("sensor_name", "HeartRate");
+            jsonObject.put("timestamp", Setting.timestampFormat.format(timestamp));
 
             sensorData.put("bpm", bpm);
 
@@ -150,6 +151,33 @@ public class JSONUtil {
         return null;
     }
 
+    public static String encodeActivitySegments(Date startTime, Date endTime, String activity,
+                                                Integer duration) {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject sensorData = new JSONObject();
+        JSONObject timeData = new JSONObject();
+
+        try {
+            jsonObject.put("sensor_name", "Activity");
+
+            timeData.put("start_time", Setting.timestampFormat.format(startTime));
+            timeData.put("end_time", Setting.timestampFormat.format(endTime));
+
+            jsonObject.put("timestamp", timeData);
+
+            sensorData.put("activity", activity);
+            sensorData.put("duration", duration);
+
+            jsonObject.put("sensor_data", sensorData);
+
+            return jsonObject.toString();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
 
 
     /* Decode Methods*/
@@ -157,14 +185,14 @@ public class JSONUtil {
 
     /**
      * @param encoded
-     * @return obj[0] : timestamp
-     * obj[1] : percent
-     * obj[2] : charging
+     * @return obj[0] : Date timestamp
+     * obj[1] : int percent
+     * obj[2] : boolean charging
      */
     public Object[] decodeBattery(String encoded) {
         try {
             JSONObject jObj = new JSONObject(encoded);
-            Date date = (Date) jObj.get("timestamp");
+            Date date = Setting.timestampFormat.parse(jObj.get("timestamp").toString());
 
             JSONObject sensorData = jObj.getJSONObject("sensor_data");
 
@@ -172,7 +200,38 @@ public class JSONUtil {
             boolean charging = sensorData.getBoolean("charging");
 
             return new Object[]{date, percent, charging};
+
         } catch (JSONException e) {
+            e.printStackTrace();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    /**
+     * @param encoded
+     * @return obj[0] : Date timestamp
+     * obj[1] : String state e.g. 'Disconnected'
+     */
+    public Object[] decodeBT(String encoded) {
+        try {
+            JSONObject jObj = new JSONObject(encoded);
+
+            Date date = Setting.timestampFormat.parse(jObj.get("timestamp").toString());
+
+            JSONObject sensorData = jObj.getJSONObject("sensor_data");
+
+            String state = sensorData.getString("state");
+
+            return new Object[]{date, state};
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;
@@ -189,15 +248,44 @@ public class JSONUtil {
     public Object[] decodeLight(String encoded) {
         try {
             JSONObject jObj = new JSONObject(encoded);
-            Date date = (Date) jObj.get("timestamp");
+            Date date = Setting.timestampFormat.parse(jObj.get("timestamp").toString());
 
             JSONObject sensorData = jObj.getJSONObject("sensor_data");
 
-            float lux = (float) sensorData.get("lux");
+            float lux = Float.valueOf(String.format(sensorData.get("lux").toString(), ".2f"));
 
             return new Object[]{date, lux};
 
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    /**
+     * obj[0] : date
+     * obj[1] : bpm
+     *
+     * @param encoded
+     * @return
+     */
+    public Object[] decodeHeartRate(String encoded) {
+        try {
+            JSONObject jObj = new JSONObject(encoded);
+            Date date = Setting.timestampFormat.parse(jObj.get("timestamp").toString());
+
+            JSONObject sensorData = jObj.getJSONObject("sensor_data");
+
+            int bpm = sensorData.getInt("bpm");
+
+            return new Object[]{date, bpm};
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;
@@ -210,25 +298,61 @@ public class JSONUtil {
      * obj[3] : text
      * obj[4] : flags
      * obj[5] : category
+     *
      * @param encoded
      * @return
      */
     public Object[] decodeNotification(String encoded) {
         try {
             JSONObject jObj = new JSONObject(encoded);
-            Date date = (Date) jObj.get("timestamp");
+            Date date = Setting.timestampFormat.parse(jObj.get("timestamp").toString());
 
             JSONObject sensorData = jObj.getJSONObject("sensor_data");
             String packageName = sensorData.getString("package_name");
             String title = sensorData.getString("title");
-            String text = sensorData.getString("text");
+            //String text = sensorData.getString("text");
             Integer flags = sensorData.getInt("flags");
             String category = sensorData.getString("category");
 
-
-            return new Object[]{date, packageName, title, text, flags, category};
+            return new Object[]{date, packageName, title, flags, category}; //text,
 
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * obj[0]: startTime
+     * obj[1] : endTime
+     * obj[2] : activityType
+     * obj[3] : duration
+     *
+     * @param encoded
+     * @return
+     */
+    public Object[] decodeActivityFit(String encoded) {
+        try {
+            JSONObject jObj = new JSONObject(encoded);
+
+            JSONObject timeObj = jObj.getJSONObject("timestamp");
+
+            Date startDate = Setting.timestampFormat.parse(timeObj.get("start_time").toString());
+            Date endDate = Setting.timestampFormat.parse(timeObj.get("end_time").toString());
+
+            JSONObject sensorData = jObj.getJSONObject("sensor_data");
+
+            String activityType = sensorData.getString("activity");
+            Integer duration = sensorData.getInt("duration");
+
+            return new Object[]{startDate, endDate, activityType, duration};
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;
@@ -240,6 +364,7 @@ public class JSONUtil {
      * obj[2] : endTime
      * obj[3] : culmStep
      * obj[4] : step_delta
+     *
      * @param encoded
      * @return
      */

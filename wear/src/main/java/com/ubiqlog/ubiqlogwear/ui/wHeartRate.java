@@ -5,21 +5,30 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.R;
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.utils.GoogleFitConnection;
+import com.ubiqlog.ubiqlogwear.utils.IOManager;
+import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
 
 import org.achartengine.ChartFactory;
@@ -30,9 +39,13 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,11 +54,26 @@ import java.util.concurrent.TimeUnit;
 
 
 public class wHeartRate extends Activity {
+    JSONUtil jsonUtil = new JSONUtil();
+    IOManager ioManager = new IOManager();
+    File[] lastDataFilesList;
+
+    TextView tvDate = null;
+    TextView tvLastSync = null;
+    ScrollView scrollView = null;
+    LinearLayout frameBox = null;
+    ImageView linksCursor = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chart);
+        tvDate = (TextView) findViewById(R.id.tvDate);
+        tvLastSync = (TextView) findViewById(R.id.tvLastSync);
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
+        frameBox = (LinearLayout) findViewById(R.id.frameBox);
+        linksCursor = (ImageView) findViewById(R.id.linksCursor);
+
         GoogleFitConnection googleFitConnection = new GoogleFitConnection(this);
 
 //        WearableSendSync.sendSyncToDevice(googleFitConnection.buildFitClient());
@@ -54,9 +82,18 @@ public class wHeartRate extends Activity {
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
         tvTitle.setText(R.string.title_activity_wheartrate);
 
-        Date date = new Date();
-        displayData(date);
 
+        lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_HeartRate, Setting.linksButtonCount);
+        //lastDataFilesList = new File[]{new File("sdcard/2-7-2015.txt"), new File("sdcard/2-6-2015.txt")}; // reading from temp file
+        if (lastDataFilesList != null && lastDataFilesList.length > 0) {
+            Date date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());//
+            displayData(date);
+        } else {
+            tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(new Date()));
+            tvLastSync.setText("\n" + getResources().getString(R.string.message_nodata));
+            tvLastSync.setTextSize(getResources().getDimension(R.dimen.textsize_m1));
+            linksCursor.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -66,20 +103,56 @@ public class wHeartRate extends Activity {
     }
 
     private void displayData(Date date) {
-        final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
-        final LinearLayout frameBox = (LinearLayout) findViewById(R.id.frameBox);
+        tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
+        tvLastSync.setHeight(0);
 
-        // remove all added views before except linksbox
-        frameBox.removeViewsInLayout(0, frameBox.getChildCount() - 1);
+        // remove all added views before except linksbox and tvLastSync label
+        frameBox.removeViewsInLayout(1, frameBox.getChildCount() - 2);
 
         FrameLayout chart = new FrameLayout(this);
         LinearLayout.LayoutParams cParams = new LinearLayout.LayoutParams(getSizeInDP(190), getSizeInDP(170));
         cParams.gravity = (Gravity.TOP | Gravity.CENTER_HORIZONTAL);
         chart.setLayoutParams(cParams);
-        chart.setPadding(3, 10, 10, 10);
+        chart.setPadding(3, 0, 10, 10);
         chart.addView(createGraph(date));
-        frameBox.addView(chart,0);
+        frameBox.addView(chart, 1);
 
+
+        // add a cursor point to show the user the scroll feature ////////////////////////////////////////////////////////
+        final AnimationSet aniSetCursor = new AnimationSet(true);
+        final AlphaAnimation aniAlpha = new AlphaAnimation(1.0f, 0.0f);
+        aniAlpha.setDuration(1500);
+        aniAlpha.setRepeatCount(2);
+        aniAlpha.setFillAfter(true);
+        aniSetCursor.addAnimation(aniAlpha);
+
+        TranslateAnimation aniMove = new TranslateAnimation(0.0f, 0.0f, -10.0f, 20.0f);          //  TranslateAnimation(xFrom, xTo, yFrom, yTo)
+        aniMove.setDuration(1500);
+        aniMove.setRepeatCount(2);
+        aniSetCursor.addAnimation(aniMove);
+
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics); // get screen properties ex. size
+        RelativeLayout.LayoutParams linksCursorParams = (RelativeLayout.LayoutParams) linksCursor.getLayoutParams();
+        linksCursorParams.setMargins(0, displayMetrics.heightPixels - 35, 0, 0); // set position of cursor in bottom of screen
+        linksCursor.setTag(null);
+        linksCursor.startAnimation(aniSetCursor);
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int scrollY = scrollView.getScrollY();
+                if (scrollY > 10 && linksCursor.getTag() == null) {
+                    aniAlpha.setRepeatCount(0);
+                    linksCursor.startAnimation(aniAlpha);
+                    linksCursor.setTag("displayed");
+                }
+            }
+        });
+
+
+        //render Links box //////////////////////////////////////////////////////////////////////////////////////////
         final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -87,16 +160,16 @@ public class wHeartRate extends Activity {
         params.setMargins(0, 0, 0, 0);
 
         final LinearLayout linksBox = (LinearLayout) findViewById(R.id.linksBox);
+        linksBox.removeAllViews();
         linksBox.setLayoutParams(params);
 
-        // create links to some dates
-        for (int i = 0; i < 7; i++) {
+        // create links to datefiles
+        for (File file : lastDataFilesList) {
             final Button btn1 = new Button(this);
-            final Date tmpDate = new Date(date.getTime() - (i + 1) * 24 * 60 * 60 * 1000);
+            final Date tmpDate = ioManager.parseDataFilename2Date(file.getName());
             btn1.setText(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
             btn1.setBackgroundColor(getResources().getColor(R.color.chart_button_bgcolor));
             btn1.setBackground(getResources().getDrawable(R.drawable.listview_bg_title));
-            btn1.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 30));
             btn1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -111,16 +184,56 @@ public class wHeartRate extends Activity {
 
     private View createGraph(Date date) {
         Log.i("Heart Rate", "In Create Chart");
-        // We start creating the XYSeries to plot the temperature
+
         XYSeries series1 = new XYSeries("Heart Rate");
 
-
-        // We start filling the series
-        // with random values for Y:0-100 to X:0-24
-        Random rand = new Random();
-        for (int i = 1; i < 23; i++) {
-            series1.add(i,rand.nextInt(50));
+        for (int i = 0; i < 24; i++) {
+            series1.add(i + 1, 0);
         }
+
+        // start filling the series
+        try {
+            String sCurrentLine;
+            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_HeartRate) + Setting.filenameFormat.format(date) + ".txt"));
+            //BufferedReader br = new BufferedReader(new FileReader(new File("sdcard/" + Setting.filenameFormat.format(date) + ".txt"))); // reading from temp file
+            ArrayList<HeartRateDataRecord> dataRecords = new ArrayList<>();
+            while ((sCurrentLine = br.readLine()) != null) {
+                Object[] decodedRow = jsonUtil.decodeHeartRate(sCurrentLine);// [0]:Date, [1]:bpm
+                if (decodedRow != null) {
+                    HeartRateDataRecord dataRecord = new HeartRateDataRecord();
+
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
+
+                    dataRecord.timeStamp = (Date) decodedRow[0];
+                    dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
+                    dataRecord.bpm = (int) decodedRow[1];
+                    dataRecord.density = 1; // density of records in same hours
+
+                    //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", tsh:" + dataRecord.timeStampHour + ", bpm:" + dataRecord.bpm + ", dns:" + dataRecord.density);
+
+                    //check if previous record's hour is the same with current record,
+                    //calculate the average 'bpm' values and update previous record
+                    if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
+                        HeartRateDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
+                        lastDataRecord.density += 1;
+                        lastDataRecord.bpm += dataRecord.bpm;
+                        dataRecords.set(dataRecords.size() - 1, lastDataRecord);
+                    } else {
+                        dataRecords.add(dataRecord);
+                    }
+                }
+            }
+
+
+            for (HeartRateDataRecord record : dataRecords) {
+                series1.add(record.timeStampHour, record.bpm / record.density);
+                //Log.d(">>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", avgbpm:" + record.bpm / record.density + ", dns:" + record.density);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         XYSeriesRenderer renderer1 = new XYSeriesRenderer();
         renderer1.setLineWidth(getResources().getInteger(R.integer.chart_line_width));
@@ -130,35 +243,42 @@ public class wHeartRate extends Activity {
         //renderer1.setPointStrokeWidth(2);
 
 
-        // Now we add our series
+        // add series
         XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
         dataset.addSeries(series1);
 
-        // Finaly we create the multiple series renderer to control the graph
+        // create the multiple series renderer to control the graph
         XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
         mRenderer.addSeriesRenderer(renderer1);
 
-        mRenderer.addXTextLabel(0, "00:00");
-        mRenderer.addXTextLabel(6, "06:00");
-        mRenderer.addXTextLabel(12, "12:00");
-        mRenderer.addXTextLabel(18, "18:00");
-        mRenderer.addXTextLabel(23, "23:59");
+        // add two extra record for first and last bars, to all Axis be in a good order
+        series1.add(0, 0);
+        series1.add(25, 0);
+
+        mRenderer.addXTextLabel(1, "00:00");
+        mRenderer.addXTextLabel(7, "06:00");
+        mRenderer.addXTextLabel(13, "12:00");
+        mRenderer.addXTextLabel(19, "18:00");
+        mRenderer.addXTextLabel(24, "23:59");
 
         mRenderer.setXAxisMin(0);
-        mRenderer.setXAxisMax(23);
-        mRenderer.setXLabelsAlign(Paint.Align.LEFT);
+        mRenderer.setXAxisMax(25);
+        mRenderer.setXLabelsAlign(Paint.Align.CENTER); // y axis
+        mRenderer.setXLabelsPadding(5.0f); // y axis
         mRenderer.setXLabels(0);
 
         mRenderer.setYAxisMin(0);
         mRenderer.setYLabelsAlign(Paint.Align.CENTER);
+        mRenderer.setYLabelsPadding(5.0f);
 
-        mRenderer.setBarSpacing(0.20);
+        mRenderer.setBarSpacing(0.15);
 
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
         // Disable Pan on two axis
         mRenderer.setPanEnabled(false, false);
         mRenderer.setShowGrid(false);
         mRenderer.setBackgroundColor(Color.WHITE);
+        mRenderer.setMargins(new int[]{20, 10, 20, 1});  //setMargins(right, top, left, bottom)! defaults(20,30,10,20)
         mRenderer.setMarginsColor(Color.WHITE);
         mRenderer.setAxesColor(Color.BLACK);
         mRenderer.setApplyBackgroundColor(true);
@@ -166,15 +286,24 @@ public class wHeartRate extends Activity {
         mRenderer.setLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setXLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setYLabelsColor(0, getResources().getColor(R.color.chart_labels_color));
-
+        mRenderer.setShowTickMarks(false);
         // Vertical bars
         mRenderer.setOrientation(XYMultipleSeriesRenderer.Orientation.VERTICAL);
 
-        mRenderer.setChartTitle(new SimpleDateFormat("MM/dd/yyyy").format(date));
         GraphicalView chartView = ChartFactory.getBarChartView(this, dataset, mRenderer, BarChart.Type.DEFAULT);
         return chartView;
     }
-    private int getSizeInDP(int x){return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());}
+
+    private int getSizeInDP(int x) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());
+    }
+
+    private class HeartRateDataRecord {
+        public Date timeStamp;
+        public int timeStampHour;
+        public int bpm;
+        public int density; // density of records in same hour
+    }
 
     /* This function sends the sync command to the watch, which returns heartRate history API info*/
     private class SyncTask extends AsyncTask<Void, Void, Void> {
@@ -195,7 +324,9 @@ public class wHeartRate extends Activity {
                     })
                     .addApi(Wearable.API).build();
             mGoogleAPIClient.blockingConnect(10, TimeUnit.SECONDS);
-            WearableSendSync.sendSyncToDevice(mGoogleAPIClient);
+            WearableSendSync.sendSyncToDevice(mGoogleAPIClient, WearableSendSync.START_HIST_SYNC, new Date());
+
+
             return null;
         }
     }

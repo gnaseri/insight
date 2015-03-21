@@ -1,5 +1,6 @@
 package com.ubiqlog.ubiqlogwear.Services;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -12,9 +13,12 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
+import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
 import com.ubiqlog.ubiqlogwear.Util.CalendarUtil;
+import com.ubiqlog.ubiqlogwear.Util.GoogleFitConnection;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -24,15 +28,37 @@ import java.util.concurrent.TimeUnit;
 public class ActivitySensor {
     private static final String TAG = ActivitySensor.class.getSimpleName();
 
-    public static void getDataInformation(GoogleApiClient mClient, DataReadRequest request){
+
+    public static class ActivityInformationRunnable implements Runnable{
+        private GoogleApiClient mGoogleApiClient;
+        private Context mcontext;
+        private Date date;
+
+        public ActivityInformationRunnable(GoogleApiClient mGoogleApiClient, Context context, Date date){
+            this.mGoogleApiClient = mGoogleApiClient;
+            this.mcontext = context;
+            this.date = date;
+        }
+        @Override
+        public void run() {
+            GoogleFitConnection googleFitConnection = new GoogleFitConnection(mcontext);
+            GoogleApiClient mFitClient = googleFitConnection.buildFitClient();
+            mFitClient.connect();
+            DataReadResult dr = getDataInformation(mFitClient, buildDataReadRequestPoints(date));
+            Log.d(TAG,"SENDING DATARESULTS");
+            mFitClient.disconnect();
+            mGoogleApiClient.connect();
+            WearableDataLayer.sendDataResult(mGoogleApiClient, dr, WearableDataLayer.ACTV_HIST_KEY);
+
+        }
+    }
+
+    public static DataReadResult getDataInformation(GoogleApiClient mClient, DataReadRequest request){
         PendingResult <DataReadResult> pendingResult =
                 Fitness.HistoryApi.readData(mClient,request);
         DataReadResult dataReadResult = pendingResult.await();
-
-        //print info
         printReadResult(dataReadResult);
-
-
+        return dataReadResult;
 
     }
 
@@ -63,8 +89,9 @@ public class ActivitySensor {
         }
         Log.d(TAG, "-----------------");
     }
-    public static DataReadRequest buildDataReadRequestPoints() {
+    public static DataReadRequest buildDataReadRequestPoints(Date date) {
         Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
         Long[] startEndTimes = CalendarUtil.getStartandEndTime(cal);
 
         DataReadRequest dataReadRequest = new DataReadRequest.Builder()

@@ -12,8 +12,10 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
 import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
+import com.ubiqlog.ubiqlogwear.utils.SemanticTempCSVUtil;
 
 import java.util.Date;
 
@@ -36,6 +38,7 @@ public class LightSensor extends Service implements SensorEventListener {
 
 
     private DataAcquisitor mDataBuffer;
+    private DataAcquisitor mSA_lightBuffer;
 
     public LightSensor() {
     }
@@ -49,9 +52,11 @@ public class LightSensor extends Service implements SensorEventListener {
     public void onCreate() {
         count = 0;
         mDataBuffer = new DataAcquisitor(this,this.getClass().getSimpleName());
+        mSA_lightBuffer = new DataAcquisitor(this, "SA/LightSensor");
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         Toast.makeText(this,"LightSens Logging Started", Toast.LENGTH_SHORT).show();
+        Log.d(LOG_TAG, "Light sensor started");
     }
 
     @Override
@@ -85,8 +90,12 @@ public class LightSensor extends Service implements SensorEventListener {
             avg = 0;
 
             //add encoded string to buffer
-            mDataBuffer.insert(encoded,true);
+            mDataBuffer.insert(encoded,true, Setting.bufferMaxSize);
             mDataBuffer.flush(true);
+
+            String encoded_SA = SemanticTempCSVUtil.encodeLight(avg,date);
+            mSA_lightBuffer.insert(encoded_SA,true,Setting.bufferMaxSize);
+            mSA_lightBuffer.flush(true);
 
             mHandler.postDelayed(activateLightListener,SensorConstants.LIGHT_SENSOR_INTERVAL);
         }
@@ -107,6 +116,7 @@ public class LightSensor extends Service implements SensorEventListener {
     @Override
     public void onDestroy() {
         mDataBuffer.flush(true);
+        mSA_lightBuffer.flush(true);
         mSensorManager.unregisterListener(this);
         Log.d(LOG_TAG, "Light sensor stopped");
         super.onDestroy();

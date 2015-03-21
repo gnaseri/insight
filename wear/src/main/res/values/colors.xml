@@ -7,7 +7,9 @@
     <color name="homescreen_bgcolor">#FFFFFF</color>
     <color name="chart_line_color">#eec774</color>
     <color name="chart_button_bgcolor">#f0f0f0</color>
-    <color name="chart_labels_color">#000000</color>
+<color name="chart_labels_color">#505050</color>
+    <color name="chart_grids_color">#f0f0f0</color>
+    <color name="home_labels_color">#ca8b02</color>
 
 
-</resources>
+    </resources>

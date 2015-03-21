@@ -3,31 +3,32 @@ package com.ubiqlog.ubiqlogwear.ui;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.data.DataPoint;
-import com.google.android.gms.fitness.data.DataType;
-import com.google.android.gms.fitness.data.Field;
-import com.google.android.gms.fitness.data.Value;
-import com.google.android.gms.fitness.request.OnDataPointListener;
-import com.google.android.gms.fitness.request.SensorRequest;
+import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.sensors.ActivityDataHelper;
+import com.ubiqlog.ubiqlogwear.common.Setting;
+import com.ubiqlog.ubiqlogwear.utils.IOManager;
+import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
+import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -37,109 +38,192 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Manouchehr on 2/13/2015.
  */
-public class wActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
-GoogleApiClient.OnConnectionFailedListener{
-
+public class wActivity extends Activity {
+    private GoogleApiClient mGoogleApiClient;
     private final String TAG = this.getClass().getSimpleName();
-    private GoogleApiClient mFitnessClient;
-    private ActivityDataHelper.StepList stepList;
+
+    JSONUtil jsonUtil = new JSONUtil();
+    IOManager ioManager = new IOManager();
+    File[] lastDataFilesList;
+
+    TextView tvDate = null;
+    TextView tvLastSync = null;
+    ScrollView scrollView = null;
+    LinearLayout frameBox = null;
+    ImageView linksCursor = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chart);
+        tvDate = (TextView) findViewById(R.id.tvDate);
+        tvLastSync = (TextView) findViewById(R.id.tvLastSync);
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
+        frameBox = (LinearLayout) findViewById(R.id.frameBox);
+        linksCursor = (ImageView) findViewById(R.id.linksCursor);
 
-        buildFitnessActivity();
-        stepList = new ActivityDataHelper.StepList(this);
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
         tvTitle.setText(R.string.title_activity_wactivity);
 
-        Date date = new Date();
-        displayData(date);
 
+        lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_ActivFit, Setting.linksButtonCount);
+        //lastDataFilesList = new File[]{new File("sdcard/2-9-2015.txt"), new File("sdcard/2-8-2015.txt")}; // reading from temp file
+        if (lastDataFilesList != null && lastDataFilesList.length > 0) {
+            Date date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());//
+            displayData(date);
+        } else {
+            tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(new Date()));
+            tvLastSync.setText("\n" + getResources().getString(R.string.message_nodata));
+            tvLastSync.setTextSize(getResources().getDimension(R.dimen.textsize_m1));
+            linksCursor.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (mFitnessClient != null){
-            mFitnessClient.connect();
+        new SyncFitActivityData().execute();
+
+    }
+
+    private HashMap<String, ArrayList<ActivityDataRecord>> fetchData(Date date) {
+        HashMap<String, ArrayList<ActivityDataRecord>> dataMapList = new HashMap<>();
+        try {
+            String sCurrentLine;
+            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_ActivFit) + Setting.filenameFormat.format(date) + ".txt"));
+            //BufferedReader br = new BufferedReader(new FileReader(new File("sdcard/" + Setting.filenameFormat.format(date) + ".txt"))); // reading from temp file
+
+            while ((sCurrentLine = br.readLine()) != null) {
+                Object[] decodedRow = jsonUtil.decodeActivityFit(sCurrentLine);// [0]:startTime, [1]:endTime, [2]:activityType, [3]:duration
+                if (decodedRow != null) {
+                    ActivityDataRecord dataRecord = new ActivityDataRecord();
+
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
+
+                    dataRecord.startTime = (Date) decodedRow[0];
+                    dataRecord.startTimeHour = Integer.valueOf(timeFormat.format(dataRecord.startTime));
+                    dataRecord.activityType = decodedRow[2].toString();
+                    dataRecord.duration = (int) decodedRow[3];
+                    dataRecord.density = 1; // density of records in same hours
+
+                    if (!dataMapList.containsKey(dataRecord.activityType))
+                        dataMapList.put(dataRecord.activityType, new ArrayList<ActivityDataRecord>());
+
+                    ArrayList<ActivityDataRecord> dataRecords = dataMapList.get(dataRecord.activityType);
+
+                    //check if previous record's hour is the same with current record,
+                    //calculate the average 'bpm' values and update previous record
+                    if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).startTimeHour == dataRecord.startTimeHour) {
+                        ActivityDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
+                        lastDataRecord.density += 1;
+                        lastDataRecord.duration += dataRecord.duration;
+                        dataRecords.set(dataRecords.size() - 1, lastDataRecord);
+                        dataMapList.put(dataRecord.activityType, dataRecords);//update records array
+                    } else {
+                        dataMapList.get(dataRecord.activityType).add(dataRecord);
+                        //dataRecords.add(dataRecord);
+                    }
+                }
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return dataMapList;
     }
 
     private void displayData(Date date) {
-        boolean isEnabled_walk = true;
-        boolean isEnabled_run = true;
-        boolean isEnabled_vehicle = true;
-        boolean isEnabled_bicycle = true;
+        tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
+        tvLastSync.setText("Last Sync: " + new SimpleDateFormat("MM/dd/yyyy hh:mm").format(date));
 
-        List<String> activities_list = new ArrayList<String>();
-        if (isEnabled_walk) activities_list.add("Walk");
-        if (isEnabled_run) activities_list.add("Run");
-        if (isEnabled_vehicle) activities_list.add("Vehicle");
-        if (isEnabled_bicycle) activities_list.add("Bicycle");
+        HashMap<String, ArrayList<ActivityDataRecord>> dataMapList = fetchData(date);
+        if (dataMapList.size() <= 0) return;
 
-        if (activities_list.size() <= 0) return;
-
-        final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
-        final LinearLayout frameBox = (LinearLayout) findViewById(R.id.frameBox);
-
-
-        // remove all added views before except linksbox
-        frameBox.removeViewsInLayout(0, frameBox.getChildCount() - 1);
+        // remove all added views before except linksbox and tvLastSync label
+        frameBox.removeViewsInLayout(1, frameBox.getChildCount() - 2);
 
         FrameLayout chart;
         LinearLayout.LayoutParams cParams;
-
-        for (int i = 0; i < activities_list.size(); i++) {
+        int i = 0;
+        for (String activityType : dataMapList.keySet()) {
             chart = new FrameLayout(this);
             chart.removeAllViews();
             cParams = new LinearLayout.LayoutParams(getSizeInDP(190), getSizeInDP(50));
             cParams.gravity = (Gravity.TOP | Gravity.CENTER_HORIZONTAL);
 
             boolean showFooter = false;
-            boolean showHeader = false;
 
             if (i == 0) {
                 //first item
-                showHeader = true;
-                cParams.setMargins(0, 0, 0, -12);
+                cParams.setMargins(0, 0, 0, -10);// setMargins(left, top, right, bottom)
 
-            } else if (i == activities_list.size() - 1) {
+            } else if (i == dataMapList.size() - 1) {
                 //last item
                 showFooter = true;
-                cParams.setMargins(0, -12, 0, 0);
+                cParams.setMargins(0, -10, 0, 0);
 
             } else {
                 //middle items
-                cParams.setMargins(0, -12, 0, -12);
+                cParams.setMargins(0, -10, 0, -10);
 
             }
             chart.setLayoutParams(cParams);
-            chart.setPadding(12, -5, 5, -5);
-            chart.addView(createGraph(date, activities_list.get(i), showFooter, showHeader));
-            frameBox.addView(chart, i);
+            chart.setPadding(10, -2, 0, -2); // setPadding(left, top, right, bottom)
+            chart.addView(createGraph(dataMapList.get(activityType), activityType, showFooter));
+            frameBox.addView(chart, i + 1);
+            i += 1;
         }
 
-        final TextView tvDate = new TextView(this);
-        tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
-        tvDate.setTextSize(getSizeInDP(8));
+        // add a cursor point to show the user the scroll feature ////////////////////////////////////////////////////////
+        final AnimationSet aniSetCursor = new AnimationSet(true);
+        final AlphaAnimation aniAlpha = new AlphaAnimation(1.0f, 0.0f);
+        aniAlpha.setDuration(1500);
+        aniAlpha.setRepeatCount(2);
+        aniAlpha.setFillAfter(true);
+        aniSetCursor.addAnimation(aniAlpha);
 
-        //  frameBox.addView(tvDate, 0);
+        TranslateAnimation aniMove = new TranslateAnimation(0.0f, 0.0f, -10.0f, 20.0f);          //  TranslateAnimation(xFrom, xTo, yFrom, yTo)
+        aniMove.setDuration(1500);
+        aniMove.setRepeatCount(2);
+        aniSetCursor.addAnimation(aniMove);
 
-        //render Links box
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics); // get screen properties ex. size
+        RelativeLayout.LayoutParams linksCursorParams = (RelativeLayout.LayoutParams) linksCursor.getLayoutParams();
+        linksCursorParams.setMargins(0, displayMetrics.heightPixels - 35, 0, 0); // set position of cursor in bottom of screen
+        linksCursor.setTag(null);
+        linksCursor.startAnimation(aniSetCursor);
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int scrollY = scrollView.getScrollY();
+                if (scrollY > 10 && linksCursor.getTag() == null) {
+                    aniAlpha.setRepeatCount(0);
+                    linksCursor.startAnimation(aniAlpha);
+                    linksCursor.setTag("displayed");
+                }
+            }
+        });
+
+
+        //render Links box //////////////////////////////////////////////////////////////////////////////////////////
         final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -147,12 +231,13 @@ GoogleApiClient.OnConnectionFailedListener{
         params.setMargins(0, 0, 0, 0);
 
         final LinearLayout linksBox = (LinearLayout) findViewById(R.id.linksBox);
+        linksBox.removeAllViews();
         linksBox.setLayoutParams(params);
 
-        // create links to some dates
-        for (int i = 0; i < 7; i++) {
+        // create links to datefiles
+        for (File file : lastDataFilesList) {
             final Button btn1 = new Button(this);
-            final Date tmpDate = new Date(date.getTime() - (i + 1) * 24 * 60 * 60 * 1000);
+            final Date tmpDate = ioManager.parseDataFilename2Date(file.getName());
             btn1.setText(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
             btn1.setBackgroundColor(getResources().getColor(R.color.chart_button_bgcolor));
             btn1.setBackground(getResources().getDrawable(R.drawable.listview_bg_title));
@@ -168,17 +253,18 @@ GoogleApiClient.OnConnectionFailedListener{
 
     }
 
-    private View createGraph(Date date, String title, boolean isVisibleFooter, boolean isVisibleHeader) {
+    private View createGraph(ArrayList<ActivityDataRecord> dataRecords, String title, boolean isFooterVisible) {
         Log.i("Activity " + title, "In Create Chart");
-        // We start creating the XYSeries to plot the temperature
         XYSeries series1 = new XYSeries("Activity " + title);
 
+        // filling the series with random values for Y:0 to X:0-24
+        for (int i = 0; i <= 23; i++) {
+            series1.add(i, 2);
+        }
 
-        // We start filling the series
-        // with random values for Y:0-30 to X:0-24
-        Random rand = new Random();
-        for (int i = 1; i < 23; i++) {
-            series1.add(i, rand.nextInt(30));
+        for (ActivityDataRecord record : dataRecords) {
+            series1.add(record.startTimeHour, record.duration);
+            //Log.d(">>", "act:" + record.activityType + ",ts:" + record.startTime.toString() + ", tsh:" + record.startTimeHour + ", sumdur:" + record.duration + ", dns:" + record.density);
         }
 
         XYSeriesRenderer renderer1 = new XYSeriesRenderer();
@@ -189,49 +275,51 @@ GoogleApiClient.OnConnectionFailedListener{
         //renderer1.setPointStrokeWidth(2);
 
 
-        // Now we add our series
+        // add series
         XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
         dataset.addSeries(series1);
 
-        // Finaly we create the multiple series renderer to control the graph
+        // create the multiple series renderer to control the graph
         XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
         mRenderer.addSeriesRenderer(renderer1);
         mRenderer.setYAxisMin(0);
         mRenderer.setYLabels(0);
-        mRenderer.addYTextLabel(0, title);
+        mRenderer.addYTextLabel(0, title); // set Title in the middle of chart
         mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
-        mRenderer.setYLabelsPadding(-1f);
+        mRenderer.setYLabelsPadding(8.0f);
 
         mRenderer.setXAxisMin(0);
         mRenderer.setXAxisMax(23);
 
-        if (isVisibleHeader)
-            mRenderer.setChartTitle(new SimpleDateFormat("MM/dd/yyyy").format(date));
-
-        if (isVisibleFooter) {
+        mRenderer.setXLabels(0);
+        if (isFooterVisible) {
             mRenderer.addXTextLabel(0, "00:00");
             mRenderer.addXTextLabel(12, "12:00");
             mRenderer.addXTextLabel(23, "23:59");
         }
 
-
         mRenderer.setBarSpacing(0.25);
 
         mRenderer.setXLabelsAlign(Paint.Align.CENTER);
-        mRenderer.setXLabels(0);
+
         mRenderer.setShowAxes(false);
+        mRenderer.setLabelsTextSize(getResources().getDimension(R.dimen.textsize_s22));
+
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
-        // Disable Pan on two axis
-        mRenderer.setPanEnabled(false, false);
-        mRenderer.setShowGrid(false);
-        mRenderer.setBackgroundColor(Color.WHITE);
-        mRenderer.setMarginsColor(Color.WHITE);
-        mRenderer.setAxesColor(Color.BLACK);
+        mRenderer.setShowGridX(true);
+        mRenderer.setShowGridY(false);
+        mRenderer.setGridColor(Color.WHITE);
+        mRenderer.setPanEnabled(false, false);// Disable Pan on two axis
+        mRenderer.setZoomEnabled(false, false);
+        mRenderer.setBackgroundColor(Color.TRANSPARENT);
+        mRenderer.setMargins(new int[]{10, 70, 10, 30}); //setMargins(top, left, bottom, right) defaults(20,30,10,20)
+        mRenderer.setAxesColor(Color.WHITE);
         mRenderer.setApplyBackgroundColor(true);
         mRenderer.setShowLegend(false);//hide info label
         mRenderer.setLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setXLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setYLabelsColor(0, getResources().getColor(R.color.chart_labels_color));
+        mRenderer.setShowTickMarks(false);
         GraphicalView chartView = ChartFactory.getBarChartView(this, dataset, mRenderer, BarChart.Type.DEFAULT);
         return chartView;
     }
@@ -240,86 +328,42 @@ GoogleApiClient.OnConnectionFailedListener{
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());
     }
 
-
-    private void buildFitnessActivity() {
-        mFitnessClient = new GoogleApiClient.Builder(this)
-                .addApi(Fitness.API)
-                .addScope(Fitness.SCOPE_ACTIVITY_READ)
-                .addScope(Fitness.SCOPE_BODY_READ_WRITE)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
+    private class ActivityDataRecord {
+        public Date startTime;
+        public Date endTime;
+        public int startTimeHour;
+        //public int endTimeHour; // we calc just startTime
+        public String activityType;
+        public int duration;
+        public int density; // density of records in same hour
     }
 
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        Log.d(TAG, "Connected to Fitness API");
-        invokeFitnessApi();
-    }
+    private class SyncFitActivityData extends AsyncTask<Void, Void, Void> {
 
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d(TAG, "Connection failed: " + connectionResult.getErrorCode());
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(wActivity.this,"Connect account with handheld device", Toast.LENGTH_LONG).show();
-            }
-        });
-
-    }
-
-    private void invokeFitnessApi() {
-        setupSensorRequest();
-
-    }
-
-    private void setupSensorRequest() {
-        SensorRequest req = new SensorRequest.Builder()
-                .setDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
-                .setSamplingRate(1, TimeUnit.SECONDS)
-                .build();
-
-        PendingResult<Status> regResult =
-                Fitness.SensorsApi.add(mFitnessClient, req, new DataSourceListener());
-
-    }
-
-    private class DataSourceListener implements OnDataPointListener {
         @Override
-        public void onDataPoint(DataPoint dataPoint) {
-            for (Field field : dataPoint.getDataType().getFields()) {
-                final Value val = dataPoint.getValue(field); //Culm amount of steps
-                if (val != null) {
-
-
-                    runOnUiThread(new Runnable() {
+        protected Void doInBackground(Void... params) {
+            mGoogleApiClient = new GoogleApiClient.Builder(wActivity.this)
+                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                         @Override
-                        public void run() {
-                            ActivityDataHelper.Step newStep = new ActivityDataHelper.Step(val.asInt(), new Date());
-
-                            //This method writes to file when walking gap conditions are met
-                            stepList.insert(newStep);
-                            Toast.makeText(wActivity.this, "Steps" + val.asInt(), Toast.LENGTH_LONG).show();
-                            /*
-                            if (mTextView != null) {
-                                mTextView.setText(val.asInt() + " steps");
-
-                            }*/
+                        public void onConnected(Bundle bundle) {
+                            Log.d(TAG, "Connected");
                         }
-                    });
-                }
-                Log.d(TAG, "Detected datapoint field: " + field.getName());
-                Log.d(TAG, "Detected datapoint value: " + val);
+
+                        @Override
+                        public void onConnectionSuspended(int i) {
+
+                        }
+                    })
+                    .addApi(Wearable.API)
+                    .build();
+            mGoogleApiClient.blockingConnect(10, TimeUnit.SECONDS);
+            if (mGoogleApiClient.isConnected()) {
+                WearableSendSync.sendSyncToDevice(mGoogleApiClient,
+                        WearableSendSync.START_ACTV_SYNC, new Date());
             }
+            return null;
+
         }
     }
-
 }

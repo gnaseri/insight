@@ -32,7 +32,8 @@
         android:layout_height="fill_parent"
         android:id="@+id/scrollView"
         android:layout_below="@+id/tvTitleChart"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp">
 
         <LinearLayout
             android:orientation="vertical"
@@ -42,22 +43,69 @@
             android:layout_centerHorizontal="true"
             android:id="@+id/frameBox">
 
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Date"
+                    android:id="@+id/tvDate"
+                    android:textSize="@dimen/textsize_m1"
+                    android:textColor="@color/chart_labels_color"
+                    android:textAlignment="center"
+                    android:gravity="center" />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Last Sync: 12/02/2015 19:22"
+                    android:id="@+id/tvLastSync"
+                    android:textSize="@dimen/textsize_s2"
+                    android:textColor="@color/chart_labels_color"
+                    android:gravity="center"
+                    android:layout_alignParentBottom="false"
+                    android:layout_alignParentStart="false"
+                    android:layout_alignParentTop="false"
+                    android:layout_below="@+id/tvDate" />
+
+
+            </RelativeLayout>
+
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="200dp"
-                android:layout_gravity="bottom|center_horizontal"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:id="@+id/linksBox"
-                android:gravity="bottom|center_horizontal"></LinearLayout>
+                android:gravity="center_horizontal">
+
+            </LinearLayout>
+
         </LinearLayout>>
     </ScrollView>
 
-    <!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+
+
+        <!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
     <!--xmlns:tools="http://schemas.android.com/tools"-->
     <!--android:id="@+id/list_fragment"-->
     <!--android:layout_width="match_parent"-->
     <!--android:layout_height="wrap_content"-->
     <!--android:layout_gravity="bottom"/>-->
-
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/linksCursor"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_arrowbottom"
+            android:layout_marginTop="100dp"
+            android:alpha="0.7"
+            android:layout_alignParentTop="false" />
 </RelativeLayout>
+
+
 </android.support.wearable.view.BoxInsetLayout>

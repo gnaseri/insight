@@ -32,7 +32,7 @@ public class ActivitySensor extends Service implements GoogleApiClient.Connectio
 
     private ActivityDataHelper.StepList stepList;
 
-    private GoogleApiClient mFitnessClient;
+    public static GoogleApiClient mFitnessClient;
 
     @Override
     public IBinder onBind(Intent intent) {

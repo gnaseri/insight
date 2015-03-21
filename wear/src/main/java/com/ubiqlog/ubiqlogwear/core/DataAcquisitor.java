@@ -3,7 +3,6 @@ package com.ubiqlog.ubiqlogwear.core;
 import android.content.Context;
 import android.util.Log;
 
-import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.utils.IOManager;
 
 import java.util.ArrayList;
@@ -29,11 +28,11 @@ public class DataAcquisitor {
     public Context getContext(){
         return context;
     }
-    public void insert (String s, boolean append){
+    public void insert (String s, boolean append, int maxBuffSize){
         Log.d(LOG_TAG, "Inserting into dBuff");
         dataBuffer.add(s);
 
-        if (dataBuffer.size() > Setting.bufferMaxSize){
+        if (dataBuffer.size() > maxBuffSize){
             IOManager dataLogger = new IOManager();
             dataLogger.logData(this,append);
             getDataBuffer().clear();
@@ -42,7 +41,7 @@ public class DataAcquisitor {
     }
 
     public void flush(boolean append){
-        Log.d(LOG_TAG, "Flushing buffer");
+        Log.d(LOG_TAG, "Flushing buffer" + this.getFolderName());
         IOManager dataLogger = new IOManager();
         dataLogger.logData(this,append);
         getDataBuffer().clear();
