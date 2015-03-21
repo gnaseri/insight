@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.UI;
+package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,9 +12,9 @@ import android.widget.Button;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.wearable.Wearable;
-import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
+import com.ubiqlog.ubiqlogwear.listeners.WearableDataLayer;
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.Services.HeartRateSensor;
+import com.ubiqlog.ubiqlogwear.services.HeartRateSensor;
 
 import java.util.Date;
 

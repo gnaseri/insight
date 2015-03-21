@@ -23,7 +23,7 @@
             android:label="@string/app_name" >
 
         </activity>
-        <activity android:name=".ui.Layouts.HomeActivity">
+        <activity android:name=".ui.layouts.HomeActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -83,7 +83,7 @@
         -->
 
         <receiver
-            android:name=".Alarm.AlarmReceiver"
+            android:name=".alarm.AlarmReceiver"
             android:process=":remote" />
     </application>
 

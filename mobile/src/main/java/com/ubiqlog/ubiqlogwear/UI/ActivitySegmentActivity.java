@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.UI;
+package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -11,8 +11,8 @@ import android.widget.Button;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.Services.ActivitySensor;
-import com.ubiqlog.ubiqlogwear.Util.GoogleFitConnection;
+import com.ubiqlog.ubiqlogwear.services.ActivitySensor;
+import com.ubiqlog.ubiqlogwear.util.GoogleFitConnection;
 
 import java.util.Date;
 

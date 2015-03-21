@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.UI;
+package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.Services.NotificationSensor;
+import com.ubiqlog.ubiqlogwear.services.NotificationSensor;
 
 
 public class NotificationActivity extends Activity {

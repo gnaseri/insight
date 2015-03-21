@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.Services;
+package com.ubiqlog.ubiqlogwear.services;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,8 +15,8 @@ import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
-import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
-import com.ubiqlog.ubiqlogwear.Util.NotifLookupUtil;
+import com.ubiqlog.ubiqlogwear.listeners.WearableDataLayer;
+import com.ubiqlog.ubiqlogwear.util.NotifLookupUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;

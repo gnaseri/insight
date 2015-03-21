@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.Listeners;
+package com.ubiqlog.ubiqlogwear.listeners;
 
 /**
  * Created by User on 2/16/15.
@@ -23,10 +23,10 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
-import com.ubiqlog.ubiqlogwear.Objects.NotificationParcel;
-import com.ubiqlog.ubiqlogwear.UI.HeartRateActivity;
-import com.ubiqlog.ubiqlogwear.Util.FileUtils;
-import com.ubiqlog.ubiqlogwear.Util.NotifLookupUtil;
+import com.ubiqlog.ubiqlogwear.objects.NotificationParcel;
+import com.ubiqlog.ubiqlogwear.ui.HeartRateActivity;
+import com.ubiqlog.ubiqlogwear.util.FileUtils;
+import com.ubiqlog.ubiqlogwear.util.NotifLookupUtil;
 
 import java.io.File;
 import java.util.Date;
