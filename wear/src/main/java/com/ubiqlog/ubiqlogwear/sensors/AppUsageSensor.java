@@ -7,7 +7,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 
 /**
- * Created by Cole on 2/13/15.
+ * Created by CM on 2/13/15.
  */
 
 /* This class utilizes UsageStats to get usage time about packages within the system */

@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
    Currently, the watch does not have the sensors to
    get changeOfStep, perform activity recognition, or get speed
  */
+/* Created by CM */
 public class ActivitySensor extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
     private static final String LOG_TAG = ActivitySensor.class.getSimpleName();

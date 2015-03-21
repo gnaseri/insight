@@ -11,7 +11,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
 
 /**
- * Created by Cole Murray on 2/16/15.
+ * Created by CM on 2/16/15.
  */
 public class GoogleFitConnection implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = GoogleFitConnection.class.getSimpleName();

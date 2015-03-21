@@ -5,7 +5,7 @@ import com.ubiqlog.ubiqlogwear.utils.NotificationParcel;
 import java.util.Date;
 
 /**
- * Created by User on 3/10/15.
+ * Created by CM on 3/10/15.
  */
 public class SemanticTempCSVUtil {
 

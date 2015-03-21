@@ -1,6 +1,6 @@
 package com.ubiqlog.ubiqlogwear.sensors;
 
-
+/* Created by CM */
 public final class SensorConstants {
 
     public static long ACCELEROMETER_LOG_INTERVAL = 300000L;  //5 minutes

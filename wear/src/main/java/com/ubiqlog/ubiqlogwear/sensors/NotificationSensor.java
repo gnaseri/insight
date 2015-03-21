@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by User on 2/21/15.
+ * Created by CM on 2/21/15.
  */
 
 /* This class logs Bluetooth and Notifications. Only one wearableListener service is allowed

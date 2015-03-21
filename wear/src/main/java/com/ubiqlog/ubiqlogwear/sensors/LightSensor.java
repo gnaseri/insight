@@ -19,7 +19,7 @@ import com.ubiqlog.ubiqlogwear.data.SemanticTempCSVUtil;
 import java.util.Date;
 
 /**
- * Created by Cole
+ * Created by CM
  */
 
 /**

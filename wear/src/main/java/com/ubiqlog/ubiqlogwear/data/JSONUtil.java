@@ -10,7 +10,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 /**
- * Created by User on 2/23/15.
+ * Created by CM on 2/23/15.
  */
 public class JSONUtil {
     public static String encodeBattery(int percent, boolean charging, Date timeStamp) {

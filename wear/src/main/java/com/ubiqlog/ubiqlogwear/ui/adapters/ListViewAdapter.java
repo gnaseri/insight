@@ -12,7 +12,7 @@ import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.ui.MainListItem;
 
 /**
- * Created by User on 2/4/15.
+ * Created by CM on 2/4/15.
  */
 public class ListViewAdapter extends WearableListView.Adapter {
     private MainListItem[] mDataset;

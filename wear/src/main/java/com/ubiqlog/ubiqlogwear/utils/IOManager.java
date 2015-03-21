@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 
+/* Created by CM & Manouchehr */
 public class IOManager {
 
     public static final String LOG_TAG = IOManager.class.getSimpleName();

@@ -1,7 +1,7 @@
 package com.ubiqlog.ubiqlogwear.data;
 
 /**
- * Created by User on 3/8/15.
+ * Created by CM on 3/8/15.
  */
 public class SemanticAbsUtil {
 

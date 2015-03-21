@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by User on 3/5/15.
+ * Created by CM on 3/5/15.
  */
 public class AlarmReceiver extends WakefulBroadcastReceiver {
     PendingIntent alarmIntent;

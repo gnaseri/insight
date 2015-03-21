@@ -1,6 +1,9 @@
 package com.ubiqlog.ubiqlogwear.common;
 
 import java.text.SimpleDateFormat;
+/*
+    Created by CM
+ */
 
 public final class Setting {
 

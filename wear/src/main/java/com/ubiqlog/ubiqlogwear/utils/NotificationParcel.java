@@ -7,7 +7,7 @@ import android.os.Parcelable;
 import android.service.notification.StatusBarNotification;
 
 /**
- * Created by User on 2/21/15.
+ * Created by CM on 2/21/15.
  */
 public class NotificationParcel implements Parcelable {
     public String EXTRA_TITLE;

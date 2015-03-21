@@ -7,6 +7,7 @@ import com.ubiqlog.ubiqlogwear.utils.IOManager;
 
 import java.util.ArrayList;
 
+/* Created by CM*/
 public class DataAcquisitor {
     private static final String LOG_TAG = DataAcquisitor.class.getSimpleName();
     private String folderName;

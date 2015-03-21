@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 /**
- * Created by User on 2/4/15.
+ * Created by CM on 2/4/15.
  */
 public class CSVEncodeDecode {
     private static final String LOG_TAG = CSVEncodeDecode.class.getSimpleName();

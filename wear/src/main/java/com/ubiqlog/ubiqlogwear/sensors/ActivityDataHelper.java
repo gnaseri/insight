@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by User on 2/9/15.
+ * Created by CM on 2/9/15.
  */
 public class ActivityDataHelper {
     private static final String LOG_TAG = ActivityDataHelper.class.getSimpleName();

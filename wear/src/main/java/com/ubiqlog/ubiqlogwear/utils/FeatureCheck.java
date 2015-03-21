@@ -5,7 +5,7 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 /**
- * Created by Cole on 2/4/15.
+ * Created by CM on 2/4/15.
  */
 public class FeatureCheck {
     public static boolean hasBluetoothFeature(Context context){

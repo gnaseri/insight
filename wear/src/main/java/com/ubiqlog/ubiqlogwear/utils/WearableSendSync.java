@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.HashSet;
 
 /**
- * Created by Cole Murray
+ * Created by  CM
  */
 
 /* This class sends a message to the handheld to sync history

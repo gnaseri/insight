@@ -17,7 +17,7 @@ import com.ubiqlog.ubiqlogwear.data.SemanticTempCSVUtil;
 import java.util.Date;
 
 /**
- * Created by User on 2/22/15.
+ * Created by CM on 2/22/15.
  */
 public class BatterySensor extends Service {
     IntentFilter mIntentFilter;

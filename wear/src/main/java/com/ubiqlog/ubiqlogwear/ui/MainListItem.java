@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 /**
- * Created by User on 2/4/15.
+ * Created by CM on 2/4/15.
  */
 public class MainListItem {
     private String title;
