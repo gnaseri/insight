@@ -1,6 +1,5 @@
 package com.ubiqlog.ubiqlogwear.utils;
 
-import com.ubiqlog.ubiqlogwear.common.NotificationParcel;
 import com.ubiqlog.ubiqlogwear.common.Setting;
 
 import org.json.JSONException;

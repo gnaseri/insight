@@ -1,7 +1,5 @@
 package com.ubiqlog.ubiqlogwear.utils;
 
-import com.ubiqlog.ubiqlogwear.common.NotificationParcel;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;

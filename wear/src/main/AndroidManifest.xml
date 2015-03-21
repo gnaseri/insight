@@ -23,7 +23,7 @@
             android:label="@string/app_name" >
 
         </activity>
-        <activity android:name=".ui.Layouts.HomeActivity">
+        <activity android:name=".ui.Layouts.HomeActivity_Actv">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,25 +31,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.wActivity"
+            android:name=".ui.Activity_Actv"
             android:label="@string/title_activity_wactivity" />
         <activity
-            android:name=".ui.wAppUsage"
+            android:name=".ui.AppUsage_Actv"
             android:label="@string/title_activity_wappusage" />
         <activity
-            android:name=".ui.wHeartRate"
+            android:name=".ui.HeartRate_Actv"
             android:label="@string/title_activity_wheartrate" />
         <activity
-            android:name=".ui.wAmbientLight"
+            android:name=".ui.AmbientLight_Actv"
             android:label="@string/title_activity_wambientlight" />
         <activity
-            android:name=".ui.wBattery"
+            android:name=".ui.Battery_Actv"
             android:label="@string/title_activity_wbattery" />
         <activity
-            android:name=".ui.wBluetooth"
+            android:name=".ui.Bluetooth_Actv"
             android:label="@string/title_activity_wbluetooth" />
         <activity
-            android:name=".ui.wNotifications"
+            android:name=".ui.Notifications_Actv"
             android:label="@string/title_activity_wnotifications" />
 
         <service

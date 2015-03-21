@@ -3,14 +3,14 @@ package com.ubiqlog.ubiqlogwear.utils;
 import android.app.Activity;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.common.MainListItem;
-import com.ubiqlog.ubiqlogwear.ui.wActivity;
-import com.ubiqlog.ubiqlogwear.ui.wAmbientLight;
-import com.ubiqlog.ubiqlogwear.ui.wAppUsage;
-import com.ubiqlog.ubiqlogwear.ui.wBattery;
-import com.ubiqlog.ubiqlogwear.ui.wBluetooth;
-import com.ubiqlog.ubiqlogwear.ui.wHeartRate;
-import com.ubiqlog.ubiqlogwear.ui.wNotifications;
+import com.ubiqlog.ubiqlogwear.ui.Activity_Actv;
+import com.ubiqlog.ubiqlogwear.ui.AmbientLight_Actv;
+import com.ubiqlog.ubiqlogwear.ui.AppUsage_Actv;
+import com.ubiqlog.ubiqlogwear.ui.Battery_Actv;
+import com.ubiqlog.ubiqlogwear.ui.Bluetooth_Actv;
+import com.ubiqlog.ubiqlogwear.ui.HeartRate_Actv;
+import com.ubiqlog.ubiqlogwear.ui.MainListItem;
+import com.ubiqlog.ubiqlogwear.ui.Notifications_Actv;
 
 import java.util.ArrayList;
 
@@ -32,15 +32,15 @@ public class MenuItems {
        // listArray.add(meTitle);
         MainListItem activityItem = new MainListItem(
                 context.getResources().getString(R.string.activity_title),
-                R.drawable.ic_activity, wActivity.class);//ActivitySensor.class
+                R.drawable.ic_activity, Activity_Actv.class);//ActivitySensor.class
         listArray.add(activityItem);
         MainListItem heartrateItem = new MainListItem(
                 context.getString(R.string.heart_rate_title),
-                R.drawable.ic_heart, wHeartRate.class);
+                R.drawable.ic_heart, HeartRate_Actv.class);
         listArray.add(heartrateItem);
         MainListItem appUsageItem = new MainListItem(
                 context.getString(R.string.app_usage_title),
-                R.drawable.ic_appusage, wAppUsage.class);
+                R.drawable.ic_appusage, AppUsage_Actv.class);
 
         listArray.add(appUsageItem);
         listArray.addAll(createSystemListItems());
@@ -58,14 +58,14 @@ public class MenuItems {
         MainListItem battItem = new MainListItem(
                 context.getString(R.string.battery_title),
                 R.drawable.ic_battery,
-                wBattery.class);//BatteryLevelActivity.class
+                Battery_Actv.class);//BatteryLevelActivity.class
 
         systemItemList.add(battItem);
 
         MainListItem notifItem = new MainListItem(
                 context.getString(R.string.notification_title),
                 R.drawable.ic_notif,
-                wNotifications.class);
+                Notifications_Actv.class);
         systemItemList.add(notifItem);
 
         if (FeatureCheck.hasBluetoothFeature(context)) {
@@ -73,13 +73,13 @@ public class MenuItems {
 
             MainListItem bluetoothItem = new MainListItem(
                     context.getString(R.string.bluetooth_title),
-                    R.drawable.ic_bluetooth, wBluetooth.class);
+                    R.drawable.ic_bluetooth, Bluetooth_Actv.class);
             systemItemList.add(bluetoothItem);
         }
         if (FeatureCheck.hasLightFeature(context)) {
             MainListItem ambLightItem = new MainListItem(
                     context.getString(R.string.amblight_title),
-                    R.drawable.ic_light, wAmbientLight.class);
+                    R.drawable.ic_light, AmbientLight_Actv.class);
             systemItemList.add(ambLightItem);
         }
 

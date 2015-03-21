@@ -44,7 +44,7 @@ import java.util.Date;
 /**
  * Created by Manouchehr on 2/13/2015.
  */
-public class wAmbientLight extends Activity {
+public class AmbientLight_Actv extends Activity {
     JSONUtil jsonUtil = new JSONUtil();
     IOManager ioManager = new IOManager();
     File[] lastDataFilesList;

@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.adapters;
+package com.ubiqlog.ubiqlogwear.ui.adapters;
 
 import android.content.Context;
 import android.support.wearable.view.WearableListView;
@@ -9,18 +9,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.common.MainListItem;
+import com.ubiqlog.ubiqlogwear.ui.MainListItem;
 
 /**
  * Created by User on 2/4/15.
  */
-public class MyAdapter extends WearableListView.Adapter {
+public class ListViewAdapter extends WearableListView.Adapter {
     private MainListItem[] mDataset;
     private final Context mContext;
     private final LayoutInflater mInflater;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(Context context, MainListItem[] dataset) {
+    public ListViewAdapter(Context context, MainListItem[] dataset) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mDataset = dataset;

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationSet;
@@ -22,70 +23,48 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.common.Setting;
-import com.ubiqlog.ubiqlogwear.utils.IOManager;
-import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
+import org.achartengine.chart.BarChart;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by Manouchehr on 2/13/2015.
  */
-public class wBattery extends Activity {
-    JSONUtil jsonUtil = new JSONUtil();
-    IOManager ioManager = new IOManager();
-    File[] lastDataFilesList;
-
-    TextView tvDate = null;
-    TextView tvLastSync = null;
-    ScrollView scrollView = null;
-    LinearLayout frameBox = null;
-    ImageView linksCursor = null;
+public class AppUsage_Actv extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_chart);
-        tvDate = (TextView) findViewById(R.id.tvDate);
-        tvLastSync = (TextView) findViewById(R.id.tvLastSync);
-        scrollView = (ScrollView) findViewById(R.id.scrollView);
-        frameBox = (LinearLayout) findViewById(R.id.frameBox);
-        linksCursor = (ImageView) findViewById(R.id.linksCursor);
-
+        //startService(new Intent(this, AppUsageSensor.class));
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitleChart);
-        tvTitle.setText(R.string.title_activity_wbattery);
+        tvTitle.setText(R.string.title_activity_wappusage);
 
+        Date date = new Date();
+        displayData(date);
 
-        lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_Battery, Setting.linksButtonCount);
-        if (lastDataFilesList != null && lastDataFilesList.length > 0) {
-            Date date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());//
-            displayData(date);
-        } else {
-            tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(new Date()));
-            tvLastSync.setText("\n" + getResources().getString(R.string.message_nodata));
-            tvLastSync.setTextSize(getResources().getDimension(R.dimen.textsize_m1));
-            linksCursor.setVisibility(View.INVISIBLE);
-        }
     }
 
     private void displayData(Date date) {
+        final TextView tvDate = (TextView) findViewById(R.id.tvDate);
         tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
-        tvLastSync.setHeight(0);
+
+        final TextView tvLastSync = (TextView) findViewById(R.id.tvLastSync);
+        tvLastSync.setText("Last Sync: " + new SimpleDateFormat("MM/dd/yyyy hh:mm").format(date));
+
+        final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
+        final LinearLayout frameBox = (LinearLayout) findViewById(R.id.frameBox);
 
         // remove all added views before except linksbox and tvLastSync label
         frameBox.removeViewsInLayout(1, frameBox.getChildCount() - 2);
@@ -94,7 +73,7 @@ public class wBattery extends Activity {
         LinearLayout.LayoutParams cParams = new LinearLayout.LayoutParams(getSizeInDP(190), getSizeInDP(170));
         cParams.gravity = (Gravity.TOP | Gravity.CENTER_HORIZONTAL);
         chart.setLayoutParams(cParams);
-        chart.setPadding(10, 0, 15, 10);
+        chart.setPadding(5, 5, 5, 5);
         chart.addView(createGraph(date));
         frameBox.addView(chart, 1);
 
@@ -112,6 +91,7 @@ public class wBattery extends Activity {
         aniMove.setRepeatCount(2);
         aniSetCursor.addAnimation(aniMove);
 
+        final ImageView linksCursor = (ImageView) findViewById(R.id.linksCursor);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics); // get screen properties ex. size
         RelativeLayout.LayoutParams linksCursorParams = (RelativeLayout.LayoutParams) linksCursor.getLayoutParams();
@@ -143,13 +123,14 @@ public class wBattery extends Activity {
         linksBox.removeAllViews();
         linksBox.setLayoutParams(params);
 
-        // create links to datefiles
-        for (File file : lastDataFilesList) {
+        // create links to some dates
+        for (int i = 0; i < 7; i++) {
             final Button btn1 = new Button(this);
-            final Date tmpDate = ioManager.parseDataFilename2Date(file.getName());
+            final Date tmpDate = new Date(date.getTime() - (i + 1) * 24 * 60 * 60 * 1000);
             btn1.setText(new SimpleDateFormat("MM/dd/yyyy").format(tmpDate));
             btn1.setBackgroundColor(getResources().getColor(R.color.chart_button_bgcolor));
             btn1.setBackground(getResources().getDrawable(R.drawable.listview_bg_title));
+            btn1.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 30));
             btn1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -160,57 +141,20 @@ public class wBattery extends Activity {
             linksBox.addView(btn1, params);
         }
 
-
     }
 
     private View createGraph(Date date) {
-        Log.i("Battery", "In Create Chart");
-        // We start creating the XYSeries to plot the temperature
-        XYSeries series1 = new XYSeries("Battery");
+        HashMap<String, Integer> apps = new HashMap<String, Integer>();
+        apps.put("Viber", 21);
+        apps.put("Facebook", 34);
+        apps.put("Chrome", 10);
+        apps.put("Instagram", 14);
+        apps.put("Skype", 1);
+        apps.put("Gmail", 15);
 
+        Log.i("App Usage", "In Create Chart");
 
-        // start filling the series
-        try {
-            String sCurrentLine;
-            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_Battery) + Setting.filenameFormat.format(date) + ".txt"));
-            ArrayList<BatteryDataRecord> dataRecords = new ArrayList<>();
-            while ((sCurrentLine = br.readLine()) != null) {
-                Object[] decodedRow = jsonUtil.decodeBattery(sCurrentLine);// [0]:Date, [1]:Percent, [2]:isCharging
-                if (decodedRow != null) {
-                    BatteryDataRecord dataRecord = new BatteryDataRecord();
-
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
-
-                    dataRecord.timeStamp = (Date) decodedRow[0];
-                    dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
-                    dataRecord.percent = (int) decodedRow[1];
-                    dataRecord.isCharging = (boolean) decodedRow[2];
-                    dataRecord.density = 1; // density of records in same hours
-
-                    //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", " + "tsh:" + dataRecord.timeStampHour + ", " + dataRecord.percent + "%, " + "chrg:" + dataRecord.isCharging + ", " + "dns:" + dataRecord.density);
-
-                    //check if previous record's hour is the same with current record,
-                    //calculate the average 'percent' and update previous record
-                    if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
-                        BatteryDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
-                        lastDataRecord.density += 1;
-                        lastDataRecord.percent += dataRecord.percent;
-                    } else {
-                        dataRecords.add(dataRecord);
-                    }
-                }
-            }
-
-
-            for (BatteryDataRecord record : dataRecords) {
-                series1.add(record.timeStampHour, record.percent / record.density);
-                // Log.d(">>>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", " + record.percent / record.density + "%, chrg:" + record.isCharging + ", dns:" + record.density);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        XYSeries series1 = new XYSeries("App Usage");
 
         XYSeriesRenderer renderer1 = new XYSeriesRenderer();
         renderer1.setLineWidth(getResources().getInteger(R.integer.chart_line_width));
@@ -220,33 +164,45 @@ public class wBattery extends Activity {
         //renderer1.setPointStrokeWidth(2);
 
 
-        // Now we add our series
-        XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-        dataset.addSeries(series1);
-
-        // Finaly we create the multiple series renderer to control the graph
+        // create the multiple series renderer to control the graph
         XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
         mRenderer.addSeriesRenderer(renderer1);
-        mRenderer.setYAxisMin(0);
-        mRenderer.setYAxisMax(101);
-        mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
-        mRenderer.setYLabelsPadding(5.0f);
+
+        //filling the series with random values for Y:0-100 to X:0-24
+        int i = 1;
+        for (String app : apps.keySet()) {
+            series1.add(i, apps.get(app));
+            mRenderer.addXTextLabel(i, app);
+            i += 1;
+        }
+        // add an extra record to all Axis be in a good order
+        series1.add(i, 0);
+        mRenderer.addXTextLabel(i, "");
+
         mRenderer.setXAxisMin(0);
-        mRenderer.setXAxisMax(23);
-
-        mRenderer.addXTextLabel(0, "00:00");
-        mRenderer.addXTextLabel(12, "12:00");
-        mRenderer.addXTextLabel(23, "23:59");
-
-        mRenderer.setXLabelsAlign(Paint.Align.CENTER);
+        mRenderer.setXLabelsAlign(Paint.Align.LEFT);
+        mRenderer.setXLabelsPadding(-22f);
         mRenderer.setXLabels(0);
+
+        mRenderer.setYAxisMin(0);
+        mRenderer.setYLabelsAlign(Paint.Align.LEFT);
+        mRenderer.setYLabelsPadding(0);
+        mRenderer.setYTitle("minutes");
+
+        mRenderer.setShowAxes(false);
+        mRenderer.setLabelsTextSize(getResources().getDimension(R.dimen.textsize_s1));
+
+        mRenderer.setBarSpacing(0.10);
 
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
         // Disable Pan on two axis
         mRenderer.setPanEnabled(false, false);
-        mRenderer.setShowGrid(false);
+        mRenderer.setShowGrid(true);
+        mRenderer.setShowGridY(true);
+        mRenderer.setShowCustomTextGridY(true);
+        mRenderer.setGridColor(getResources().getColor(R.color.chart_grids_color));
         mRenderer.setBackgroundColor(Color.WHITE);
-        mRenderer.setMargins(new int[]{10, 20, 5, 20});  //setMargins(top, left, bottom, right) defaults(20,30,10,20) ** more space in left and right for labels
+        mRenderer.setMargins(new int[]{20,5,10,5});  //setMargins(right, top, left, bottom)! defaults(20,30,10,20)
         mRenderer.setMarginsColor(Color.WHITE);
         mRenderer.setAxesColor(Color.BLACK);
         mRenderer.setApplyBackgroundColor(true);
@@ -255,9 +211,13 @@ public class wBattery extends Activity {
         mRenderer.setXLabelsColor(getResources().getColor(R.color.chart_labels_color));
         mRenderer.setYLabelsColor(0, getResources().getColor(R.color.chart_labels_color));
         mRenderer.setShowTickMarks(false);
-        //mRenderer.setChartTitle(new SimpleDateFormat("MM/dd/yyyy").format(date));
+        // Vertical bars
+        mRenderer.setOrientation(XYMultipleSeriesRenderer.Orientation.VERTICAL);
 
-        GraphicalView chartView = ChartFactory.getLineChartView(this, dataset, mRenderer);
+        // add series
+        XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
+        dataset.addSeries(series1);
+        GraphicalView chartView = ChartFactory.getBarChartView(this, dataset, mRenderer, BarChart.Type.DEFAULT);
         return chartView;
     }
 
@@ -265,11 +225,5 @@ public class wBattery extends Activity {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());
     }
 
-    private class BatteryDataRecord {
-        public Date timeStamp;
-        public int timeStampHour;
-        public int percent;
-        public boolean isCharging;
-        public int density; // density of records in same hour
-    }
+
 }

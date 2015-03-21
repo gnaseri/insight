@@ -7,10 +7,9 @@ import android.support.wearable.view.BoxInsetLayout;
 import android.support.wearable.view.WatchViewStub;
 import android.support.wearable.view.WearableListView;
 
-import com.ubiqlog.ubiqlogwear.adapters.MyAdapter;
+import com.ubiqlog.ubiqlogwear.ui.adapters.ListViewAdapter;
 import com.ubiqlog.ubiqlogwear.alarm.AlarmReceiver;
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.common.MainListItem;
 import com.ubiqlog.ubiqlogwear.sensors.ActivitySensor;
 import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;
 import com.ubiqlog.ubiqlogwear.sensors.LightSensor;
@@ -49,7 +48,7 @@ public class OldMainActivity extends Activity {
                     //Start Alarm manager
 
                     listView = (WearableListView) roundBack.findViewById(R.id.wearable_list);
-                    listView.setAdapter(new MyAdapter(OldMainActivity.this, menuItems.createMeListItems()));
+                    listView.setAdapter(new ListViewAdapter(OldMainActivity.this, menuItems.createMeListItems()));
                     listView.setClickListener(new WearableListView.ClickListener() {
                         @Override
                         public void onClick(WearableListView.ViewHolder viewHolder) {

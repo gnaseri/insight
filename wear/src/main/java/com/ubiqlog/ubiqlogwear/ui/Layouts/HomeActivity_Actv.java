@@ -17,7 +17,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.common.MainListItem;
+import com.ubiqlog.ubiqlogwear.ui.MainListItem;
 import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.sensors.ActivitySensor;
 import com.ubiqlog.ubiqlogwear.sensors.BatterySensor;
@@ -31,15 +31,15 @@ import java.io.File;
 /**
  * Created by Manouchehr on 3/10/2015.
  */
-public class HomeActivity extends Activity {
-    public static String LOG_TAG = HomeActivity.class.getSimpleName();
+public class HomeActivity_Actv extends Activity {
+    public static String LOG_TAG = HomeActivity_Actv.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        MenuItems menuItemsClass = new MenuItems(HomeActivity.this);
+        MenuItems menuItemsClass = new MenuItems(HomeActivity_Actv.this);
         final MainListItem[] menuItems = menuItemsClass.createMeListItems();
 
         GridLayout frameBox = (GridLayout) findViewById(R.id.home_lstItems);

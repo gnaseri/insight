@@ -29,8 +29,8 @@ import java.util.Date;
 import java.util.List;
 
 
-public class wBluetooth extends Activity {
-    private static final String LOG_TAG = wBluetooth.class.getSimpleName();
+public class Notifications_Actv extends Activity {
+    private static final String LOG_TAG = Notifications_Actv.class.getSimpleName();
     private MultipleListItemsAdapter mAdapter;
 
     JSONUtil jsonUtil = new JSONUtil();
@@ -44,9 +44,9 @@ public class wBluetooth extends Activity {
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitle);
-        tvTitle.setText(R.string.title_activity_wbluetooth);
+        tvTitle.setText(R.string.title_activity_wnotifications);
 
-        lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_Bluetooth, Setting.linksButtonCount);
+        lastDataFilesList = ioManager.getLastFilesInDir(Setting.dataFilename_Notifications, Setting.linksButtonCount);
         if (lastDataFilesList != null && lastDataFilesList.length > 0) {
             Date date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());
             displayDataList(date);
@@ -62,6 +62,13 @@ public class wBluetooth extends Activity {
             frameBox.removeViewsInLayout(1, frameBox.getChildCount() - 1); // remove all views except title
             frameBox.addView(tvMessage, 1);
         }
+
+        //-------------------------------- pop up a prediction on watch screen
+        /*
+        PredictionNotification predictionNotification = new PredictionNotification();
+        predictionNotification.show(this, "Caution", "Your battery is going to drain faster than average!");
+        Toast.makeText(this, "Prediction Created!", Toast.LENGTH_SHORT).show();
+        */
     }
 
     public void displayDataList(Date date) {
@@ -99,16 +106,15 @@ public class wBluetooth extends Activity {
 
     public List<RowData> getDataFromFile(Date date) {
         List<RowData> rDatas = new ArrayList<RowData>();
-
         try {
             String sCurrentLine;
-            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_Bluetooth) + Setting.filenameFormat.format(date) + ".txt"));
+            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_Notifications) + Setting.filenameFormat.format(date) + ".txt"));
             while ((sCurrentLine = br.readLine()) != null) {
-                Object[] decodedRow = jsonUtil.decodeBT(sCurrentLine); // [0]:Date, [1]:State
+                Object[] decodedRow = jsonUtil.decodeNotification(sCurrentLine); // [0]:date, [1]:pkg name, [2]:title, [3]:flags, [4]:category
                 if (decodedRow != null) {
                     Date rowDate = (Date) decodedRow[0];
-                    String rowState = String.valueOf(decodedRow[1]);
-                    RowData rData = new RowData(rowDate, rowState, R.drawable.ic_bar_bullet);
+                    String rowTitle = decodedRow[2].toString();
+                    RowData rData = new RowData(rowDate, rowTitle, R.drawable.ic_bar_bullet);
                     rDatas.add(rData);
                     // Log.d(">>", "ts:" + rowDate.toString() + ", st:" + rowState);
                 }
