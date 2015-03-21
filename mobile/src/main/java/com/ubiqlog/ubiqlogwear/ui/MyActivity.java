@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.services.WearableListenerService;
 
 public class MyActivity extends Activity {
 
@@ -20,8 +19,7 @@ public class MyActivity extends Activity {
         Button auth_btn = (Button) findViewById(R.id.auth_btn);
         Button notif_btn = (Button) findViewById(R.id.notif_btn);
         Button appUsage_btn = (Button) findViewById(R.id.appusage_btn);
-        Button testHR_btn = (Button) findViewById(R.id.hr_btn);
-        Button activ_btn = (Button) findViewById(R.id.activ_btn);
+
 
         auth_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,20 +40,7 @@ public class MyActivity extends Activity {
             public void onClick(View view) {
             }
         });
-        testHR_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //startActivity(new Intent(MyActivity.this,HeartRateActivity.class));
-                startService(new Intent(MyActivity.this, WearableListenerService.class));
-            }
-        });
 
-        activ_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MyActivity.this, ActivitySegmentActivity.class));
-            }
-        });
     }
 
 

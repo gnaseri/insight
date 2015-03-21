@@ -18,13 +18,10 @@ import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.result.DataReadResult;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataMap;
-import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.objects.NotificationParcel;
-import com.ubiqlog.ubiqlogwear.ui.HeartRateActivity;
 import com.ubiqlog.ubiqlogwear.util.FileUtils;
 import com.ubiqlog.ubiqlogwear.util.NotifLookupUtil;
 
@@ -33,7 +30,7 @@ import java.util.Date;
 
 
 
-public class WearableDataLayer implements MessageApi.MessageListener{
+public class WearableDataLayer {
     private static final String TAG = WearableDataLayer.class.getSimpleName();
 
     public static final String HEART_HIST_KEY = "com.insight.heartrate";
@@ -157,12 +154,4 @@ public class WearableDataLayer implements MessageApi.MessageListener{
     }
 
 
-
-    @Override
-    public void onMessageReceived(MessageEvent messageEvent) {
-        if (messageEvent.getPath().equals(SYNC_KEY)) {
-            Log.d(TAG, "Message Event received");
-            HeartRateActivity.fetchHeartDataSet(mContext);
-        }
-    }
 }
