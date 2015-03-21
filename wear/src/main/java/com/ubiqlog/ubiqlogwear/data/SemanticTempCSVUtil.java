@@ -1,4 +1,6 @@
-package com.ubiqlog.ubiqlogwear.utils;
+package com.ubiqlog.ubiqlogwear.data;
+
+import com.ubiqlog.ubiqlogwear.utils.NotificationParcel;
 
 import java.util.Date;
 
@@ -10,7 +12,7 @@ public class SemanticTempCSVUtil {
     public static String encodeBattery(int percent, boolean charging, Date timeStamp){
         StringBuilder encoded = new StringBuilder("");
         encoded.append("battery," + percent + "% Charging:" + charging +  "," + timeStamp);
-        encoded.append("," + SemanticAbsUtil.getSemanticBattery(percent,charging) + ",");
+        encoded.append("," + SemanticAbsUtil.getSemanticBattery(percent, charging) + ",");
         encoded.append(TempGranUtil.getTemporalTimeStamp(timeStamp));
 
         return encoded.toString();

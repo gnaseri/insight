@@ -1,4 +1,6 @@
-package com.ubiqlog.ubiqlogwear.utils;
+package com.ubiqlog.ubiqlogwear.data;
+
+import com.ubiqlog.ubiqlogwear.utils.NotificationParcel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

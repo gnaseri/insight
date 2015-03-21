@@ -24,7 +24,7 @@ import android.widget.TextView;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.utils.IOManager;
-import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
+import com.ubiqlog.ubiqlogwear.data.JSONUtil;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;

@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.utils;
+package com.ubiqlog.ubiqlogwear.data;
 
 /**
  * Created by User on 3/8/15.

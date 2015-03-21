@@ -24,8 +24,8 @@ import com.google.android.gms.wearable.WearableListenerService;
 import com.ubiqlog.ubiqlogwear.utils.NotificationParcel;
 import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
-import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
-import com.ubiqlog.ubiqlogwear.utils.SemanticTempCSVUtil;
+import com.ubiqlog.ubiqlogwear.data.JSONUtil;
+import com.ubiqlog.ubiqlogwear.data.SemanticTempCSVUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;

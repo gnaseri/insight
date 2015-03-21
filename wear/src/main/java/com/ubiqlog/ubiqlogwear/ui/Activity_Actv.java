@@ -27,7 +27,7 @@ import com.google.android.gms.wearable.Wearable;
 import com.ubiqlog.ubiqlogwear.R;
 import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.utils.IOManager;
-import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
+import com.ubiqlog.ubiqlogwear.data.JSONUtil;
 import com.ubiqlog.ubiqlogwear.utils.WearableSendSync;
 
 import org.achartengine.ChartFactory;

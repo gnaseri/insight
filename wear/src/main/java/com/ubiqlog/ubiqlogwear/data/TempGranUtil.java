@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.utils;
+package com.ubiqlog.ubiqlogwear.data;
 
 import java.util.Calendar;
 import java.util.Date;

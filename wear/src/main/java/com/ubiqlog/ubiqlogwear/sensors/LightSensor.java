@@ -14,8 +14,8 @@ import android.widget.Toast;
 
 import com.ubiqlog.ubiqlogwear.common.Setting;
 import com.ubiqlog.ubiqlogwear.core.DataAcquisitor;
-import com.ubiqlog.ubiqlogwear.utils.JSONUtil;
-import com.ubiqlog.ubiqlogwear.utils.SemanticTempCSVUtil;
+import com.ubiqlog.ubiqlogwear.data.JSONUtil;
+import com.ubiqlog.ubiqlogwear.data.SemanticTempCSVUtil;
 
 import java.util.Date;
 
