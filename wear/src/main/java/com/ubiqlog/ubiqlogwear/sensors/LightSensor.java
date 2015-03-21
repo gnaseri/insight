@@ -55,7 +55,6 @@ public class LightSensor extends Service implements SensorEventListener {
         mSA_lightBuffer = new DataAcquisitor(this, "SA/LightSensor");
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        Toast.makeText(this,"LightSens Logging Started", Toast.LENGTH_SHORT).show();
         Log.d(LOG_TAG, "Light sensor started");
     }
 
