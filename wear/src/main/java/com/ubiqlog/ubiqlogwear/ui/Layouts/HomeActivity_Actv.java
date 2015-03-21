@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.ui.Layouts;
+package com.ubiqlog.ubiqlogwear.ui.layouts;
 
 import android.app.Activity;
 import android.content.Intent;
