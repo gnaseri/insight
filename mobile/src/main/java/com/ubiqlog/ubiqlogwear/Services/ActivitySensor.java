@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.Services;
+package com.ubiqlog.ubiqlogwear.services;
 
 import android.content.Context;
 import android.util.Log;
@@ -13,9 +13,9 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
-import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
-import com.ubiqlog.ubiqlogwear.Util.CalendarUtil;
-import com.ubiqlog.ubiqlogwear.Util.GoogleFitConnection;
+import com.ubiqlog.ubiqlogwear.listeners.WearableDataLayer;
+import com.ubiqlog.ubiqlogwear.util.CalendarUtil;
+import com.ubiqlog.ubiqlogwear.util.GoogleFitConnection;
 
 import java.util.Calendar;
 import java.util.Date;

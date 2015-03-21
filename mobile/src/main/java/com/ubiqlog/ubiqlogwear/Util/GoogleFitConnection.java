@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.Util;
+package com.ubiqlog.ubiqlogwear.util;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,7 +9,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
-import com.ubiqlog.ubiqlogwear.Services.HeartRateSensor;
+import com.ubiqlog.ubiqlogwear.services.HeartRateSensor;
 
 /**
  * Created by User on 2/15/15.

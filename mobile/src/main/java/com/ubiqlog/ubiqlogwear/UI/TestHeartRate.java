@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.UI;
+package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.UI;
+package com.ubiqlog.ubiqlogwear.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.ubiqlog.ubiqlogwear.R;
-import com.ubiqlog.ubiqlogwear.Services.WearableListenerService;
+import com.ubiqlog.ubiqlogwear.services.WearableListenerService;
 
 public class MyActivity extends Activity {
 
@@ -33,7 +33,7 @@ public class MyActivity extends Activity {
         notif_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MyActivity.this,NotificationActivity.class));
+                startActivity(new Intent(MyActivity.this, com.ubiqlog.ubiqlogwear.ui.NotificationActivity.class));
             }
         });
 

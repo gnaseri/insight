@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.Objects;
+package com.ubiqlog.ubiqlogwear.objects;
 
 /**
  * Created by User on 3/3/15.

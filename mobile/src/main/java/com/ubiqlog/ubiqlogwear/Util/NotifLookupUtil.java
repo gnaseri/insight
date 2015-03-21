@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.Util;
+package com.ubiqlog.ubiqlogwear.util;
 
 import android.content.Context;
 import android.util.Log;
@@ -45,7 +45,7 @@ public class NotifLookupUtil {
                 if ((genre = isMapped(context,pkgName)) == null){
                     url = gPlayURL + pkgName;
 
-                    genre = new PkgLookupUtil.HtmlGrab().execute(url).get();
+                    genre = new com.ubiqlog.ubiqlogwear.util.PkgLookupUtil.HtmlGrab().execute(url).get();
                     writeGenreToMapFile(context,pkgName,genre);
                 }
                 String reEncoded = reEncodeString(decoded, genre);

@@ -1,4 +1,4 @@
-package com.ubiqlog.ubiqlogwear.Services;
+package com.ubiqlog.ubiqlogwear.services;
 
 import android.app.Notification;
 import android.os.Bundle;
@@ -9,7 +9,7 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Wearable;
-import com.ubiqlog.ubiqlogwear.Listeners.WearableDataLayer;
+import com.ubiqlog.ubiqlogwear.listeners.WearableDataLayer;
 
 /**
  * Created by User on 2/10/15.
