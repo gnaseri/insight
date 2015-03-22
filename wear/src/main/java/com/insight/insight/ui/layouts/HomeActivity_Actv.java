@@ -25,7 +25,7 @@ import com.insight.insight.sensors.LightSensor;
 import com.insight.insight.ui.MainListItem;
 import com.insight.insight.utils.FeatureCheck;
 import com.insight.insight.utils.MenuItems;
-import com.insight.insight.utils.coldstart.ColdStart;
+import com.insight.insight.data.coldstart.ColdStart;
 
 import java.io.File;
 

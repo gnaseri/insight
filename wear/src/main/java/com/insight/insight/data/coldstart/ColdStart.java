@@ -1,4 +1,4 @@
-package com.insight.insight.utils.coldstart;
+package com.insight.insight.data.coldstart;
 
 import android.os.Environment;
 import android.util.Log;

@@ -1,4 +1,4 @@
-package com.insight.insight.utils.coldstart;
+package com.insight.insight.data.coldstart;
 
 /**
  * Created by User on 3/20/15.
