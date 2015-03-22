@@ -85,7 +85,7 @@ public class LightSensor extends Service implements SensorEventListener {
             //Encode the lux value and date
             String encoded = JSONUtil.encodeLight(avg, date);
             Log.d(LOG_TAG, encoded);
-            avg = 0;
+
 
             //add encoded string to buffer
             mDataBuffer.insert(encoded,true, Setting.bufferMaxSize);
@@ -94,6 +94,7 @@ public class LightSensor extends Service implements SensorEventListener {
             String encoded_SA = SemanticTempCSVUtil.encodeLight(avg, date);
             mSA_lightBuffer.insert(encoded_SA,true,Setting.bufferMaxSize);
             mSA_lightBuffer.flush(true);
+            avg = 0;
 
             mHandler.postDelayed(activateLightListener,SensorConstants.LIGHT_SENSOR_INTERVAL);
         }
