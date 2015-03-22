@@ -17,6 +17,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.insight.insight.R;
+import com.insight.insight.alarm.AlarmReceiver;
 import com.insight.insight.common.Setting;
 import com.insight.insight.sensors.ActivitySensor;
 import com.insight.insight.sensors.BatterySensor;
@@ -116,9 +117,11 @@ public class HomeActivity_Actv extends Activity {
     private void startAllServices() {
         startService(new Intent(this, BatterySensor.class));
         startService(new Intent(this, ActivitySensor.class));
-        //TODO Activity Sensor have hooks applied and needs to be redone
         //Notification and Bluetooth autostart due to dataLayer
         // HeartRate needs hooks applied to activity
+
+        AlarmReceiver alarmReceiver = new AlarmReceiver();
+        alarmReceiver.setMidnightAlarmManager(HomeActivity_Actv.this);
         if (FeatureCheck.hasLightFeature(this)) {
             startService(new Intent(this, LightSensor.class));
         }
