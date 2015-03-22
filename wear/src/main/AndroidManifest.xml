@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.ubiqlog.ubiqlogwear" >
+    package="com.insight.insight" >
 
     <uses-feature android:name="android.hardware.type.watch" />
 
@@ -19,11 +19,11 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".ui.OldMainActivity"
+            android:name="com.insight.insight.ui.OldMainActivity"
             android:label="@string/app_name" >
 
         </activity>
-        <activity android:name=".ui.layouts.HomeActivity_Actv">
+        <activity android:name="com.insight.insight.ui.layouts.HomeActivity_Actv">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,46 +31,46 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.Activity_Actv"
+            android:name="com.insight.insight.ui.Activity_Actv"
             android:label="@string/title_activity_wactivity" />
         <activity
-            android:name=".ui.AppUsage_Actv"
+            android:name="com.insight.insight.ui.AppUsage_Actv"
             android:label="@string/title_activity_wappusage" />
         <activity
-            android:name=".ui.HeartRate_Actv"
+            android:name="com.insight.insight.ui.HeartRate_Actv"
             android:label="@string/title_activity_wheartrate" />
         <activity
-            android:name=".ui.AmbientLight_Actv"
+            android:name="com.insight.insight.ui.AmbientLight_Actv"
             android:label="@string/title_activity_wambientlight" />
         <activity
-            android:name=".ui.Battery_Actv"
+            android:name="com.insight.insight.ui.Battery_Actv"
             android:label="@string/title_activity_wbattery" />
         <activity
-            android:name=".ui.Bluetooth_Actv"
+            android:name="com.insight.insight.ui.Bluetooth_Actv"
             android:label="@string/title_activity_wbluetooth" />
         <activity
-            android:name=".ui.Notifications_Actv"
+            android:name="com.insight.insight.ui.Notifications_Actv"
             android:label="@string/title_activity_wnotifications" />
 
         <service
-            android:name=".sensors.BatterySensor"
+            android:name="com.insight.insight.sensors.BatterySensor"
             android:enabled="true"
             android:exported="false" />
-        <service android:name=".sensors.NotificationSensor" >
+        <service android:name="com.insight.insight.sensors.NotificationSensor" >
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
         </service>
         <service
-            android:name=".sensors.AppUsageSensor"
+            android:name="com.insight.insight.sensors.AppUsageSensor"
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".sensors.ActivitySensor"
+            android:name="com.insight.insight.sensors.ActivitySensor"
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".sensors.LightSensor"
+            android:name="com.insight.insight.sensors.LightSensor"
             android:enabled="true"
             android:exported="false" />
 
@@ -83,7 +83,7 @@
         -->
 
         <receiver
-            android:name=".alarm.AlarmReceiver"
+            android:name="com.insight.insight.alarm.AlarmReceiver"
             android:process=":remote" />
     </application>
 

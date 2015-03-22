@@ -6,7 +6,7 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "com.ubiqlog.ubiqlogwear"
+        applicationId "com.insight.insight"
         minSdkVersion 20
         targetSdkVersion 21
         versionCode 1

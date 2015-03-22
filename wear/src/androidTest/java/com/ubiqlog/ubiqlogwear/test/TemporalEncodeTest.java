@@ -3,7 +3,7 @@ package com.ubiqlog.ubiqlogwear.test;
 import android.test.InstrumentationTestCase;
 import android.util.Log;
 
-import com.ubiqlog.ubiqlogwear.data.TempGranUtil;
+import com.insight.insight.data.TempGranUtil;
 
 import java.util.Date;
 

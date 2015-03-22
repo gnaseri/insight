@@ -3,7 +3,7 @@ package com.ubiqlog.ubiqlogwear.test;
 import android.test.InstrumentationTestCase;
 import android.util.Log;
 
-import com.ubiqlog.ubiqlogwear.data.CSVEncodeDecode;
+import com.insight.insight.data.CSVEncodeDecode;
 
 import java.util.ArrayList;
 import java.util.Date;
