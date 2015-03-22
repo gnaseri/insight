@@ -1,4 +1,4 @@
-package com.insight.insight.objects;
+package com.insight.insight.util;
 
 import android.app.Notification;
 import android.os.Build;

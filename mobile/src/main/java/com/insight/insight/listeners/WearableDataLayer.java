@@ -21,7 +21,7 @@ import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
-import com.insight.insight.objects.NotificationParcel;
+import com.insight.insight.util.NotificationParcel;
 import com.insight.insight.util.FileUtils;
 import com.insight.insight.util.NotifLookupUtil;
 
