@@ -22,7 +22,11 @@ public class NotificationParcel implements Parcelable{
     public NotificationParcel(StatusBarNotification sbn){
         Notification n = sbn.getNotification();
 
-        this.EXTRA_TITLE = n.extras.getCharSequence(Notification.EXTRA_TITLE).toString();
+        if (n.extras.getCharSequence(Notification.EXTRA_TITLE) == null){
+            this.EXTRA_TITLE = "";
+        }else{
+            this.EXTRA_TITLE = n.extras.getCharSequence(Notification.EXTRA_TITLE).toString();
+        }
         if (n.extras.getCharSequence(Notification.EXTRA_TEXT) == null){
             this.EXTRA_TEXT = "";
         }

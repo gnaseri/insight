@@ -12,7 +12,6 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Wearable;
-import com.insight.insight.sensors.ActivitySensor;
 import com.insight.insight.utils.WearableSendSync;
 
 import java.util.Calendar;
@@ -28,14 +27,16 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     /* Returns an alarm manager that will fire at 11:59 and ever day there after*/
     public AlarmManager setMidnightAlarmManager(Context context){
-        PendingIntent alarmIntent;
+        Log.d("AlarmRCV", "Set alarm");
         Intent intent = new Intent(context, AlarmReceiver.class);
         alarmIntent = PendingIntent.getBroadcast(context,0,intent,0);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
+
         calendar.set(Calendar.HOUR_OF_DAY,23);
-        calendar.set(Calendar.MINUTE,59);
+        calendar.set(Calendar.MINUTE,58);
+        calendar.set(Calendar.SECOND,0);
 
 
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -70,7 +71,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.d("AlarmRecv", "ALARM ");
         sendFitDataSync(context);
-        reconnectStepCount();
+      //  reconnectStepCount();
     }
 
     private void sendFitDataSync(final Context context){
@@ -102,8 +103,5 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
             }
         });
-    }
-    private void reconnectStepCount(){
-        ActivitySensor.mFitnessClient.reconnect();
     }
 }
