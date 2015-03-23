@@ -15,7 +15,7 @@ import com.insight.insight.ui.Notifications_Actv;
 import java.util.ArrayList;
 
 /**
- * Created by Manouchehr on 3/11/2015.
+ * Created by MN on 3/11/2015.
  */
 public class MenuItems {
     Activity context = new Activity();

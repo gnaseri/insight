@@ -49,7 +49,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Manouchehr on 2/13/2015.
+ * Created by MN on 2/13/2015.
  */
 public class Activity_Actv extends Activity {
     private GoogleApiClient mGoogleApiClient;
@@ -162,9 +162,13 @@ public class Activity_Actv extends Activity {
         LinearLayout.LayoutParams cParams;
         int i = 0;
         for (String activityType : dataMapList.keySet()) {
+            //ignore displaying 'unknown' type activities
+            if(activityType.toLowerCase().contains("unknown"))
+                continue;
+
             chart = new FrameLayout(this);
             chart.removeAllViews();
-            cParams = new LinearLayout.LayoutParams(getSizeInDP(190), getSizeInDP(50));
+            cParams = new LinearLayout.LayoutParams(getSizeInDP(190), getSizeInDP(65));
             cParams.gravity = (Gravity.TOP | Gravity.CENTER_HORIZONTAL);
 
             boolean showFooter = false;
@@ -303,7 +307,7 @@ public class Activity_Actv extends Activity {
         mRenderer.setXLabelsAlign(Paint.Align.CENTER);
 
         mRenderer.setShowAxes(false);
-        mRenderer.setLabelsTextSize(getResources().getDimension(R.dimen.textsize_s22));
+        mRenderer.setLabelsTextSize(getResources().getDimension(R.dimen.textsize_s3));
 
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
         mRenderer.setShowGridX(true);

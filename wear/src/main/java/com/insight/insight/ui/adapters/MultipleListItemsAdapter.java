@@ -1,4 +1,4 @@
-package com.insight.insight.utils;
+package com.insight.insight.ui.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,13 +10,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.insight.insight.R;
+import com.insight.insight.utils.RowData;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
 /**
- * Created by Manouchehr on 2/4/2015.
+ * Created by MN on 2/4/2015.
  */
 public class MultipleListItemsAdapter extends BaseAdapter {
 

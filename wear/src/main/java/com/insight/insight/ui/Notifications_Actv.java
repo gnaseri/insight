@@ -14,7 +14,7 @@ import com.insight.insight.R;
 import com.insight.insight.common.Setting;
 import com.insight.insight.data.JSONUtil;
 import com.insight.insight.utils.IOManager;
-import com.insight.insight.utils.MultipleListItemsAdapter;
+import com.insight.insight.ui.adapters.MultipleListItemsAdapter;
 import com.insight.insight.utils.RowData;
 
 import java.io.BufferedReader;
