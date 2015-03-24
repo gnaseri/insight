@@ -19,13 +19,12 @@ import android.widget.TextView;
 import com.insight.insight.R;
 import com.insight.insight.alarm.AlarmReceiver;
 import com.insight.insight.common.Setting;
-import com.insight.insight.sensors.ActivitySensor;
+import com.insight.insight.data.coldstart.ColdStart;
 import com.insight.insight.sensors.BatterySensor;
 import com.insight.insight.sensors.LightSensor;
 import com.insight.insight.ui.MainListItem;
 import com.insight.insight.utils.FeatureCheck;
 import com.insight.insight.utils.MenuItems;
-import com.insight.insight.data.coldstart.ColdStart;
 
 import java.io.File;
 
@@ -116,7 +115,6 @@ public class HomeActivity_Actv extends Activity {
     //TODO Integrate this into autostart
     private void startAllServices() {
         startService(new Intent(this, BatterySensor.class));
-        startService(new Intent(this, ActivitySensor.class));
         //Notification and Bluetooth autostart due to dataLayer
         // HeartRate needs hooks applied to activity
 

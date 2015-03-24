@@ -9,7 +9,6 @@ import android.support.wearable.view.WearableListView;
 
 import com.insight.insight.R;
 import com.insight.insight.alarm.AlarmReceiver;
-import com.insight.insight.sensors.ActivitySensor;
 import com.insight.insight.sensors.BatterySensor;
 import com.insight.insight.sensors.LightSensor;
 import com.insight.insight.ui.adapters.ListViewAdapter;
@@ -77,7 +76,7 @@ public class OldMainActivity extends Activity {
     //TODO Integrate this into autostart
     private void startAllServices() {
         startService(new Intent(this, BatterySensor.class));
-        startService(new Intent(this, ActivitySensor.class));
+       // startService(new Intent(this, ActivitySensor.class));
         //TODO Activity Sensor have hooks applied and needs to be redone
         //Notification and Bluetooth autostart due to dataLayer
         // HeartRate needs hooks applied to activity
