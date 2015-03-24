@@ -36,6 +36,7 @@ public class WearableDataLayer {
     public static final String HEART_HIST_KEY = "com.insight.heartrate";
     public static final String ACTV_HIST_KEY = "com.insight.activity";
     private static final String SYNC_KEY = "/start/HistorySYNC";
+    public static final String STEP_HIST_KEY = "com.insight.step";
     private static Context mContext;
 
     public static GoogleApiClient buildDataApiClient(Context context){
@@ -90,6 +91,21 @@ public class WearableDataLayer {
         byte[] bytes = p.marshall();
         Log.d(TAG, "Sending activity data");
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/actv");
+        putDataMapReq.getDataMap().putLong("time", new Date().getTime());
+        putDataMapReq.getDataMap().putByteArray(KEY_NAME,bytes);
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        //Send Data To wearable
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mClient,putDataReq);
+        p.recycle();
+    }
+
+    public static void sendStepResult(GoogleApiClient mClient, DataReadResult dr, final String KEY_NAME){
+        Parcel p = Parcel.obtain();
+        dr.writeToParcel(p,0);
+        byte[] bytes = p.marshall();
+        Log.d(TAG, "Sending activity data");
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/step");
         putDataMapReq.getDataMap().putLong("time", new Date().getTime());
         putDataMapReq.getDataMap().putByteArray(KEY_NAME,bytes);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();

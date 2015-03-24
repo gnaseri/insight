@@ -65,10 +65,7 @@
             android:name="com.insight.insight.sensors.AppUsageSensor"
             android:enabled="true"
             android:exported="false" />
-        <service
-            android:name="com.insight.insight.sensors.ActivitySensor"
-            android:enabled="true"
-            android:exported="false" />
+
         <service
             android:name="com.insight.insight.sensors.LightSensor"
             android:enabled="true"

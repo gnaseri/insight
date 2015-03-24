@@ -10,6 +10,7 @@ import com.google.android.gms.common.data.FreezableUtils;
 import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.data.Value;
 import com.google.android.gms.fitness.result.DataReadResult;
@@ -48,6 +49,7 @@ public class NotificationSensor extends WearableListenerService {
     private final String NOTIF_KEY = "com.insight.notif";
     private final String HEART_KEY = "com.insight.heartrate";
     private final String ACTV_KEY = "com.insight.activity";
+    private final String STEP_KEY = "com.insight.step";
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-yyyy HH:mm:ss");
 
@@ -58,12 +60,14 @@ public class NotificationSensor extends WearableListenerService {
     private DataAcquisitor mNotifBuffer;
     private DataAcquisitor mHeartBuffer;
     private static DataAcquisitor mActivBuffer;
+    private static DataAcquisitor mStepBuffer;
 
     //TemporalGran Buffers
     private DataAcquisitor mSA_NotifBuffer;
     private DataAcquisitor mSA_BTBuffer;
     private DataAcquisitor mSA_HeartBuffer;
     private static DataAcquisitor mSA_ActivBuffer;
+    private DataAcquisitor mSA_StepBuffer;
 
     private String lastPackageName;
     private String lastExtraText;
@@ -83,12 +87,15 @@ public class NotificationSensor extends WearableListenerService {
         mNotifBuffer = new DataAcquisitor(this,"Notif");
         mHeartBuffer = new DataAcquisitor(this,"HeartRate");
         mActivBuffer = new DataAcquisitor(this,"ActivFit");
+        mStepBuffer = new DataAcquisitor(this,"Activity");
 
         //TemporalGran buffers
         mSA_BTBuffer = new DataAcquisitor(this,"SA/Bluetooth");
         mSA_NotifBuffer = new DataAcquisitor(this,"SA/Notif");
         mSA_HeartBuffer = new DataAcquisitor(this,"SA/HeartRate");
         mSA_ActivBuffer = new DataAcquisitor(this,"SA/ActivFit");
+        mSA_StepBuffer = new DataAcquisitor(this,"SA/Activity");
+
 
         mClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
@@ -207,10 +214,21 @@ public class NotificationSensor extends WearableListenerService {
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     final byte[] bytes = dataMap.getByteArray(ACTV_KEY);
 
-                    DataReadResult result = unMarshallActivityResult(bytes);
+                    DataReadResult result = unMarshallDataResult(bytes);
                     writeActivResults(result);
 
                     writeSA_ActivResults(result);
+
+                }
+
+                if (item.getUri().getPath().compareTo("/step") == 0){
+                    Log.d(TAG, "Step data");
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    final byte[] bytes = dataMap.getByteArray(STEP_KEY);
+
+                    DataReadResult result = unMarshallDataResult(bytes);
+                    writeStepResults(result);
+                    writeSA_StepResult(result);
 
                 }
 
@@ -250,7 +268,7 @@ public class NotificationSensor extends WearableListenerService {
         parcel.recycle();
         return dataSet;
     }
-    private DataReadResult unMarshallActivityResult (byte[] bytes){
+    private DataReadResult unMarshallDataResult(byte[] bytes){
         Parcel parcel = Parcel.obtain();
         parcel.unmarshall(bytes,0,bytes.length);
         parcel.setDataPosition(0);
@@ -359,6 +377,23 @@ public class NotificationSensor extends WearableListenerService {
         mSA_ActivBuffer.flush(false);
     }
 
+    private void writeStepResults(DataReadResult dataReadResult){
+        DataSet dataSet = dataReadResult.getDataSet(DataType.TYPE_STEP_COUNT_DELTA);
+        ArrayList<String> encoded = encodeStepDataSet(dataSet);
+        for (String s : encoded){
+            mStepBuffer.insert(s,false,Integer.MAX_VALUE);
+        }
+        mStepBuffer.flush(false);
+    }
+
+    private void writeSA_StepResult (DataReadResult dataReadResult){
+        DataSet dataSet = dataReadResult.getDataSet(DataType.TYPE_STEP_COUNT_DELTA);
+        ArrayList<String> sa_encoded = SA_encodeStepDataSet(dataSet);
+        for (String s : sa_encoded){
+            mSA_StepBuffer.insert(s,false, Integer.MAX_VALUE);
+        }
+        mSA_StepBuffer.flush(false);
+    }
 
 
     private static void processDataSet(DataSet dataSet){
@@ -402,6 +437,64 @@ public class NotificationSensor extends WearableListenerService {
         return encoded;
 
     }
+
+    /**
+     *
+     * @param dataSet
+     * @return
+     * [0] :
+     */
+    private static ArrayList<String> encodeStepDataSet( DataSet dataSet){
+        Long startTime = null;
+        Long endTime = null;
+        Integer steps = null;
+        int stepCount = 0;
+        ArrayList<String> encodedArray = new ArrayList<String>();
+        String encoded ;
+        for (DataPoint dp : dataSet.getDataPoints()) {
+            startTime = dp.getStartTime(TimeUnit.MILLISECONDS);
+            endTime = dp.getEndTime(TimeUnit.MILLISECONDS);
+            for (Field field : dp.getDataType().getFields()) {
+                if (field.getName().equals("steps")) {
+                    steps = dp.getValue(field).asInt();
+                    stepCount += steps;
+                    encoded = JSONUtil.encodeStepActivity(new Date(startTime), new Date(endTime), stepCount, steps);
+                    encodedArray.add(encoded);
+                }
+
+            }
+        }
+        return encodedArray;
+
+
+    }
+
+    private static ArrayList<String> SA_encodeStepDataSet( DataSet dataSet){
+        Long startTime = null;
+        Long endTime = null;
+        Integer steps = null;
+        int stepCount = 0;
+        ArrayList<String> encodedArray = new ArrayList<String>();
+        String encoded ;
+        for (DataPoint dp : dataSet.getDataPoints()) {
+            startTime = dp.getStartTime(TimeUnit.MILLISECONDS);
+            endTime = dp.getEndTime(TimeUnit.MILLISECONDS);
+            for (Field field : dp.getDataType().getFields()) {
+                if (field.getName().equals("steps")) {
+                    steps = dp.getValue(field).asInt();
+                    stepCount += steps;
+                    encoded = SemanticTempCSVUtil.encodeStepActivity(new Date(startTime), stepCount, steps);
+                    encodedArray.add(encoded);
+                }
+
+            }
+        }
+        return encodedArray;
+
+
+    }
+
+
 
     private static String SA_encodeActvDataSet(DataSet dataSet){
         Long startTime = null;
