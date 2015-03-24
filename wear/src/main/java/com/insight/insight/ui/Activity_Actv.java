@@ -49,7 +49,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Manouchehr on 2/13/2015.
+ * Created by MN on 2/13/2015.
  */
 public class Activity_Actv extends Activity {
     private GoogleApiClient mGoogleApiClient;
@@ -87,11 +87,15 @@ public class Activity_Actv extends Activity {
             Date date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());//
             displayData(date);
         } else {
-            tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(new Date()));
-            tvLastSync.setText("\n" + getResources().getString(R.string.message_nodata));
-            tvLastSync.setTextSize(getResources().getDimension(R.dimen.textsize_m1));
-            linksCursor.setVisibility(View.INVISIBLE);
+            showNoData();
         }
+    }
+
+    private void showNoData() {
+        tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(new Date()));
+        tvLastSync.setText("\n" + getResources().getString(R.string.message_nodata) + "\n");
+        tvLastSync.setTextSize(getResources().getDimension(R.dimen.textsize_m1));
+        linksCursor.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -120,6 +124,10 @@ public class Activity_Actv extends Activity {
                     dataRecord.activityType = decodedRow[2].toString();
                     dataRecord.duration = (int) decodedRow[3];
                     dataRecord.density = 1; // density of records in same hours
+
+                    //ignore 'unknown' type activities
+                    if (dataRecord.activityType.toLowerCase().contains("unknown"))
+                        continue;
 
                     if (!dataMapList.containsKey(dataRecord.activityType))
                         dataMapList.put(dataRecord.activityType, new ArrayList<ActivityDataRecord>());
@@ -153,7 +161,8 @@ public class Activity_Actv extends Activity {
         tvLastSync.setText("Last Sync: " + new SimpleDateFormat("MM/dd/yyyy hh:mm").format(date));
 
         HashMap<String, ArrayList<ActivityDataRecord>> dataMapList = fetchData(date);
-        if (dataMapList.size() <= 0) return;
+        if (dataMapList.size() <= 0)
+            showNoData();
 
         // remove all added views before except linksbox and tvLastSync label
         frameBox.removeViewsInLayout(1, frameBox.getChildCount() - 2);
@@ -164,7 +173,7 @@ public class Activity_Actv extends Activity {
         for (String activityType : dataMapList.keySet()) {
             chart = new FrameLayout(this);
             chart.removeAllViews();
-            cParams = new LinearLayout.LayoutParams(getSizeInDP(190), getSizeInDP(50));
+            cParams = new LinearLayout.LayoutParams(getSizeInDP(190), getSizeInDP(60));
             cParams.gravity = (Gravity.TOP | Gravity.CENTER_HORIZONTAL);
 
             boolean showFooter = false;
@@ -303,7 +312,7 @@ public class Activity_Actv extends Activity {
         mRenderer.setXLabelsAlign(Paint.Align.CENTER);
 
         mRenderer.setShowAxes(false);
-        mRenderer.setLabelsTextSize(getResources().getDimension(R.dimen.textsize_s22));
+        mRenderer.setLabelsTextSize(getResources().getDimension(R.dimen.textsize_s3));
 
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
         mRenderer.setShowGridX(true);

@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by Manouchehr on 2/13/2015.
+ * Created by MN on 2/13/2015.
  */
 public class AmbientLight_Actv extends Activity {
     JSONUtil jsonUtil = new JSONUtil();
@@ -246,7 +246,7 @@ public class AmbientLight_Actv extends Activity {
         mRenderer.setPanEnabled(false, false);
         mRenderer.setShowGrid(false);
         mRenderer.setBackgroundColor(Color.WHITE);
-        mRenderer.setMargins(new int[]{10, 35, 5, 20});  //setMargins(top, left, bottom, right) defaults(20,30,10,20) ** more space in left and right for labels
+        mRenderer.setMargins(new int[]{10, 40, 5, 20});  //setMargins(top, left, bottom, right) defaults(20,30,10,20) ** more space in left and right for labels
         mRenderer.setMarginsColor(Color.WHITE);
         mRenderer.setAxesColor(Color.BLACK);
         mRenderer.setApplyBackgroundColor(true);

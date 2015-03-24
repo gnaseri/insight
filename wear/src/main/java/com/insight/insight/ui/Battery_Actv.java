@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by Manouchehr on 2/13/2015.
+ * Created by MN on 2/13/2015.
  */
 public class Battery_Actv extends Activity {
     JSONUtil jsonUtil = new JSONUtil();

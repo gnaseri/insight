@@ -3,7 +3,7 @@ package com.insight.insight.utils;
 import java.util.Date;
 
 /**
- * Created by Manouchehr on 2/1/2015.
+ * Created by MN on 2/1/2015.
  */
 public class RowData {
     public Date time;

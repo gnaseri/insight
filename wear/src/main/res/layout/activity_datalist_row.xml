@@ -55,7 +55,8 @@
             android:id="@+id/tvTitle"
             android:layout_column="2"
             android:gravity="left|center_vertical"
-            android:textSize="@dimen/textsize_s3" />
+            android:textSize="@dimen/textsize_s3"
+            android:singleLine="false" />
 
     </TableRow>
 

@@ -10,7 +10,7 @@ import com.insight.insight.R;
 
 
 /**
- * Created by Manouchehr on 3/10/2015.
+ * Created by MN on 3/10/2015.
  */
 public class PredictionNotification {
 
