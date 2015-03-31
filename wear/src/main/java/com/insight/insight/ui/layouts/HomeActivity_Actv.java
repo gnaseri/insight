@@ -3,8 +3,7 @@ package com.insight.insight.ui.layouts;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Bundle;
-import android.os.Environment;
+import android.os.*;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -27,6 +26,8 @@ import com.insight.insight.utils.FeatureCheck;
 import com.insight.insight.utils.MenuItems;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 
 /**
  * Created by MN on 3/10/2015.
@@ -100,10 +101,8 @@ public class HomeActivity_Actv extends Activity {
                 index += 1;
             }
         startAllServices();
-        File out = new File ( Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
-                + Setting.APP_FOLDER + "/" +  "profile");
-        if (!out.exists())
-            ColdStart.getProfile();
+
+
 
     }
 
@@ -119,7 +118,7 @@ public class HomeActivity_Actv extends Activity {
         // HeartRate needs hooks applied to activity
 
         AlarmReceiver alarmReceiver = new AlarmReceiver();
-        alarmReceiver.setMidnightAlarmManager(HomeActivity_Actv.this);
+        alarmReceiver.setMidnightAlarmManager(getApplicationContext());
         if (FeatureCheck.hasLightFeature(this)) {
             startService(new Intent(this, LightSensor.class));
         }

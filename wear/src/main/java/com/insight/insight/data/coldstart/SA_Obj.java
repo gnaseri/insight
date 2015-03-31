@@ -1,8 +1,9 @@
 package com.insight.insight.data.coldstart;
 
 /**
- * Created by User on 3/20/15.
+ * Created by User on 3/24/15.
  */
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -84,11 +85,14 @@ public class SA_Obj {
 
     public String toJSONString(){
         JSONObject jsonObj = new JSONObject();
+        JSONArray weekArray;
         try {
             jsonObj.put("confidence", getConfidence());
             jsonObj.put("time", mSensor_time);
-            jsonObj.put(mSensor_name, mSensor_data );
-            jsonObj.put("weekdays", getWeekDayArray());
+            jsonObj.put("sensor", mSensor_name + ";" + mSensor_data);
+            weekArray = new JSONArray(getWeekDayArray());
+            jsonObj.put("weekdays", weekArray);
+            jsonObj.put("totalweekdays", mTotalWeekdays);
 
             return jsonObj.toString();
         } catch (JSONException e) {

@@ -60,7 +60,7 @@ public class NotificationSensor extends WearableListenerService {
     private DataAcquisitor mNotifBuffer;
     private DataAcquisitor mHeartBuffer;
     private static DataAcquisitor mActivBuffer;
-    private static DataAcquisitor mStepBuffer;
+    private DataAcquisitor mStepBuffer;
 
     //TemporalGran Buffers
     private DataAcquisitor mSA_NotifBuffer;

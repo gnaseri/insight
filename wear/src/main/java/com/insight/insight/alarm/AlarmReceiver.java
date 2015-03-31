@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v4.content.WakefulBroadcastReceiver;
@@ -12,8 +13,13 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Wearable;
+import com.insight.insight.common.Setting;
+import com.insight.insight.data.coldstart.ColdStart;
 import com.insight.insight.utils.WearableSendSync;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -71,6 +77,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.d("AlarmRecv", "ALARM ");
         sendFitDataSync(context);
+        profileUpdate();
       //  reconnectStepCount();
     }
 
@@ -103,5 +110,30 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
             }
         });
+    }
+    private void profileUpdate(){
+        File out = new File ( Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
+                + Setting.APP_FOLDER + "/" +  "profile");
+        if (!out.exists()){
+            try {
+                ColdStart.getProfile();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            HandlerThread ht = new HandlerThread("UpdateProfile", android.os.Process.THREAD_PRIORITY_BACKGROUND);
+            ht.start();
+            Handler h = new Handler(ht.getLooper());
+            h.post(new Runnable() {
+                @Override
+                public void run() {
+                    ColdStart.updateProfile();
+                }
+            });
+
+        }
     }
 }

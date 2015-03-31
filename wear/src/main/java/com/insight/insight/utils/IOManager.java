@@ -10,10 +10,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -181,6 +183,39 @@ public class IOManager {
         return null;
     }
 
+    public static void copyFile(File sourceFile, File destFile) throws IOException {
+        if (!destFile.exists()) {
+            destFile.createNewFile();
+        }
+        FileInputStream fIn = null;
+        FileOutputStream fOut = null;
+        FileChannel source = null;
+        FileChannel destination = null;
+        try {
+            fIn = new FileInputStream(sourceFile);
+            source = fIn.getChannel();
+            fOut = new FileOutputStream(destFile);
+            destination = fOut.getChannel();
+            long transfered = 0;
+            long bytes = source.size();
+            while (transfered < bytes) {
+                transfered += destination.transferFrom(source, 0, source.size());
+                destination.position(transfered);
+            }
+        } finally {
+            if (source != null) {
+                source.close();
+            } else if (fIn != null) {
+                fIn.close();
+            }
+            if (destination != null) {
+                destination.close();
+            } else if (fOut != null) {
+                fOut.close();
+            }
+        }
+    }
+
 
 	/*public void logError(String msg) {
         PrintWriter printWr;
@@ -198,4 +233,5 @@ public class IOManager {
 		}
 	}
     */
+
 }
