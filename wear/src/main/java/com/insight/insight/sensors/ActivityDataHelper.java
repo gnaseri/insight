@@ -14,6 +14,10 @@ import java.util.Date;
 /**
  * Created by CM on 2/9/15.
  */
+
+/* This class is no longer being used. It was previously used to differentiate when the user
+   has started and stopped walking
+ */
 public class ActivityDataHelper {
     private static final String LOG_TAG = ActivityDataHelper.class.getSimpleName();
 

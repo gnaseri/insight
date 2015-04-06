@@ -23,6 +23,11 @@ import java.util.Set;
 
 public class UpdateProfile {
 
+    /* This function will compare the last update for the directory (in policy) and
+       check with the second most recent file. If it is after, update the policy with the
+       new date and return true
+       else false
+     */
     public static boolean isReady(String dir) {
 
         File[] files = Util.getLastFilesInDir(dir, 2);
@@ -35,12 +40,8 @@ public class UpdateProfile {
             Log.d("ColdStart", secondLastDateString);
             Date secondLastDate = Util.parseDate(secondLastDateString);
             String lastUpdateString = Util.getLastUpdateDateString(dir);
-            Log.d("ColdStart", "S:" + lastUpdateString);
-
             Date lastUpdate = Util.parseDate(lastUpdateString);
 
-            System.out.println("SecondLast:" + secondLastDate + "\t"
-                    + "lastUpdate:" + lastUpdate);
 
             if (Util.isDateAfter(secondLastDate, lastUpdate)) {
                 UpdateProfile.updatePolicy(secondLastDateString, dir, lastUpdateString);
@@ -48,7 +49,6 @@ public class UpdateProfile {
             }
             return false;
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return false;
         } catch (IOException e) {
@@ -57,7 +57,6 @@ public class UpdateProfile {
         }
 
     }
-
     public static void updatePolicy(String secondLastDate, String dirName, String lastUpdate) throws IOException {
         File file = new File(Util.POLICY_LOCATION);
         String encoded;
@@ -71,7 +70,7 @@ public class UpdateProfile {
         }
 
         BufferedReader br = new BufferedReader(new FileReader(file));
-        File tmp = new File(ColdStart.getDataFolderFullPath("tmp"));
+        File tmp = new File(Util.getDataFolderFullPath("tmp"));
         FileWriter fw = new FileWriter(tmp, false);
         String line;
 
@@ -89,6 +88,10 @@ public class UpdateProfile {
 
 
     }
+
+
+
+
 
     public static Set<SA_Obj> getUpdatedProfileObjs(String dir) {
         File[] files = Util.getLastFilesInDir(dir, 2);
@@ -126,7 +129,7 @@ public class UpdateProfile {
     }
 
     public static void writeUpdateToProfile(Set<SA_Obj> sa_objs) {
-        File out = new File(ColdStart.getDataFolderFullPath("profile"));
+        File out = new File(Util.getDataFolderFullPath("profile"));
         try {
             FileWriter fw = new FileWriter(out, false);
 
@@ -136,7 +139,6 @@ public class UpdateProfile {
             }
             fw.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

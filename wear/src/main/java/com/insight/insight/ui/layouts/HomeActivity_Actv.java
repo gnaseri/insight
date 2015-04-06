@@ -3,7 +3,7 @@ package com.insight.insight.ui.layouts;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.*;
+import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -17,17 +17,11 @@ import android.widget.TextView;
 
 import com.insight.insight.R;
 import com.insight.insight.alarm.AlarmReceiver;
-import com.insight.insight.common.Setting;
-import com.insight.insight.data.coldstart.ColdStart;
 import com.insight.insight.sensors.BatterySensor;
 import com.insight.insight.sensors.LightSensor;
 import com.insight.insight.ui.MainListItem;
 import com.insight.insight.utils.FeatureCheck;
 import com.insight.insight.utils.MenuItems;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
 
 /**
  * Created by MN on 3/10/2015.
@@ -114,9 +108,6 @@ public class HomeActivity_Actv extends Activity {
     //TODO Integrate this into autostart
     private void startAllServices() {
         startService(new Intent(this, BatterySensor.class));
-        //Notification and Bluetooth autostart due to dataLayer
-        // HeartRate needs hooks applied to activity
-
         AlarmReceiver alarmReceiver = new AlarmReceiver();
         alarmReceiver.setMidnightAlarmManager(getApplicationContext());
         if (FeatureCheck.hasLightFeature(this)) {

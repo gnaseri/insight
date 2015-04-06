@@ -4,11 +4,6 @@ package com.insight.insight.data.coldstart;
  * Created by User on 3/24/15.
  */
 
-import android.os.Environment;
-import android.util.Log;
-
-import com.insight.insight.common.Setting;
-
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -25,14 +20,59 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+/* This class has two main functions
+   Create Profile and Update Profile
+ */
 public class ColdStart {
 
-    static String getDataFolderFullPath(String folder) {
-        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/" + folder;
+    /* This function will get the first 7 Files in each directory
+     It compares these 7 files with each other to create the profile
+     It then writes the dates for each of the last updates for each Directory
+   */
+    public static void createProfile() throws ParseException, IOException {
+        ArrayList<String> dirNames = new ArrayList<>(Arrays.asList("SA/BatterySensor",
+                "SA/Bluetooth", "SA/Notif"));
+        ArrayList<Pair> lastUpdateEntries = new ArrayList<>();
+        for (String dirName : dirNames) {
+            File[] files = Util.getFirstFilesInDir(dirName, 7);
+
+            Pair entry = new Pair (dirName, Util.getStringDateFromFileName(files[files.length-1]));
+            lastUpdateEntries.add(entry);
+            compareAllFiles(files);
+        }
+        writeLastUpdates(lastUpdateEntries);
 
     }
 
-    public static Set<SA_Obj> loadFileIntoSet(File f1) {
+    /* This function updates our profile.
+       It performs a check with isReady on each directory in dirNames
+       to see if 2 files exist after the last profile update
+       if so, Update the profile
+     */
+    public static void updateProfile(){
+        ArrayList<String> dirNames = new ArrayList<>(Arrays.asList("SA/BatterySensor",
+                "SA/Bluetooth", "SA/Notif"));
+        Set <SA_Obj> updated = null;
+        for (String dir : dirNames){
+            UpdateProfile profile = new UpdateProfile();
+            boolean isReady = profile.isReady(dir);
+
+            if (isReady){
+                updated = UpdateProfile.getUpdatedProfileObjs(dir);
+
+            }
+        }
+
+        if (updated != null){
+            UpdateProfile.incrementTotalDays(updated);
+            UpdateProfile.writeUpdateToProfile(updated);
+        }
+
+    }
+
+
+
+    private static Set<SA_Obj> loadFileIntoSet(File f1) {
         String line;
         Set<SA_Obj> objs = new HashSet<SA_Obj>();
         try {
@@ -43,16 +83,14 @@ public class ColdStart {
             } // all objects loaded into set
 
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return objs;
 
     }
-    public static Set<SA_Obj> loadProfileIntoSet(File f1) {
+    protected static Set<SA_Obj> loadProfileIntoSet(File f1) {
         String line;
         Set<SA_Obj> objs = new HashSet<SA_Obj>();
         try {
@@ -63,10 +101,8 @@ public class ColdStart {
             } // all objects loaded into set
 
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return objs;
@@ -79,24 +115,17 @@ public class ColdStart {
             String weekDay = new SimpleDateFormat("EE").format(weekDate);
             return weekDay;
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return null;
         }
     }
+    /* Compare one file with all other files
+        The files are loaded into an Set of objects for each line
+        Using a set allows us to avoid duplicates
 
-	/*public static SA_Obj updateSet (Set <SA_Obj> s1Objs, Set <SA_Obj> s2Objs){
-		String f2WeekDay = ((SA_Obj) (s2Objs.iterator().next())).mWeekDay;
-		for (SA_Obj s1 : s1Objs) {
-
-			if (s2Objs.contains(s1)) {
-				s1.insertWeekDay(f2WeekDay);
-			}
-			s1.incrementDayTotal();
-		}
-	} */
-
-    public static Set<SA_Obj> compareFiles(File f1, File[] files) {
+        return this set of objects
+     */
+    protected static Set<SA_Obj> compareFiles(File f1, File[] files) {
         Set<SA_Obj> f1_Objs = loadFileIntoSet(f1);
 
         for (File f2 : files) {
@@ -115,7 +144,7 @@ public class ColdStart {
 
     }
 
-    public static void compareAllFiles(File[] files) {
+    protected static void compareAllFiles(File[] files) {
         File[] original = files;
         Set<SA_Obj> sa_objs;
         ArrayList<File> fileList = new ArrayList<File>(Arrays.asList(files));
@@ -138,7 +167,6 @@ public class ColdStart {
             }
             fw.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -158,7 +186,6 @@ public class ColdStart {
                     fw.append("\n");
 
                 } catch (JSONException | IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 
@@ -166,54 +193,21 @@ public class ColdStart {
             fw.flush();
             fw.close();
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
     }
 
-    public static class Pair {
+    private static class Pair {
         String dirName;
         String date;
         Pair (String dir, String date){ this.dirName = dir; this.date = date;}
     }
 
-    public static void getProfile() throws ParseException, IOException {
-        ArrayList<String> dirNames = new ArrayList<>(Arrays.asList("SA/BatterySensor",
-                "SA/Bluetooth", "SA/Notif"));
-        ArrayList<Pair> lastUpdateEntries = new ArrayList<>();
-        for (String dirName : dirNames) {
-            File[] files = Util.getFirstFilesInDir(dirName, 7);
-
-            Pair entry = new Pair (dirName, Util.getStringDateFromFileName(files[files.length-1]));
-            lastUpdateEntries.add(entry);
-            compareAllFiles(files);
-        }
-        writeLastUpdates(lastUpdateEntries);
-
-    }
 
 
-    public static void updateProfile(){
-        ArrayList<String> dirNames = new ArrayList<>(Arrays.asList("SA/BatterySensor",
-                "SA/Bluetooth", "SA/Notif"));
-        Set <SA_Obj> updated = null;
-        for (String dir : dirNames){
-            UpdateProfile profile = new UpdateProfile();
-            boolean isReady = profile.isReady(dir);
 
-            if (isReady){
-                updated = UpdateProfile.getUpdatedProfileObjs(dir);
 
-            }
-        }
-
-        if (updated != null){
-            UpdateProfile.incrementTotalDays(updated);
-            UpdateProfile.writeUpdateToProfile(updated);
-        }
-
-    }
 
 }
 

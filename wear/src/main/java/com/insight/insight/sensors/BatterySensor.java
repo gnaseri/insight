@@ -59,7 +59,9 @@ public class BatterySensor extends Service {
         super.onDestroy();
 
     }
-
+    /* This class receives updates from the System
+       If the level is a multiple of 5, write to file
+     */
     private class BatteryReceiver extends BroadcastReceiver{
 
         @Override

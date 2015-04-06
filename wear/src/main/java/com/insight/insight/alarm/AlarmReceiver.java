@@ -27,11 +27,16 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by CM on 3/5/15.
  */
+
+/* This class creates an alarm that sends a sync message to the handheld
+    for Google Fit's Activity and HeartRate data. It also sends the current days notif
+    file to get the genre information
+ */
 public class AlarmReceiver extends WakefulBroadcastReceiver {
     PendingIntent alarmIntent;
     AlarmManager alarm;
 
-    /* Returns an alarm manager that will fire at 11:59 and ever day there after*/
+    /* Returns an alarm manager that will fire at 11:58 and ever day there after*/
     public AlarmManager setMidnightAlarmManager(Context context){
         Log.d("AlarmRCV", "Set alarm");
         Intent intent = new Intent(context, AlarmReceiver.class);
@@ -55,32 +60,21 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
         return alarm;
     }
-    public AlarmManager setTestAlarmManager(Context context){
-        Log.d("ALARMRCV", "Set alarm");
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(context,0,intent,0);
-
-
-
-    /* Should go off 1 minute from now and repeat every minute */
-        alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis(),
-                30*1000,
-                alarmIntent
-        );
-
-        return alarm;
-    }
 
     @Override
     public void onReceive(final Context context, Intent intent) {
         Log.d("AlarmRecv", "ALARM ");
         sendFitDataSync(context);
         profileUpdate();
-      //  reconnectStepCount();
     }
 
+    /* This function sends the 3 messages to the handheld
+        syncs:
+            Google Fit Activity Data
+            Google Fit HeartRate
+        Sends current day's notification file to handheld have genre evaluated
+
+     */
     private void sendFitDataSync(final Context context){
         final Date date = new Date();
         HandlerThread ht = new HandlerThread("HeartThread", android.os.Process.THREAD_PRIORITY_BACKGROUND);
@@ -111,12 +105,16 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             }
         });
     }
+
+    /* If profile file doesn't exist, run coldstart
+        if it does exist, start a thread to update the profile with the new files
+     */
     private void profileUpdate(){
         File out = new File ( Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
                 + Setting.APP_FOLDER + "/" +  "profile");
         if (!out.exists()){
             try {
-                ColdStart.getProfile();
+                ColdStart.createProfile();
             } catch (ParseException e) {
                 e.printStackTrace();
             } catch (IOException e) {

@@ -1,6 +1,9 @@
 package com.insight.insight.data.coldstart;
 
+import android.os.Environment;
 import android.util.Log;
+
+import com.insight.insight.common.Setting;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,7 +103,6 @@ public class Util {
             return returnObj;
 
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return null;
         }
@@ -143,7 +145,7 @@ public class Util {
             }
         };
         // TODO FIX THIS
-        File dir = new File(ColdStart.getDataFolderFullPath(folder));
+        File dir = new File(getDataFolderFullPath(folder));
         File[] files = dir.listFiles(myFilter);
 
         // sort files list on lastModified date
@@ -188,7 +190,7 @@ public class Util {
             }
         };
         // TODO FIX THIS
-        File dir = new File(ColdStart.getDataFolderFullPath(folder));
+        File dir = new File(getDataFolderFullPath(folder));
         File[] files = dir.listFiles(myFilter);
 
         // sort files list on lastModified date
@@ -222,8 +224,8 @@ public class Util {
         return tokens[0];
     }
 
-    static String POLICY_LOCATION = ColdStart.getDataFolderFullPath("policy");
-    static String PROFILE_LOCATION = ColdStart.getDataFolderFullPath("profile"); //gives filelocation
+    static String POLICY_LOCATION = getDataFolderFullPath("policy");
+    static String PROFILE_LOCATION = getDataFolderFullPath("profile"); //gives filelocation
 
     static String getLastUpdateDateString(String dirName) {
         Log.d("ColdStart", "Starting updateSTring");
@@ -265,6 +267,10 @@ public class Util {
         return false;
     }
 
+    static String getDataFolderFullPath(String folder) {
+        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Setting.APP_FOLDER + "/" + folder;
+
+    }
 }
 
 
