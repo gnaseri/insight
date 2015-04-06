@@ -1,7 +1,7 @@
 package com.insight.insight.listeners;
 
 /**
- * Created by User on 2/16/15.
+ * Created by CM on 2/16/15.
  */
 
 import android.content.Context;
@@ -29,7 +29,9 @@ import java.io.File;
 import java.util.Date;
 
 
-
+/*
+    This Class handles the sending of data to the wearable
+ */
 public class WearableDataLayer {
     private static final String TAG = WearableDataLayer.class.getSimpleName();
 
@@ -69,7 +71,7 @@ public class WearableDataLayer {
     }
 
 
-    public static void sendData(GoogleApiClient mClient, DataSet dataSet, final String KEY_NAME){
+    public static void sendHeartData(GoogleApiClient mClient, DataSet dataSet, final String KEY_NAME){
         Parcel p = Parcel.obtain();
         dataSet.writeToParcel(p,0);
         byte[] bytes = p.marshall();
@@ -85,7 +87,7 @@ public class WearableDataLayer {
 
     }
 
-    public static void sendDataResult(GoogleApiClient mClient, DataReadResult dr, final String KEY_NAME){
+    public static void sendActivityData(GoogleApiClient mClient, DataReadResult dr, final String KEY_NAME){
         Parcel p = Parcel.obtain();
         dr.writeToParcel(p,0);
         byte[] bytes = p.marshall();
@@ -150,7 +152,9 @@ public class WearableDataLayer {
         p.recycle();
 
     }
+    /* This will send the newly updated genre complete notification file to the handheld
 
+     */
     public static void sendSACompleteToWear (Context context,GoogleApiClient mClient, String filename){
         File file = new File (context.getFilesDir() + NotifLookupUtil.sa_completeDir + "/" + NotifLookupUtil.completeFileName);
 

@@ -23,7 +23,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by User on 3/2/15.
+ * Created by CM on 3/2/15.
+ */
+
+/* This class is run when a sync request for activity is received
+   It will send the activity and step data to the wearable
  */
 public class ActivitySensor {
     private static final String TAG = ActivitySensor.class.getSimpleName();
@@ -51,26 +55,26 @@ public class ActivitySensor {
             Log.d(TAG,"SENDING DATARESULTS");
             mFitClient.disconnect();
             mGoogleApiClient.connect();
-            WearableDataLayer.sendDataResult(mGoogleApiClient, dr, WearableDataLayer.ACTV_HIST_KEY);
+            WearableDataLayer.sendActivityData(mGoogleApiClient, dr, WearableDataLayer.ACTV_HIST_KEY);
             WearableDataLayer.sendStepResult(mGoogleApiClient, step_result, WearableDataLayer.STEP_HIST_KEY);
 
         }
     }
 
-    public static DataReadResult getDataInformation(GoogleApiClient mClient, DataReadRequest request){
+    private static DataReadResult getDataInformation(GoogleApiClient mClient, DataReadRequest request){
         PendingResult <DataReadResult> pendingResult =
                 Fitness.HistoryApi.readData(mClient,request);
         DataReadResult dataReadResult = pendingResult.await();
-        printReadResult(dataReadResult);
+        //printReadResult(dataReadResult);
         return dataReadResult;
 
     }
 
-    public static DataReadResult getStepData (GoogleApiClient mClient, DataReadRequest request){
+    private static DataReadResult getStepData (GoogleApiClient mClient, DataReadRequest request){
         PendingResult <DataReadResult> pendingResult =
                 Fitness.HistoryApi.readData(mClient,request);
         DataReadResult dataReadResult = pendingResult.await();
-        printStepResult(dataReadResult);
+        //printStepResult(dataReadResult);
         return dataReadResult;
     }
     private static void printStepResult (DataReadResult dataReadResult){
@@ -118,7 +122,7 @@ public class ActivitySensor {
         }
         Log.d(TAG, "-----------------");
     }
-    public static DataReadRequest buildDataReadRequestPoints(Date date) {
+    private static DataReadRequest buildDataReadRequestPoints(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         Long[] startEndTimes = CalendarUtil.getStartandEndTime(cal);
@@ -133,7 +137,7 @@ public class ActivitySensor {
 
     }
 
-    public static DataReadRequest buildStepRequest(Date date){
+    private static DataReadRequest buildStepRequest(Date date){
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         Long[] startEndTimes = CalendarUtil.getStartandEndTime(cal);

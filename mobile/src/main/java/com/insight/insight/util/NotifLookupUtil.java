@@ -12,8 +12,10 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by User on 3/10/15.
+ * Created by CM on 3/10/15.
  */
+
+/* Connect and parse data from the Google Play Store for the pkg supplied */
 public class NotifLookupUtil {
     public static final String gPlayURL = "http://play.google.com/store/apps/details?id=";
     public static final String TAG = NotifLookupUtil.class.getSimpleName();

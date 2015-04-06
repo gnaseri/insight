@@ -14,6 +14,9 @@ import com.insight.insight.listeners.WearableDataLayer;
 /**
  * Created by User on 2/10/15.
  */
+
+/* Receive notifications from handheld and send to wearable */
+
 public class NotificationSensor extends NotificationListenerService {
     private static final String TAG = NotificationSensor.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;

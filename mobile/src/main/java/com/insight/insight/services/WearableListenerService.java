@@ -25,7 +25,11 @@ import java.io.IOException;
 import java.util.Date;
 
 /**
- * Created by User on 2/25/15.
+ * Created by CM on 2/25/15.
+ */
+
+/* This class receives sync requests from the handheld
+
  */
 public class WearableListenerService extends com.google.android.gms.wearable.WearableListenerService {
     private final String TAG = this.getClass().getSimpleName();
@@ -80,7 +84,7 @@ public class WearableListenerService extends com.google.android.gms.wearable.Wea
 
     //Send the dataSet to the wearable
     public static void sendToWearable(DataSet dataSet) {
-        WearableDataLayer.sendData(mGoogleApiClient, dataSet, WearableDataLayer.HEART_HIST_KEY);
+        WearableDataLayer.sendHeartData(mGoogleApiClient, dataSet, WearableDataLayer.HEART_HIST_KEY);
 
     }
 
