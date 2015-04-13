@@ -20,7 +20,7 @@ import com.insight.insight.utils.PredictionNotification;
 /**
  * Created by Cole
  */
-
+// TODO 4m Reza: Please remove this class
 public class OldMainActivity extends Activity {
 
 
