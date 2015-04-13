@@ -1,6 +1,7 @@
 package com.insight.insight.sensors;
 
 /* Created by CM */
+//TODO 4m Reza: Move this to Common.Settings class 
 public final class SensorConstants {
 
     public static long ACCELEROMETER_LOG_INTERVAL = 300000L;  //5 minutes
