@@ -12,6 +12,7 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -28,6 +29,8 @@ import com.insight.insight.utils.MenuItems;
  */
 public class HomeActivity_Actv extends Activity {
     public static String LOG_TAG = HomeActivity_Actv.class.getSimpleName();
+    RelativeLayout loadingPanel;
+    ScrollView scrollview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,9 @@ public class HomeActivity_Actv extends Activity {
         final MainListItem[] menuItems = menuItemsClass.createMeListItems();
 
         GridLayout frameBox = (GridLayout) findViewById(R.id.home_lstItems);
+
+        loadingPanel = (RelativeLayout) findViewById(R.id.loadingPanel);
+        scrollview = (ScrollView) findViewById(R.id.scrollView2);
 
         //int[] icons = new int[]{R.drawable.ic_activity, R.drawable.ic_heart, R.drawable.ic_battery, R.drawable.ic_bluetooth, R.drawable.ic_notif, R.drawable.ic_light, R.drawable.ic_appusage};
         // int[] icons = new int[]{R.drawable.ic_activity, R.drawable.ic_heart, R.drawable.ic_battery, R.drawable.ic_bluetooth, R.drawable.ic_notif, R.drawable.ic_light, R.drawable.ic_appusage};
@@ -58,6 +64,8 @@ public class HomeActivity_Actv extends Activity {
                     @Override
                     public void onClick(View v) {
                         //Toast.makeText(HomeActivity.this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                        scrollview.setVisibility(View.INVISIBLE);
+                        loadingPanel.setVisibility(View.VISIBLE); // It will be invisible on Activity onResume() method
                         startActivity(itemIntent);
                     }
                 });
@@ -95,11 +103,15 @@ public class HomeActivity_Actv extends Activity {
                 index += 1;
             }
         startAllServices();
-
-
-
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadingPanel.setVisibility(View.GONE);
+        scrollview.setVisibility(View.VISIBLE);
+    }
 
     private int getSizeInDP(int x) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());
