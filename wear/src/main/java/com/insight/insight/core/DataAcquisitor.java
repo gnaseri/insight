@@ -1,7 +1,6 @@
 package com.insight.insight.core;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.insight.insight.utils.IOManager;
 
@@ -30,7 +29,7 @@ public class DataAcquisitor {
         return context;
     }
     public void insert (String s, boolean append, int maxBuffSize){
-        Log.d(LOG_TAG, "Inserting into dBuff");
+        //Log.d(LOG_TAG, "Inserting into dBuff");
         dataBuffer.add(s);
 
         if (dataBuffer.size() > maxBuffSize){
@@ -42,7 +41,7 @@ public class DataAcquisitor {
     }
 
     public void flush(boolean append){
-        Log.d(LOG_TAG, "Flushing buffer" + this.getFolderName());
+        //Log.d(LOG_TAG, "Flushing buffer" + this.getFolderName());
         IOManager dataLogger = new IOManager();
         dataLogger.logData(this,append);
         getDataBuffer().clear();

@@ -40,8 +40,9 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -107,11 +108,10 @@ public class Activity_Actv extends Activity {
 
     private HashMap<String, ArrayList<ActivityDataRecord>> fetchData(Date date) {
         HashMap<String, ArrayList<ActivityDataRecord>> dataMapList = new HashMap<>();
+        BufferedReader br = null;
         try {
             String sCurrentLine;
-            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_ActivFit) + Setting.filenameFormat.format(date) + ".txt"));
-            //BufferedReader br = new BufferedReader(new FileReader(new File("sdcard/" + Setting.filenameFormat.format(date) + ".txt"))); // reading from temp file
-
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(ioManager.getDataFolderFullPath(Setting.dataFilename_ActivFit) + Setting.filenameFormat.format(date) + ".txt")));
             while ((sCurrentLine = br.readLine()) != null) {
                 Object[] decodedRow = jsonUtil.decodeActivityFit(sCurrentLine);// [0]:startTime, [1]:endTime, [2]:activityType, [3]:duration
                 if (decodedRow != null) {
@@ -148,8 +148,7 @@ public class Activity_Actv extends Activity {
                     }
                 }
             }
-
-
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -193,7 +192,7 @@ public class Activity_Actv extends Activity {
 
             }
             chart.setLayoutParams(cParams);
-            chart.setPadding(10, -2, 0, -2); // setPadding(left, top, right, bottom)
+            chart.setPadding(10, -2, 0, -3); // setPadding(left, top, right, bottom)
             chart.addView(createGraph(dataMapList.get(activityType), activityType, showFooter));
             frameBox.addView(chart, i + 1);
             i += 1;

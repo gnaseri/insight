@@ -1,7 +1,6 @@
 package com.insight.insight.utils;
 
 import android.os.Environment;
-import android.util.Log;
 
 import com.insight.insight.common.Setting;
 import com.insight.insight.core.DataAcquisitor;
@@ -47,7 +46,7 @@ public class IOManager {
             }
             writer.flush();
             writer.close();
-            Log.d(LOG_TAG, "Finished writing to file");
+            //Log.d(LOG_TAG, "Finished writing to file");
         } catch (IOException e) {
             e.printStackTrace();
         }
