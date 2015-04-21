@@ -33,7 +33,7 @@ import java.util.List;
 public class Bluetooth_Actv extends Activity {
     private static final String LOG_TAG = Bluetooth_Actv.class.getSimpleName();
     private MultipleListItemsAdapter mAdapter;
-
+    TextView tvDate = null;
     JSONUtil jsonUtil = new JSONUtil();
     IOManager ioManager = new IOManager();
     File[] lastDataFilesList;
@@ -42,6 +42,7 @@ public class Bluetooth_Actv extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_datalist);
+        tvDate = (TextView) findViewById(R.id.tvDate);
 
         //set Title of activity
         TextView tvTitle = (TextView) findViewById(R.id.tvTitle);
@@ -52,6 +53,7 @@ public class Bluetooth_Actv extends Activity {
             Date date = ioManager.parseDataFilename2Date(lastDataFilesList[0].getName());
             displayDataList(date);
         } else {
+            tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(new Date()));
             TextView tvMessage = new TextView(this);
             tvMessage.setGravity(Gravity.CENTER_HORIZONTAL);
             tvMessage.setText(getResources().getString(R.string.message_nodata));
@@ -66,6 +68,7 @@ public class Bluetooth_Actv extends Activity {
     }
 
     public void displayDataList(Date date) {
+        tvDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(date));
         mAdapter = new MultipleListItemsAdapter(this);
 
         //generate sample data

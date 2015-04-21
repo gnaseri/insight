@@ -9,14 +9,13 @@
         android:layout_height="match_parent"
         app:layout_box="all">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="false"
-            android:gravity="left|center_vertical"
-            android:id="@+id/rl1">
+            android:layout_centerHorizontal="true"
+            android:id="@+id/llHeader">
 
             <TextView
                 android:layout_width="fill_parent"
@@ -28,14 +27,39 @@
                 android:textSize="@dimen/textsize_m2"
                 android:gravity="center_vertical|center_horizontal"
                 android:typeface="monospace"
-                android:layout_alignParentBottom="false" />
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="false" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Date"
+                android:id="@+id/tvDate"
+                android:textSize="@dimen/textsize_m1"
+                android:textColor="@color/chart_labels_color"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="3dp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="false"
+            android:gravity="left|center_vertical"
+            android:id="@+id/rl1">
 
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_below="@+id/rl1"
+            android:layout_below="@+id/llHeader"
             android:layout_centerHorizontal="true">
 
             <ListView

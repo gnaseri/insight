@@ -84,7 +84,7 @@ public class MultipleListItemsAdapter extends BaseAdapter {
                     convertView = mInflater.inflate(R.layout.activity_datalist_row, null);
                     holder.item_StatusImage = (ImageView) convertView.findViewById(R.id.ivStatus);
                     holder.item_Time = (TextView) convertView.findViewById(R.id.tvTime);
-                    holder.item_Date = (TextView) convertView.findViewById(R.id.tvDate);
+                    //holder.item_Date = (TextView) convertView.findViewById(R.id.tvDate);
                     holder.item_Title = (TextView) convertView.findViewById(R.id.tvTitle);
                     break;
 
@@ -103,7 +103,7 @@ public class MultipleListItemsAdapter extends BaseAdapter {
             case TYPE_ITEM:
                 RowData rData = (RowData) mData.get(position);
                 holder.item_Title.setText(rData.statusText);
-                holder.item_Date.setText(new SimpleDateFormat("MM/dd/yyyy").format(rData.time));
+                //holder.item_Date.setText(new SimpleDateFormat("MM/dd/yyyy").format(rData.time));
                 holder.item_Time.setText(new SimpleDateFormat("hh:mm").format(rData.time));
                 holder.item_StatusImage.setBackground(activity.getResources().getDrawable(getBackgroundImage(getCount(), position)));
                 holder.item_StatusImage.setPadding(6, 6, 6, 6);
@@ -125,7 +125,7 @@ public class MultipleListItemsAdapter extends BaseAdapter {
     public static class ViewHolder {
         // Data Items views
         public TextView item_Time;
-        public TextView item_Date;
+        //public TextView item_Date;
         public TextView item_Title;
         public ImageView item_StatusImage;
 
