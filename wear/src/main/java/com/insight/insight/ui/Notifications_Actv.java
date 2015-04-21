@@ -13,15 +13,16 @@ import android.widget.TextView;
 import com.insight.insight.R;
 import com.insight.insight.common.Setting;
 import com.insight.insight.data.JSONUtil;
-import com.insight.insight.utils.IOManager;
 import com.insight.insight.ui.adapters.MultipleListItemsAdapter;
+import com.insight.insight.utils.IOManager;
 import com.insight.insight.utils.RowData;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -108,20 +109,25 @@ public class Notifications_Actv extends Activity {
         List<RowData> rDatas = new ArrayList<RowData>();
         try {
             String sCurrentLine;
-            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_Notifications) + Setting.filenameFormat.format(date) + ".txt"));
-            while ((sCurrentLine = br.readLine()) != null) {
-                Object[] decodedRow = jsonUtil.decodeNotification(sCurrentLine); // [0]:date, [1]:pkg name, [2]:title, [3]:flags, [4]:category
-                if (decodedRow != null) {
-                    Date rowDate = (Date) decodedRow[0];
-                    String rowTitle = decodedRow[2].toString();
-                    RowData rData = new RowData(rowDate, rowTitle, R.drawable.ic_bar_bullet);
-                    rDatas.add(rData);
-                    // Log.d(">>", "ts:" + rowDate.toString() + ", st:" + rowState);
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(ioManager.getDataFolderFullPath(Setting.dataFilename_Notifications) + Setting.filenameFormat.format(date) + ".txt")));
+            try {
+                while ((sCurrentLine = br.readLine()) != null) {
+                    Object[] decodedRow = jsonUtil.decodeNotification(sCurrentLine); // [0]:date, [1]:pkg name, [2]:title, [3]:flags, [4]:category
+                    if (decodedRow != null) {
+                        Date rowDate = (Date) decodedRow[0];
+                        String rowTitle = decodedRow[2].toString();
+                        RowData rData = new RowData(rowDate, rowTitle, R.drawable.ic_bar_bullet);
+                        rDatas.add(rData);
+                        // Log.d(">>", "ts:" + rowDate.toString() + ", st:" + rowState);
+                    }
                 }
-            }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+
+            } finally {
+                br.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -35,8 +35,9 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -172,41 +173,46 @@ public class AmbientLight_Actv extends Activity {
         // start filling the series
         try {
             String sCurrentLine;
-            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_LightSensor) + Setting.filenameFormat.format(date) + ".txt"));
-            ArrayList<LightDataRecord> dataRecords = new ArrayList<>();
-            while ((sCurrentLine = br.readLine()) != null) {
-                Object[] decodedRow = jsonUtil.decodeLight(sCurrentLine);// [0]:Date, [1]:lux
-                if (decodedRow != null) {
-                    LightDataRecord dataRecord = new LightDataRecord();
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(ioManager.getDataFolderFullPath(Setting.dataFilename_LightSensor) + Setting.filenameFormat.format(date) + ".txt")));
+            try {
+                ArrayList<LightDataRecord> dataRecords = new ArrayList<>();
+                while ((sCurrentLine = br.readLine()) != null) {
+                    Object[] decodedRow = jsonUtil.decodeLight(sCurrentLine);// [0]:Date, [1]:lux
+                    if (decodedRow != null) {
+                        LightDataRecord dataRecord = new LightDataRecord();
 
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
 
-                    dataRecord.timeStamp = (Date) decodedRow[0];
-                    dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
-                    dataRecord.lux = Math.round(Float.valueOf(decodedRow[1].toString()));
-                    dataRecord.density = 1; // density of records in same hours
+                        dataRecord.timeStamp = (Date) decodedRow[0];
+                        dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
+                        dataRecord.lux = Math.round(Float.valueOf(decodedRow[1].toString()));
+                        dataRecord.density = 1; // density of records in same hours
 
-                    //Log.i(">>", "ts:" + dataRecord.timeStamp.toString() + ", tsh:" + dataRecord.timeStampHour + ", lux:" + dataRecord.lux + ", dns:" + dataRecord.density);
+                        //Log.i(">>", "ts:" + dataRecord.timeStamp.toString() + ", tsh:" + dataRecord.timeStampHour + ", lux:" + dataRecord.lux + ", dns:" + dataRecord.density);
 
-                    //check if previous record's hour is the same with current record,
-                    //calculate the average lux value and update previous record
-                    if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
-                        LightDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
-                        lastDataRecord.density += 1;
-                        lastDataRecord.lux += dataRecord.lux;
-                        dataRecords.set(dataRecords.size() - 1, lastDataRecord);
-                    } else {
-                        dataRecords.add(dataRecord);
+                        //check if previous record's hour is the same with current record,
+                        //calculate the average lux value and update previous record
+                        if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
+                            LightDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
+                            lastDataRecord.density += 1;
+                            lastDataRecord.lux += dataRecord.lux;
+                            dataRecords.set(dataRecords.size() - 1, lastDataRecord);
+                        } else {
+                            dataRecords.add(dataRecord);
+                        }
                     }
                 }
+
+
+                for (LightDataRecord record : dataRecords) {
+                    series1.add(record.timeStampHour, record.lux / record.density);
+                    //Log.i(">>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", avglux:" + record.lux / record.density + ", dns:" + record.density);
+                }
+
+
+            } finally {
+                br.close();
             }
-
-
-            for (LightDataRecord record : dataRecords) {
-                series1.add(record.timeStampHour, record.lux / record.density);
-                //Log.i(">>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", avglux:" + record.lux / record.density + ", dns:" + record.density);
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -41,8 +41,9 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -194,46 +195,46 @@ public class HeartRate_Actv extends Activity {
         // start filling the series
         try {
             String sCurrentLine;
-            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_HeartRate) + Setting.filenameFormat.format(date) + ".txt"));
-            //BufferedReader br = new BufferedReader(new FileReader(new File("sdcard/" + Setting.filenameFormat.format(date) + ".txt"))); // reading from temp file
-            ArrayList<HeartRateDataRecord> dataRecords = new ArrayList<>();
-            while ((sCurrentLine = br.readLine()) != null) {
-                Object[] decodedRow = jsonUtil.decodeHeartRate(sCurrentLine);// [0]:Date, [1]:bpm
-                if (decodedRow != null) {
-                    HeartRateDataRecord dataRecord = new HeartRateDataRecord();
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(ioManager.getDataFolderFullPath(Setting.dataFilename_HeartRate) + Setting.filenameFormat.format(date) + ".txt")));
+            try {
+                ArrayList<HeartRateDataRecord> dataRecords = new ArrayList<>();
+                while ((sCurrentLine = br.readLine()) != null) {
+                    Object[] decodedRow = jsonUtil.decodeHeartRate(sCurrentLine);// [0]:Date, [1]:bpm
+                    if (decodedRow != null) {
+                        HeartRateDataRecord dataRecord = new HeartRateDataRecord();
 
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
 
-                    dataRecord.timeStamp = (Date) decodedRow[0];
-                    dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
-                    dataRecord.bpm = (int) decodedRow[1];
-                    dataRecord.density = 1; // density of records in same hours
+                        dataRecord.timeStamp = (Date) decodedRow[0];
+                        dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
+                        dataRecord.bpm = (int) decodedRow[1];
+                        dataRecord.density = 1; // density of records in same hours
 
-                    //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", tsh:" + dataRecord.timeStampHour + ", bpm:" + dataRecord.bpm + ", dns:" + dataRecord.density);
+                        //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", tsh:" + dataRecord.timeStampHour + ", bpm:" + dataRecord.bpm + ", dns:" + dataRecord.density);
 
-                    //check if previous record's hour is the same with current record,
-                    //calculate the average 'bpm' values and update previous record
-                    if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
-                        HeartRateDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
-                        lastDataRecord.density += 1;
-                        lastDataRecord.bpm += dataRecord.bpm;
-                        dataRecords.set(dataRecords.size() - 1, lastDataRecord);
-                    } else {
-                        dataRecords.add(dataRecord);
+                        //check if previous record's hour is the same with current record,
+                        //calculate the average 'bpm' values and update previous record
+                        if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
+                            HeartRateDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
+                            lastDataRecord.density += 1;
+                            lastDataRecord.bpm += dataRecord.bpm;
+                            dataRecords.set(dataRecords.size() - 1, lastDataRecord);
+                        } else {
+                            dataRecords.add(dataRecord);
+                        }
                     }
                 }
+                for (HeartRateDataRecord record : dataRecords) {
+                    series1.add(record.timeStampHour, record.bpm / record.density);
+                    //Log.d(">>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", avgbpm:" + record.bpm / record.density + ", dns:" + record.density);
+                }
+
+            } finally {
+                br.close();
             }
-
-
-            for (HeartRateDataRecord record : dataRecords) {
-                series1.add(record.timeStampHour, record.bpm / record.density);
-                //Log.d(">>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", avgbpm:" + record.bpm / record.density + ", dns:" + record.density);
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         XYSeriesRenderer renderer1 = new XYSeriesRenderer();
         renderer1.setLineWidth(getResources().getInteger(R.integer.chart_line_width));

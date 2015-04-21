@@ -35,8 +35,9 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -172,41 +173,46 @@ public class Battery_Actv extends Activity {
         // start filling the series
         try {
             String sCurrentLine;
-            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_Battery) + Setting.filenameFormat.format(date) + ".txt"));
-            ArrayList<BatteryDataRecord> dataRecords = new ArrayList<>();
-            while ((sCurrentLine = br.readLine()) != null) {
-                Object[] decodedRow = jsonUtil.decodeBattery(sCurrentLine);// [0]:Date, [1]:Percent, [2]:isCharging
-                if (decodedRow != null) {
-                    BatteryDataRecord dataRecord = new BatteryDataRecord();
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(ioManager.getDataFolderFullPath(Setting.dataFilename_Battery) + Setting.filenameFormat.format(date) + ".txt")));
+            try {
+                ArrayList<BatteryDataRecord> dataRecords = new ArrayList<>();
+                while ((sCurrentLine = br.readLine()) != null) {
+                    Object[] decodedRow = jsonUtil.decodeBattery(sCurrentLine);// [0]:Date, [1]:Percent, [2]:isCharging
+                    if (decodedRow != null) {
+                        BatteryDataRecord dataRecord = new BatteryDataRecord();
 
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
 
-                    dataRecord.timeStamp = (Date) decodedRow[0];
-                    dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
-                    dataRecord.percent = (int) decodedRow[1];
-                    dataRecord.isCharging = (boolean) decodedRow[2];
-                    dataRecord.density = 1; // density of records in same hours
+                        dataRecord.timeStamp = (Date) decodedRow[0];
+                        dataRecord.timeStampHour = Integer.valueOf(timeFormat.format(dataRecord.timeStamp));
+                        dataRecord.percent = (int) decodedRow[1];
+                        dataRecord.isCharging = (boolean) decodedRow[2];
+                        dataRecord.density = 1; // density of records in same hours
 
-                    //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", " + "tsh:" + dataRecord.timeStampHour + ", " + dataRecord.percent + "%, " + "chrg:" + dataRecord.isCharging + ", " + "dns:" + dataRecord.density);
+                        //Log.d(">>", "ts:" + dataRecord.timeStamp.toString() + ", " + "tsh:" + dataRecord.timeStampHour + ", " + dataRecord.percent + "%, " + "chrg:" + dataRecord.isCharging + ", " + "dns:" + dataRecord.density);
 
-                    //check if previous record's hour is the same with current record,
-                    //calculate the average 'percent' and update previous record
-                    if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
-                        BatteryDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
-                        lastDataRecord.density += 1;
-                        lastDataRecord.percent += dataRecord.percent;
-                    } else {
-                        dataRecords.add(dataRecord);
+                        //check if previous record's hour is the same with current record,
+                        //calculate the average 'percent' and update previous record
+                        if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
+                            BatteryDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
+                            lastDataRecord.density += 1;
+                            lastDataRecord.percent += dataRecord.percent;
+                        } else {
+                            dataRecords.add(dataRecord);
+                        }
                     }
                 }
+
+
+                for (BatteryDataRecord record : dataRecords) {
+                    series1.add(record.timeStampHour, record.percent / record.density);
+                    // Log.d(">>>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", " + record.percent / record.density + "%, chrg:" + record.isCharging + ", dns:" + record.density);
+                }
+
+
+            } finally {
+                br.close();
             }
-
-
-            for (BatteryDataRecord record : dataRecords) {
-                series1.add(record.timeStampHour, record.percent / record.density);
-                // Log.d(">>>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", " + record.percent / record.density + "%, chrg:" + record.isCharging + ", dns:" + record.density);
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

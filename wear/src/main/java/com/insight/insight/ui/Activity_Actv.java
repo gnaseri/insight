@@ -108,47 +108,49 @@ public class Activity_Actv extends Activity {
 
     private HashMap<String, ArrayList<ActivityDataRecord>> fetchData(Date date) {
         HashMap<String, ArrayList<ActivityDataRecord>> dataMapList = new HashMap<>();
-        BufferedReader br = null;
         try {
             String sCurrentLine;
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(ioManager.getDataFolderFullPath(Setting.dataFilename_ActivFit) + Setting.filenameFormat.format(date) + ".txt")));
-            while ((sCurrentLine = br.readLine()) != null) {
-                Object[] decodedRow = jsonUtil.decodeActivityFit(sCurrentLine);// [0]:startTime, [1]:endTime, [2]:activityType, [3]:duration
-                if (decodedRow != null) {
-                    ActivityDataRecord dataRecord = new ActivityDataRecord();
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(ioManager.getDataFolderFullPath(Setting.dataFilename_ActivFit) + Setting.filenameFormat.format(date) + ".txt")));
+            try {
+                while ((sCurrentLine = br.readLine()) != null) {
+                    Object[] decodedRow = jsonUtil.decodeActivityFit(sCurrentLine);// [0]:startTime, [1]:endTime, [2]:activityType, [3]:duration
+                    if (decodedRow != null) {
+                        ActivityDataRecord dataRecord = new ActivityDataRecord();
 
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("H"); // return just hours of timestamp
 
-                    dataRecord.startTime = (Date) decodedRow[0];
-                    dataRecord.startTimeHour = Integer.valueOf(timeFormat.format(dataRecord.startTime));
-                    dataRecord.activityType = decodedRow[2].toString();
-                    dataRecord.duration = (int) decodedRow[3];
-                    dataRecord.density = 1; // density of records in same hours
+                        dataRecord.startTime = (Date) decodedRow[0];
+                        dataRecord.startTimeHour = Integer.valueOf(timeFormat.format(dataRecord.startTime));
+                        dataRecord.activityType = decodedRow[2].toString();
+                        dataRecord.duration = (int) decodedRow[3];
+                        dataRecord.density = 1; // density of records in same hours
 
-                    //ignore 'unknown' type activities
-                    if (dataRecord.activityType.toLowerCase().contains("unknown"))
-                        continue;
+                        //ignore 'unknown' type activities
+                        if (dataRecord.activityType.toLowerCase().contains("unknown"))
+                            continue;
 
-                    if (!dataMapList.containsKey(dataRecord.activityType))
-                        dataMapList.put(dataRecord.activityType, new ArrayList<ActivityDataRecord>());
+                        if (!dataMapList.containsKey(dataRecord.activityType))
+                            dataMapList.put(dataRecord.activityType, new ArrayList<ActivityDataRecord>());
 
-                    ArrayList<ActivityDataRecord> dataRecords = dataMapList.get(dataRecord.activityType);
+                        ArrayList<ActivityDataRecord> dataRecords = dataMapList.get(dataRecord.activityType);
 
-                    //check if previous record's hour is the same with current record,
-                    //calculate the average 'bpm' values and update previous record
-                    if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).startTimeHour == dataRecord.startTimeHour) {
-                        ActivityDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
-                        lastDataRecord.density += 1;
-                        lastDataRecord.duration += dataRecord.duration;
-                        dataRecords.set(dataRecords.size() - 1, lastDataRecord);
-                        dataMapList.put(dataRecord.activityType, dataRecords);//update records array
-                    } else {
-                        dataMapList.get(dataRecord.activityType).add(dataRecord);
-                        //dataRecords.add(dataRecord);
+                        //check if previous record's hour is the same with current record,
+                        //calculate the average 'bpm' values and update previous record
+                        if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).startTimeHour == dataRecord.startTimeHour) {
+                            ActivityDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
+                            lastDataRecord.density += 1;
+                            lastDataRecord.duration += dataRecord.duration;
+                            dataRecords.set(dataRecords.size() - 1, lastDataRecord);
+                            dataMapList.put(dataRecord.activityType, dataRecords);//update records array
+                        } else {
+                            dataMapList.get(dataRecord.activityType).add(dataRecord);
+                            //dataRecords.add(dataRecord);
+                        }
                     }
                 }
+            } finally {
+                br.close();
             }
-            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

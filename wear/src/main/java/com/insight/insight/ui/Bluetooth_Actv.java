@@ -13,15 +13,16 @@ import android.widget.TextView;
 import com.insight.insight.R;
 import com.insight.insight.common.Setting;
 import com.insight.insight.data.JSONUtil;
-import com.insight.insight.utils.IOManager;
 import com.insight.insight.ui.adapters.MultipleListItemsAdapter;
+import com.insight.insight.utils.IOManager;
 import com.insight.insight.utils.RowData;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -102,20 +103,24 @@ public class Bluetooth_Actv extends Activity {
 
         try {
             String sCurrentLine;
-            BufferedReader br = new BufferedReader(new FileReader(ioManager.getDataFolderFullPath(Setting.dataFilename_Bluetooth) + Setting.filenameFormat.format(date) + ".txt"));
-            while ((sCurrentLine = br.readLine()) != null) {
-                Object[] decodedRow = jsonUtil.decodeBT(sCurrentLine); // [0]:Date, [1]:State
-                if (decodedRow != null) {
-                    Date rowDate = (Date) decodedRow[0];
-                    String rowState = String.valueOf(decodedRow[1]);
-                    RowData rData = new RowData(rowDate, rowState, R.drawable.ic_bar_bullet);
-                    rDatas.add(rData);
-                    // Log.d(">>", "ts:" + rowDate.toString() + ", st:" + rowState);
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(ioManager.getDataFolderFullPath(Setting.dataFilename_Bluetooth) + Setting.filenameFormat.format(date) + ".txt")));
+            try {
+                while ((sCurrentLine = br.readLine()) != null) {
+                    Object[] decodedRow = jsonUtil.decodeBT(sCurrentLine); // [0]:Date, [1]:State
+                    if (decodedRow != null) {
+                        Date rowDate = (Date) decodedRow[0];
+                        String rowState = String.valueOf(decodedRow[1]);
+                        RowData rData = new RowData(rowDate, rowState, R.drawable.ic_bar_bullet);
+                        rDatas.add(rData);
+                        // Log.d(">>", "ts:" + rowDate.toString() + ", st:" + rowState);
+                    }
                 }
-            }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                br.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
