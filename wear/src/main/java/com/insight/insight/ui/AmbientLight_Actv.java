@@ -28,8 +28,9 @@ import com.insight.insight.utils.IOManager;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
+import org.achartengine.chart.BarChart;
+import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
@@ -167,8 +168,7 @@ public class AmbientLight_Actv extends Activity {
     private View createGraph(Date date) {
         Log.i("LightSensor", "In Create Chart");
         // We start creating the XYSeries to plot the temperature
-        XYSeries series1 = new XYSeries("LightSensor");
-
+        TimeSeries series1 = new TimeSeries("LightSensor");
 
         // start filling the series
         try {
@@ -192,20 +192,20 @@ public class AmbientLight_Actv extends Activity {
 
                         //check if previous record's hour is the same with current record,
                         //calculate the average lux value and update previous record
-                        if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
-                            LightDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
-                            lastDataRecord.density += 1;
-                            lastDataRecord.lux += dataRecord.lux;
-                            dataRecords.set(dataRecords.size() - 1, lastDataRecord);
-                        } else {
-                            dataRecords.add(dataRecord);
-                        }
+//                        if (dataRecords.size() > 0 && dataRecords.get(dataRecords.size() - 1).timeStampHour == dataRecord.timeStampHour) {
+//                            LightDataRecord lastDataRecord = dataRecords.get(dataRecords.size() - 1);
+//                            lastDataRecord.density += 1;
+//                            lastDataRecord.lux += dataRecord.lux;
+//                            dataRecords.set(dataRecords.size() - 1, lastDataRecord);
+//                        } else {
+                        dataRecords.add(dataRecord);
+//                        }
                     }
                 }
 
 
                 for (LightDataRecord record : dataRecords) {
-                    series1.add(record.timeStampHour, record.lux / record.density);
+                    series1.add(record.timeStamp, getNormalizedLux(record.lux));
                     //Log.i(">>", "ts:" + record.timeStamp.toString() + ", tsh:" + record.timeStampHour + ", avglux:" + record.lux / record.density + ", dns:" + record.density);
                 }
 
@@ -234,25 +234,33 @@ public class AmbientLight_Actv extends Activity {
         XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
         mRenderer.addSeriesRenderer(renderer1);
         mRenderer.setYAxisMin(0);
-        //mRenderer.setYAxisMax(101);
+        mRenderer.setYAxisMax(18);
         mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
         mRenderer.setYLabelsPadding(5.0f);
-        mRenderer.setXAxisMin(0);
-        mRenderer.setXAxisMax(23);
+        mRenderer.setYLabels(0);
 
-        mRenderer.addXTextLabel(0, "00:00");
-        mRenderer.addXTextLabel(12, "12:00");
-        mRenderer.addXTextLabel(23, "23:59");
+        mRenderer.addYTextLabel(0, "Dark");
+        mRenderer.addYTextLabel(6, "Less\nbright");
+        mRenderer.addYTextLabel(10, "Bright");
+        mRenderer.addYTextLabel(16, "Very\nbright");
 
-        mRenderer.setXLabelsAlign(Paint.Align.CENTER);
+        double minXValue = series1.getMinX();
+        double midXValue = series1.getX(series1.getItemCount() / 2);
+        double maxXValue = series1.getMaxX();
+        mRenderer.addXTextLabel(minXValue, new SimpleDateFormat("HH").format(minXValue));
+        mRenderer.addXTextLabel(midXValue, new SimpleDateFormat("HH").format(midXValue));
+        mRenderer.addXTextLabel(maxXValue, new SimpleDateFormat("HH").format(maxXValue));
+
         mRenderer.setXLabels(0);
-
+        mRenderer.setXLabelsAlign(Paint.Align.CENTER);
         mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00)); // transparent margins
         // Disable Pan on two axis
         mRenderer.setPanEnabled(false, false);
-        mRenderer.setShowGrid(false);
+        mRenderer.setShowGridY(false);
+        mRenderer.setShowGridX(true);
+        mRenderer.setShowCustomTextGridY(true);
         mRenderer.setBackgroundColor(Color.WHITE);
-        mRenderer.setMargins(new int[]{10, 40, 5, 20});  //setMargins(top, left, bottom, right) defaults(20,30,10,20) ** more space in left and right for labels
+        mRenderer.setMargins(new int[]{10, 50, 5, 20});  //setMargins(top, left, bottom, right) defaults(20,30,10,20) ** more space in left and right for labels
         mRenderer.setMarginsColor(Color.WHITE);
         mRenderer.setAxesColor(Color.BLACK);
         mRenderer.setApplyBackgroundColor(true);
@@ -263,12 +271,36 @@ public class AmbientLight_Actv extends Activity {
         mRenderer.setShowTickMarks(false);
         //mRenderer.setChartTitle(new SimpleDateFormat("MM/dd/yyyy").format(date));
 
-        GraphicalView chartView = ChartFactory.getLineChartView(this, dataset, mRenderer);
+        GraphicalView chartView = ChartFactory.getBarChartView(this, dataset, mRenderer, BarChart.Type.STACKED);//
         return chartView;
     }
 
     private int getSizeInDP(int x) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, getResources().getDisplayMetrics());
+    }
+
+    public int getNormalizedLux(float lux) {
+        int result = 0;
+        if (lux < 30) result = 0;//             dark
+        else if (lux < 200) result = 1;//       less bright
+        else if (lux < 400) result = 2;
+        else if (lux < 800) result = 3;
+        else if (lux < 1200) result = 4;
+        else if (lux < 1500) result = 5;
+        else if (lux < 2000) result = 6;
+        else if (lux < 3000) result = 7;
+        else if (lux < 4000) result = 8;
+        else if (lux < 5000) result = 9;
+        else if (lux < 6000) result = 10;
+        else if (lux < 8000) result = 11;
+        else if (lux < 10000) result = 12;//    bright
+        else if (lux < 20000) result = 13;
+        else if (lux < 35000) result = 14;
+        else if (lux < 50000) result = 15;
+        else if (lux < 65000) result = 16;//    very bright
+        else if (lux < 80000) result = 17;
+        else result = 18;
+        return result;
     }
 
     private class LightDataRecord {
